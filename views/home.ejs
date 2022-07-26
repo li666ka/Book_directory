@@ -1,0 +1,75 @@
+<html>
+
+<head>
+    <title>Book Directory</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+
+<body>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script type="module" src="/javascripts/main.js"></script>
+    <script type="module" src="/javascripts/handlers.js"></script>
+    <script type="module" src="/javascripts/requests.js"></script>
+    <script type="module" src="/javascripts/html-builder.js"></script>
+
+    <h1>Welcome to Book Directory</h1>
+
+    <div class="row">
+        <!--Search book form-->
+        <div class="column">
+            <h2>Search</h2>
+            <label for="book-title-field">Book`s title</label><br>
+            <input id="book-title-field"><br>
+            <label for="author-name-field">Author`s name</label><br>
+            <input id="author-name-field"><br><br>
+            <button id="search-button">Search</button><br>
+        </div>
+        <!--Adding book form-->
+        <div class="column">
+            <h2>Adding new book</h2>
+
+            <form id="add-book-form" action="/api/books/addBook" method="post" enctype="multipart/form-data" >
+                <label for="new-book-title">Title*</label><br>
+                <input id="new-book-title" name="book_title"><br>
+
+                <label for="authors-combobox">Choose author*</label><br>
+                <select id="authors-combobox" name="author_name">
+                    <!--There will be list of authors-->
+                </select><br><br>
+
+                <label for="new-book-desc">Description*</label><br>
+                <textarea id="new-book-desc" name="book_desc"></textarea><br>
+
+                <input type="file" id="book-file" name="book_file" accept=".pdf"><br><br>
+
+                <button type="submit">Add book</button>
+            </form>
+
+        </div>
+        <!--Adding author form-->
+        <div class="column">
+            <h2>Adding new author</h2>
+
+            <label for="new-author-name">Name*</label><br>
+            <input id="new-author-name"><br>
+
+            <label for="new-author-date-birth">Date of birth*</label><br>
+            <input type="date" id="new-author-date-birth"><br>
+
+            <label for="new-author-date-death">Date of death</label><br>
+            <input type="date" id="new-author-date-death"><br>
+
+            <label for="new-author-info">Info</label><br>
+            <textarea id="new-author-info"></textarea><br><br>
+
+            <button id="add-author-button">Add author</button>
+        </div>
+    </div>
+    <div id="books-viewer">
+        <!--There will be list of books-->
+    </div>
+
+</body>
+
+</html>
