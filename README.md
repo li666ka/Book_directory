@@ -12,3 +12,5 @@ In this project I`m using MySql db. You need install Docker for local running da
     ```
 
 2. Then run new containers *book_directory* in Docker.
+
+Run the app and go to localhost:8888
