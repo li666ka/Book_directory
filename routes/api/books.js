@@ -33,10 +33,13 @@ router.post('/addBook', (req, res) => {
 
         const id = uuidv1();
         const authorName = fields.author_name;
-        const authorId = await Author.getAuthorIdByName(authorName);
         const title = fields.book_title;
-        const url = await Utils.createBookUrl(id, authorName, title, files.book_file);
-        const descUrl = await Utils.createBookDescriptionUrl(id, authorName, title, fields.book_desc);
+
+        const [ authorId, url, descUrl ] = await Promise.all([
+            Author.getAuthorIdByName(authorName),
+            Utils.createBookUrl(id, authorName, title, files.book_file),
+            Utils.createBookDescriptionUrl(id, authorName, title, fields.book_desc)
+        ]);
 
         Book.addBook(id, authorId, title, descUrl, url).then(r => {
             res.render('home');
