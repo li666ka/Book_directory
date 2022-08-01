@@ -31,7 +31,7 @@ export async function addAuthor(name, dateBirth, dateDeath, info) {
     return await axios.post('/api/authors/addAuthor', params);
 }
 
-export async function addBook(data) {
+export async function addBook(title, authorName, desc, file) {
     // if (name === '') {
     //     return;
     // }
@@ -40,14 +40,13 @@ export async function addBook(data) {
     //     return;
     // }
 
-    const params = {
-        name: name,
-        birth_date: dateBirth,
-        death_date: dateDeath,
-        info: info
-    }
+    const data = new FormData();
+    data.append(title.name, title.value);
+    data.append(authorName.name, authorName.value);
+    data.append(desc.name, desc.value);
+    data.append(file.name, file.value);
 
-    return await axios.post('/api/authors/addAuthor', params);
+    return await axios.post('/api/books/addBook', data);
 }
 
 export async function getAuthorNames() {

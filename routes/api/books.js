@@ -42,7 +42,7 @@ router.post('/addBook', (req, res) => {
         ]);
 
         Book.addBook(id, authorId, title, descUrl, url).then(r => {
-            res.render('home');
+            res.json({ result: 'Book was added successfully' });
         });
     });
 

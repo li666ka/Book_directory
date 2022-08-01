@@ -29,7 +29,7 @@
         <div class="column">
             <h2>Adding new book</h2>
 
-            <form id="add-book-form" action="/api/books/addBook" method="post" enctype="multipart/form-data" >
+            <form id="add-book-form" enctype="multipart/form-data" >
                 <label for="new-book-title">Title*</label><br>
                 <input id="new-book-title" name="book_title"><br>
 
@@ -42,9 +42,8 @@
                 <textarea id="new-book-desc" name="book_desc"></textarea><br>
 
                 <input type="file" id="book-file" name="book_file" accept=".pdf"><br><br>
-
-                <button type="submit">Add book</button>
             </form>
+            <button id="add-book-button">Add book</button>
 
         </div>
         <!--Adding author form-->
