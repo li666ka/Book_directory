@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const formidable = require('formidable');
 const fs = require('fs');
+const path = require('path');
 const { v1: uuidv1 } = require('uuid');
 
 const Book = require("../../models/book");
@@ -55,7 +56,7 @@ router.get('/:id', (req, res, next) => {
         .then(book => {
             let l = __dirname;
             l = l.slice(0, l.length - 10);
-            const newUrl = require('path').normalize(l + book[0].url);
+            const newUrl = path.normalize(l + book[0].url);
             res.sendFile(newUrl);
         })
         .catch(err => console.log(err));
