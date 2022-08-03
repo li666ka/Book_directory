@@ -29,12 +29,8 @@ async function getAuthorInfo(req, res) {
 
     try {
         const author = await Author.getAuthorById(req.params.id);
-
-        let l = __dirname;
-        l = l.slice(0, l.length - 10);
-        const newUrl = require('path').normalize(l + author.info_url);
-
-        res.sendFile(newUrl);
+        const root = Utils.getFileRoot(author.info_url);
+        res.sendFile(root);
     } catch (err) {
         console.log(err);
     }

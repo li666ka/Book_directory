@@ -34,4 +34,6 @@ const createBookTable =
         'UNIQUE(description_url)' +
     ')';
 
-module.exports = { connectionUri, createAuthorTable, createBookTable };
+const dataUri = '/data/';
+
+module.exports = { connectionUri, createAuthorTable, createBookTable, dataUri };

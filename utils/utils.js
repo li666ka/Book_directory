@@ -1,4 +1,7 @@
 const fs = require('fs');
+const path = require("path");
+
+const { dataUri } = require('../db/config');
 
 async function createAuthorInfoUrl(name, info) {
     let n = name.replaceAll(' ', '_');
@@ -93,4 +96,12 @@ async function createBookUrl(id, authorName, title, file) {
     return url;
 }
 
-module.exports = { createAuthorInfoUrl, createBookDescriptionUrl, createBookUrl };
+function getFileRoot(url) {
+    return path.join(getDataRoot(), url);
+}
+
+function getDataRoot() {
+    return path.join(path.dirname(__dirname), dataUri);
+}
+
+module.exports = { createAuthorInfoUrl, createBookDescriptionUrl, createBookUrl, getFileRoot };

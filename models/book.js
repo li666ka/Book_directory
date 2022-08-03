@@ -29,7 +29,8 @@ async function getBooks(title, authorName) {
 
 async function getBookById(id) {
     const query = `SELECT * FROM Book WHERE id = '${id}'`;
-    return await Db.executeQuery(query);
+    const result = await Db.executeQuery(query);
+    return result[0];
 }
 
 async function addBook(id, authorId, title, descUrl, url) {
