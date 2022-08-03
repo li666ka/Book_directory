@@ -11,6 +11,6 @@ In this project I`m using MySql db. You need install Docker for local running da
     > docker run --name book_dictory -p 8080:3306 -e MYSQL_ROOT_PASSWORD=0000 -d mysql
     ```
 
-2. Then run new containers *book_directory* in Docker.
+2. Run new container *book_directory* in Docker.
 
 Run the app and go to localhost:8888
