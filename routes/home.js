@@ -1,5 +1,4 @@
 const { Router } = require('express');
-const { getBookById } = require("../models/book");
 
 const router = Router();
 
