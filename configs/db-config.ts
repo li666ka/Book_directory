@@ -1,4 +1,4 @@
-const connectionUri = {
+const connectionUri: object = {
     host: 'localhost',
     port: '8080',
     user: 'root',
@@ -6,7 +6,7 @@ const connectionUri = {
     password: '0000'
 };
 
-const createAuthorTable =
+const createAuthorTableQuery : string =
     'CREATE TABLE IF NOT EXISTS Author ( ' +
         'id         int             AUTO_INCREMENT, ' +
         'name       varchar(255)    NOT NULL, ' +
@@ -18,7 +18,7 @@ const createAuthorTable =
         'UNIQUE(info_url)' +
     ')';
 
-const createBookTable =
+const createBookTableQuery : string =
     'CREATE TABLE IF NOT EXISTS Book ( ' +
         'id                 char(36), ' +
         'author_id          int             NOT NULL, ' +
@@ -34,6 +34,6 @@ const createBookTable =
         'UNIQUE(description_url)' +
     ')';
 
-const dataUri = '/data/';
+export const dataUri: string = '/data/';
 
-module.exports = { connectionUri, createAuthorTable, createBookTable, dataUri };
+export default { connectionUri, createAuthorTableQuery, createBookTableQuery, dataUri };
