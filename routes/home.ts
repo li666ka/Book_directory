@@ -3,8 +3,8 @@ import { Router } from 'express';
 const router: Router = Router();
 
 /* GET home page. */
-router.get('/', (req: any, res: { render: (arg0: string) => void; }) => {
+router.get('/', (req: any, res: any) => {
     res.render('home');
 });
 
-export default router;
+export = router;

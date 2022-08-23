@@ -13,4 +13,4 @@ router.get('/names', AuthorsController.getAuthorNames);
 /* GET author info */
 router.get('/:id', AuthorsController.getAuthorInfo);
 
-export default router;
+export = router;

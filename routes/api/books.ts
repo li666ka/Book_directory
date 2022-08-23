@@ -13,4 +13,4 @@ router.post('/addBook', booksController.addBook);
 /* GET book file */
 router.get('/:id', booksController.getBookFile);
 
-export default router;
+export = router;

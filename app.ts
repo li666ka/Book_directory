@@ -2,14 +2,13 @@ import express, { Express } from 'express';
 import path from 'path';
 //import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import requireDirectory from 'require-directory';
 
 import Db from './utils/db';
-import homePageRouter from './routes/home';
-import apiBooksRouter from './routes/api/books';
-import apiAuthorsRouter from './routes/api/authors';
 
 const app: Express = express();
 const port: number = 8888;
+const routes = requireDirectory(module, './routes');
 
 /* db setup */
 Db.initialize()
@@ -31,6 +30,8 @@ app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', homePageRouter);
-app.use('/api/books', apiBooksRouter);
-app.use('/api/authors', apiAuthorsRouter);
+app.use('/', routes.home);
+app.use('/api/books', routes.api.books);
+app.use('/api/authors', routes.api.authors);
+
+console.log(routes);
