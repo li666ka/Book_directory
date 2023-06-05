@@ -1,37 +1,32 @@
 import express, { Express } from 'express';
-import path from 'path';
-//import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import cors from 'cors';
 import logger from 'morgan';
-import requireDirectory from 'require-directory';
-
-import Db from './utils/db';
+import routes from './routes/all';
+import corsOption from './configs/cors.config';
 
 const app: Express = express();
-const port: number = 8888;
-const routes = requireDirectory(module, './routes');
+const port: number = 4000;
 
-/* db setup */
-Db.initialize()
-    .then(() => {
-        app.listen(port, () => {
-            console.log(`Server is listening on port ${port}`);
-        });
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+app.listen(port, () => {
+	console.log(`Server is listening on port ${port}`);
+});
 
-// register view engine
-app.set('view engine', 'ejs');
-
+app.use(express.static('content'));
+app.use(cors(corsOption));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-//app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes.home);
-app.use('/api/books', routes.api.books);
-app.use('/api/authors', routes.api.authors);
+app.use('/books', routes.books);
+app.use('/books', routes.books_genres);
+app.use('/books', routes.books_reviews);
 
-console.log(routes);
+app.use('/authors', routes.authors);
+app.use('/genres', routes.genres);
+
+app.use('/users', routes.users);
+app.use('/users', routes.users_books);
+
+app.use('/statuses', routes.statuses);

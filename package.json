@@ -9,29 +9,28 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
-    "ejs": "^3.1.8",
-    "express": "~4.16.1",
-    "formidable": "^2.0.1",
+    "express": "^4.18.2",
+    "formidable": "^2.1.1",
+    "jsonwebtoken": "^9.0.0",
     "morgan": "~1.9.1",
-    "mysql2": "^2.3.3",
-    "require-all": "^3.0.0",
-    "require-dir": "^1.2.0",
-    "require-directory": "^2.1.1",
-    "uuid": "^8.3.2"
+    "mysql2": "^2.3.3"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.13",
     "@types/formidable": "^2.0.5",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/morgan": "^1.9.3",
-    "@types/node": "^18.7.9",
-    "@types/require-all": "^3.0.3",
-    "@types/require-dir": "^1.0.2",
-    "@types/require-directory": "^2.1.2",
-    "@types/uuid": "^8.3.4",
     "concurrently": "^7.3.0",
     "nodemon": "^2.0.19",
+    "prettier": "^2.8.7",
     "typescript": "^4.7.4"
   }
 }
