@@ -17,8 +17,6 @@
 
 2. Run new container *book_directory* in Docker.
 
-Run the app and go to localhost:8888
-
 ## API
 
 ### General
