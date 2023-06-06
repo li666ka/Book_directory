@@ -1,4 +1,4 @@
-# Library
+# Booklist
 
 ## About
 
@@ -42,9 +42,11 @@ Run the app and go to localhost:8888
 `DELETE /books/:id` - deletes book <br />
 
 `GET /books/:id/author` - returns book's author <br />
-`GET /books/:bookId/genres` - returns all book's genres <br />
+`GET /books/:bookId/genres` - returns book's genres <br />
 `PUT /books/:bookId/genres/:genreId` - adds genre to book <br />
 `DELETE /books/:bookId/genres/:genreId` - removes genre from book <br />
+
+`GET /books/:id/reviews` - returns book reviews <br />
 
 ### Genres
 
@@ -53,8 +55,6 @@ Run the app and go to localhost:8888
 `POST /genres/` - creates genre <br />
 `PUT /genres/:id` - updates genre <br />
 `DELETE /genres/:id` - deletes genre <br />
-
-`GET /genres/:id/books` - returns books with certain genre <br />
 
 ### Statuses
 
@@ -87,6 +87,15 @@ Run the app and go to localhost:8888
 `POST /users/:userId/books/:bookId` - adds book to user's booklist <br />
 `PUT /users/:userId/books/:bookId` - updates booklist item <br />
 `DELETE /users/:userId/books/:bookId` - removes item from booklist <br />
+
+`GET /users/:userId/books/:bookId/review` - returns book review <br />
+`POST /users/:userId/books/:bookId/review` - creates book review <br />
+`PUT /users/:userId/books/:bookId/review` - updates book review <br />
+`DELETE /users/:userId/books/:bookId/review` - deletes book review <br />
+
+### Book Reviews
+
+`GET /reviews/` - returns all reviews <br />
 
 ### Details
 
