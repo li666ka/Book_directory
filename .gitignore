@@ -4,5 +4,4 @@
 *.js.map
 /content
 /build
-*.idea
-.idea
+.vscode

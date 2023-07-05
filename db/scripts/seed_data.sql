@@ -1,4 +1,4 @@
-USE library;
+USE booklist;
 
 INSERT INTO authors (full_name, born_at, died_at, img_url, info, created_at)
 VALUES ('Jack London', '1876-01-12', '1916-11-22', '/Jack_London/Jack_London.jpg',

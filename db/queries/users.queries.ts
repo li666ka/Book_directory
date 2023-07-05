@@ -2,17 +2,23 @@ const UsersQueries = {
 	GetAll: `
         SELECT *
         FROM users`,
-	GetById: `
+	Get: `
         SELECT *
         FROM users
         WHERE id = ?`,
-	GetByUsername: `
-        SELECT *
-        FROM users
-        WHERE username = ?`,
 	Create: `
         INSERT INTO users (role_id, username, password, created_at)
         VALUES (?, ?, ?, NOW())`,
+	Update: `
+		UPDATE users
+		SET role_id = ?, username = ?, password = ?
+		WHERE id = ?
+	`,
+	Delete: `
+        DELETE
+        FROM users
+        WHERE id = ?
+	`
 };
 
 export default UsersQueries;

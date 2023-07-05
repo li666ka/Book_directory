@@ -1,27 +1,27 @@
 const AuthorsQueries = {
 	GetAll: `
         SELECT *
-        FROM authors`,
-	GetAllByFullName: `
+        FROM authors
+	`,
+	Get: `
         SELECT *
         FROM authors
-        WHERE full_name LIKE ?`,
-	GetById: `
-        SELECT *
-        FROM authors
-        WHERE id = ?`,
-	GetByFullName: `
-        SELECT *
-        FROM authors
-        WHERE full_name = ?`,
+        WHERE id = ?
+	`,
 	Create: `
         INSERT INTO authors (full_name, born_at, died_at, img_url, info, created_at)
-        VALUES (?, ?, ?, ?, ?, NOW())`,
+        VALUES (?, ?, ?, ?, ?, NOW())
+	`,
+	Update: `
+		UPDATE authors
+        SET full_name = ?, born_at = ?, died_at = ?, img_url = ?, info = ?
+        WHERE id = ?
+	`,
 	Delete: `
         DELETE
         FROM authors
         WHERE id = ?
-	`,
+	`
 };
 
 export default AuthorsQueries;

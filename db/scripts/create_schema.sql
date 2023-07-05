@@ -1,5 +1,6 @@
-CREATE DATABASE IF NOT EXISTS library;
-USE library;
+-- Active: 1686078023502@@localhost@8080
+CREATE DATABASE IF NOT EXISTS booklist;
+USE booklist;
 
 CREATE TABLE IF NOT EXISTS authors
 (
@@ -110,7 +111,7 @@ CREATE TABLE IF NOT EXISTS users_books
         ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS books_reviews
+CREATE TABLE IF NOT EXISTS reviews
 (
     user_id    INT,
     book_id    INT,

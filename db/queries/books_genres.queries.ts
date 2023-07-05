@@ -1,15 +1,23 @@
 const BooksGenresQueries = {
-	GetAllByBookId: `
+	GetAll: `
         SELECT *
         FROM books_genres
-        WHERE book_id = ?`,
+	`,
+	Get: `
+		SELECT * 
+		FROM books_genres 
+		WHERE book_id = ? AND genre_id = ?
+	`,
 	Create: `
         INSERT INTO books_genres (book_id, genre_id)
-        VALUES (?, ?)`,
-	DeleteAllByBookId: `
+        VALUES (?, ?)
+	`,
+	/* No UPDATE query, because these rows can be only deleted */
+	Delete: `
         DELETE
         FROM books_genres
-        WHERE book_id = ?`,
+        WHERE book_id = ? AND genre_id = ?
+	`,
 };
 
 export default BooksGenresQueries;
