@@ -1,6 +1,7 @@
+import { OkPacket, RowDataPacket } from 'mysql2';
+
 import DB_CONNECTION from '../utils/db.connector';
 import GenresQueries from '../db/queries/genres.queries';
-import { RowDataPacket } from 'mysql2';
 
 export interface Genre extends RowDataPacket {
 	id: number;
@@ -8,18 +9,34 @@ export interface Genre extends RowDataPacket {
 }
 
 export class GenreRepository {
-	public static async get(): Promise<Genre[] | never> {
+	public static async getAll(): Promise<Genre[] | never> {
 		const query: string = GenresQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Genre[]>(query);
 		return rows;
 	}
 
-	public static async getById(id: number): Promise<Genre | never> {
-		let query: string = GenresQueries.GetById;
-		let values: number[] = [id];
+	public static async get(id: number): Promise<Genre | never> {
+		const query: string = GenresQueries.Get;
+		const values: any[] = [id];
 		const [rows] = await DB_CONNECTION.promise().query<Genre[]>(query, values);
 		return rows[0];
 	}
-}
 
-export default Genre;
+	public static async create(name: string): Promise<void | never> {
+		const query: string = GenresQueries.Create;
+		const values: any[] = [name];
+		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+	}
+
+	public static async update(n_name: string, id: number): Promise<void | never> {
+		const query: string = GenresQueries.Update;
+		const values: any[] = [n_name, id];
+		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+	}
+
+	public static async delete(id: number): Promise<void | never> {
+		const query: string = GenresQueries.Delete;
+		const values: any[] = [id];
+		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+	}
+}

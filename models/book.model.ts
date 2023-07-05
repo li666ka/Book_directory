@@ -14,53 +14,15 @@ export interface Book extends RowDataPacket {
 }
 
 export class BookRepository {
-	public static async get(title?: string, genresIds?: number[]): Promise<Book[]> {
-		let isWhereSet: boolean = false;
+	public static async getAll(): Promise<Book[]> {
 		let query: string = BooksQueries.GetAll;
-		let values: any[] = [];
-
-		if (title) {
-			title = '%' + title + '%';
-			query += ` WHERE books.title LIKE ?`;
-			values.push(title);
-			isWhereSet = true;
-		}
-
-		if (genresIds) {
-			genresIds.map((genreId) => {
-				isWhereSet ? (query += ` AND`) : (query += ` WHERE`);
-				query += ` EXISTS( 
-				SELECT * FROM books_genres 
-				WHERE books_genres.book_id = books.id AND books_genres.genre_id = ?)`;
-				values.push(genreId);
-			});
-		}
-
-		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
-
+		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query);
 		return rows;
 	}
 
-	public static async getById(id: number): Promise<Book | never> {
-		const query: string = BooksQueries.GetById;
-		const values: number[] = [id];
-		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
-		return rows[0];
-	}
-
-	public static async getByAuthorId(id: number): Promise<Book[] | never> {
-		const query: string = BooksQueries.GetAllByAuthorId;
-		const values: number[] = [id];
-		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
-		return rows;
-	}
-
-	public static async getByTitleAndAuthorId(
-		title: string,
-		authorId: number
-	): Promise<Book | undefined | never> {
-		const query: string = BooksQueries.GetByTitleAndAuthorId;
-		const values: any[] = [title, authorId];
+	public static async get(id: number): Promise<Book | never> {
+		const query: string = BooksQueries.Get;
+		const values: any[] = [id];
 		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
 		return rows[0];
 	}
@@ -77,40 +39,18 @@ export class BookRepository {
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
-	public static async updateTitle(id: number, title: string): Promise<void | never> {
-		const query: string = BooksQueries.UpdateTitle;
-		const values: any[] = [id, title];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
-	}
-
-	public static async updateAuthorId(
-		id: number,
-		authorId: string
-	): Promise<void | never> {
-		const query: string = BooksQueries.UpdateAuthorId;
-		const values: any[] = [id, authorId];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
-	}
-
-	public static async updateDescription(
-		id: number,
-		description: string
-	): Promise<void | never> {
-		const query: string = BooksQueries.UpdateDescription;
-		const values: any[] = [id, description];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
-	}
-
-	public static async updateImgUrl(id: number, imgUrl: string): Promise<void | never> {
-		const query: string = BooksQueries.UpdateImgUrl;
-		const values: any[] = [id, imgUrl];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
-	}
-
-	public static async updateUrl(id: number, url: string): Promise<void | never> {
-		const query: string = BooksQueries.UpdateImgUrl;
-		const values: any[] = [id, url];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+	public static async update(
+		n_authorId: number,
+		n_title: string,
+		n_imgUrl: string,
+		n_description: string,
+		n_url: string,
+		id: number
+	): Promise<Book[] | never> {
+		const query: string = BooksQueries.Update;
+		const values: any[] = [n_authorId, n_title, n_imgUrl, n_description, n_url, id];
+		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
+		return rows;
 	}
 
 	public static async delete(id: number): Promise<void | never> {

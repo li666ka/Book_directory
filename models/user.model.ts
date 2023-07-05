@@ -12,23 +12,15 @@ export interface User extends RowDataPacket {
 }
 
 export class UserRepository {
-	public static async get(): Promise<User[] | never> {
+	public static async getAll(): Promise<User[] | never> {
 		const query: string = UsersQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<User[]>(query);
 		return rows;
 	}
 
-	public static async getById(id: number): Promise<User> {
-		const query: string = UsersQueries.GetById;
+	public static async get(id: number): Promise<User> {
+		const query: string = UsersQueries.Get;
 		const values: any[] = [id];
-
-		const [rows] = await DB_CONNECTION.promise().query<User[]>(query, values);
-		return rows[0];
-	}
-
-	public static async getByUsername(username: string): Promise<User> {
-		const query: string = UsersQueries.GetByUsername;
-		const values: any[] = [username];
 
 		const [rows] = await DB_CONNECTION.promise().query<User[]>(query, values);
 		return rows[0];
@@ -38,16 +30,27 @@ export class UserRepository {
 		roleId: number,
 		username: string,
 		password: string
-	): Promise<User> {
+	): Promise<void | never> {
 		const query: string = UsersQueries.Create;
 		const values: any[] = [roleId, username, password];
 
-		//await validateSqlQuery(query, values);
-
 		await DB_CONNECTION.promise().execute<OkPacket>(query, values);
+	}
 
-		return await this.getByUsername(username);
+	public static async update(
+		n_roleId: number,
+		n_username: string,
+		n_password: string,
+		id: number
+	): Promise<void | never> {
+		const query: string = UsersQueries.Update;
+		const values: any[] = [n_roleId, n_username, n_password, id];
+		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+	}
+
+	public static async delete(id: number): Promise<void | never> {
+		const query: string = UsersQueries.Delete;
+		const values: any[] = [id];
+		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 }
-
-export default User;

@@ -6,49 +6,50 @@ import AuthorsQueries from '../db/queries/authors.queries';
 export interface Author extends RowDataPacket {
 	id: number;
 	full_name: string;
-	birth_date: string;
-	death_date?: string;
+	born_at: string;
+	died_at?: string;
 	img_url: string;
 	info: string;
+	created_at: string;
 }
 
 export class AuthorRepository {
-	public static async get(fullName: string | undefined): Promise<Author[] | never> {
+	public static async getAll(): Promise<Author[] | never> {
 		let query: string = AuthorsQueries.GetAll;
-		let values: any[] | undefined = undefined;
-		if (fullName) {
-			query = AuthorsQueries.GetAllByFullName;
-			values = [`%${fullName}%`];
-		}
-
-		const [rows] = await DB_CONNECTION.promise().query<Author[]>(query, values);
+		const [rows] = await DB_CONNECTION.promise().query<Author[]>(query);
 		return rows;
 	}
 
-	public static async getById(id: number): Promise<Author | undefined | never> {
-		const query: string = AuthorsQueries.GetById;
+	public static async get(id: number): Promise<Author | undefined | never> {
+		const query: string = AuthorsQueries.Get;
 		const values: any[] = [id];
 
 		const [rows] = await DB_CONNECTION.promise().query<Author[]>(query, values);
 		return rows[0];
 	}
 
-	public static async getByName(name: string): Promise<Author | undefined | never> {
-		const query: string = AuthorsQueries.GetByFullName;
-		const values: any[] = [name];
-		const [rows] = await DB_CONNECTION.promise().query<Author[]>(query, values);
-		return rows[0];
-	}
-
 	public static async create(
 		fullName: string,
-		birthDate: string,
+		bornAt: string,
 		imgUrl: string,
 		info: string,
-		deathDate?: string
+		diedAt?: string
 	): Promise<void | never> {
 		const query: string = AuthorsQueries.Create;
-		const values: any[] = [fullName, birthDate, deathDate, imgUrl, info];
+		const values: any[] = [fullName, bornAt, diedAt, imgUrl, info];
+		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+	}
+
+	public static async update(
+		n_fullName: string,
+		n_bornAt: string,
+		n_diedAt: string,
+		n_imgUrl: string,
+		n_info: string,
+		id: number
+	): Promise<void | never> {
+		const query: string = AuthorsQueries.Update;
+		const values: any[] = [n_fullName, n_bornAt, n_diedAt, n_imgUrl, n_info, id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
@@ -58,5 +59,3 @@ export class AuthorRepository {
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 }
-
-export default Author;

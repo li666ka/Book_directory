@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { BookReview, BookReviewRepository } from '../models/books_reviews.model';
+import { BookReview, BookReviewRepository } from '../models/review.model';
 import { JWT_SECRET, JWTPayload } from '../utils/jwt';
 import jwt from 'jsonwebtoken';
 import { Role, RoleRepository } from '../models/role.model';

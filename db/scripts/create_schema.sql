@@ -1,4 +1,3 @@
--- Active: 1686078023502@@localhost@8080
 CREATE DATABASE IF NOT EXISTS booklist;
 USE booklist;
 
