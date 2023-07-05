@@ -1,7 +1,8 @@
 const UsersQueries = {
 	GetAll: `
         SELECT *
-        FROM users`,
+        FROM users
+	`,
 	Get: `
         SELECT *
         FROM users
