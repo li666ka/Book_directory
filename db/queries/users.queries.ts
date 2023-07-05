@@ -3,7 +3,7 @@ const UsersQueries = {
         SELECT *
         FROM users
 	`,
-	Get: `
+	Get: ` 
         SELECT *
         FROM users
         WHERE id = ?`,
