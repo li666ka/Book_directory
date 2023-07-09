@@ -1,0 +1,3 @@
+interface GetBookDto {
+	id: number;
+}

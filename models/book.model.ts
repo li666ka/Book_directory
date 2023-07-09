@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.connector';
+import DB_CONNECTION from '../services/db.connector';
 import BooksQueries from '../db/queries/books.queries';
 
 export interface Book extends RowDataPacket {
@@ -33,10 +33,11 @@ export class BookRepository {
 		imgUrl: string,
 		description: string,
 		url: string
-	): Promise<void | never> {
+	): Promise<OkPacket | never> {
 		const query: string = BooksQueries.Create;
 		const values: any[] = [authorId, title, imgUrl, description, url];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return res[0];
 	}
 
 	public static async update(
@@ -59,5 +60,3 @@ export class BookRepository {
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 }
-
-export default Book;

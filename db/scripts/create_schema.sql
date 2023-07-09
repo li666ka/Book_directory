@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS authors
 
 CREATE TABLE IF NOT EXISTS books
 (
-    id          INT AUTO_INCREMENT,
+    id          INT          AUTO_INCREMENT,
     author_id   INT          NOT NULL,
     title       VARCHAR(255) NOT NULL,
     img_url     VARCHAR(255) NOT NULL,

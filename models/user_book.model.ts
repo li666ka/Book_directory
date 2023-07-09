@@ -1,7 +1,7 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
 import UsersBooksQueries from '../db/queries/users_books.queries';
-import DB_CONNECTION from '../utils/db.connector';
+import DB_CONNECTION from '../services/db.connector';
 
 export interface UserBook extends RowDataPacket {
 	user_id: number;

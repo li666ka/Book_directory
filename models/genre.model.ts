@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.connector';
+import DB_CONNECTION from '../services/db.connector';
 import GenresQueries from '../db/queries/genres.queries';
 
 export interface Genre extends RowDataPacket {
@@ -15,7 +15,7 @@ export class GenreRepository {
 		return rows;
 	}
 
-	public static async get(id: number): Promise<Genre | never> {
+	public static async get(id: number): Promise<Genre | undefined | never> {
 		const query: string = GenresQueries.Get;
 		const values: any[] = [id];
 		const [rows] = await DB_CONNECTION.promise().query<Genre[]>(query, values);

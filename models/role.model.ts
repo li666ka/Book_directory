@@ -1,11 +1,17 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
 import RolesQueries from '../db/queries/roles.queries';
-import DB_CONNECTION from '../utils/db.connector';
+import DB_CONNECTION from '../services/db.connector';
 
 export interface Role extends RowDataPacket {
 	id: number;
 	name: string;
+}
+
+export enum Roles {
+	User = 1,
+	Moderator,
+	Admin,
 }
 
 export class RoleRepository {

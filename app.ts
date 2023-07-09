@@ -20,13 +20,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/books', routes.books);
-app.use('/books', routes.books_genres);
-app.use('/books', routes.books_reviews);
-
-app.use('/authors', routes.authors);
-app.use('/genres', routes.genres);
-
-app.use('/users', routes.users);
-app.use('/users', routes.users_books);
-
-app.use('/statuses', routes.statuses);
+// app.use('/authors', routes.authors);
+// app.use('/genres', routes.genres);
+// app.use('/users', routes.users);
+// app.use('/statuses', routes.statuses);
+//
+// app.use(multer({ storage: 'content/', fileFilter: fileFilter })
