@@ -59,6 +59,8 @@ class BookValidator {
 	public static async validateDeletingData(
 		deleteBookDto: DeleteBookDto | undefined
 	): Promise<Book | never> {
+		if (!deleteBookDto) throw new Error('Dto is empty');
+
 		const { id } = deleteBookDto;
 		if (!id) throw new Error('id is undefined');
 

@@ -136,7 +136,7 @@ class BooksController {
 		req: Request<DeleteBookDto>,
 		res: Response
 	): Promise<void> {
-		await BooksService.delete(req.params.id);
+		await BooksService.delete(req.params);
 		res.sendStatus(200);
 	}
 }
