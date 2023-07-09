@@ -33,17 +33,13 @@ class BooksService {
 		return booksDto;
 	}
 
-	public static async findOne(
-		getBookDto: GetBookDto
-	): Promise<BookDto | undefined | never> {
+	public static async findOne(getBookDto: GetBookDto): Promise<BookDto | never> {
 		const { id } = getBookDto;
-		const book: Book | undefined = await BookRepository.get(id);
 
-		if (book) {
-			return await this.toDto(book);
-		} else {
-			return undefined;
-		}
+		const book: Book | undefined = await BookRepository.get(id);
+		if (!book) throw new Error(`Book with id ${id} does not exist`);
+
+		return await this.toDto(book);
 	}
 
 	public static async create(

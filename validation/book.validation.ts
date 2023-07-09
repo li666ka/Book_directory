@@ -1,7 +1,6 @@
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
 import { Author, AuthorRepository } from '../models/author.model';
 import { Genre, GenreRepository } from '../models/genre.model';
-import BookDto from '../controllers/books/dto/book.dto';
 import { Book, BookRepository } from '../models/book.model';
 
 class BookValidator {

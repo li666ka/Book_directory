@@ -5,9 +5,6 @@ import BookDto from './dto/book.dto';
 import CreateBookDto from './dto/create_book.dto';
 
 import BooksService from '../../services/books.service';
-import BookValidator from '../../validation/book.validation';
-import BookValidation from '../../validation/book.validation';
-import { Book } from '../../models/book.model';
 
 class BooksController {
 	public static async getAll(
@@ -18,9 +15,13 @@ class BooksController {
 		res.json(books);
 	}
 
-	public static async get(req: Request<never, GetBookDto>, res: Response) {
-		const book: BookDto | undefined = await BooksService.findOne(req.params);
-		res.json(book);
+	public static async get(req: Request<GetBookDto>, res: Response) {
+		try {
+			const book: BookDto = await BooksService.findOne(req.params);
+			res.json(book);
+		} catch (err: unknown) {
+			res.sendStatus(400);
+		}
 	}
 
 	public static async create(
