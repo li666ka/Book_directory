@@ -25,11 +25,11 @@ router.post(
 // 	AuthService.requireAdminOrModerator,
 // 	BooksController.update
 // );
-// router.delete(
-// 	'/:id',
-// 	AuthService.verify,
-// 	AuthService.requireAdminOrModerator,
-// 	BooksController.delete
-// );
+router.delete(
+	'/:id',
+	// AuthService.verify,
+	// AuthService.requireAdminOrModerator,
+	BooksController.delete
+);
 
 export default router;

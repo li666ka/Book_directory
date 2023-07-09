@@ -6,9 +6,12 @@ import { Book, BookRepository } from '../models/book.model';
 import { Author, AuthorRepository } from '../models/author.model';
 import { BookGenre, BookGenreRepository } from '../models/book_genre.model';
 import { Genre, GenreRepository } from '../models/genre.model';
+
 import GetBooksDto from '../controllers/books/dto/get_books.dto';
 import BookDto from '../controllers/books/dto/book.dto';
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
+
+import BookValidator from '../validation/book.validation';
 
 class BooksService {
 	public static async find(getBooksDto: GetBooksDto): Promise<BookDto[] | never> {
@@ -44,12 +47,22 @@ class BooksService {
 	}
 
 	public static async create(
-		createBookDto: CreateBookDto,
-		imageFile: Express.Multer.File,
-		bookFile: Express.Multer.File,
-		author: Author
+		createBookDto: CreateBookDto | undefined,
+		files:
+			| {
+					[key: string]: Express.Multer.File[];
+			  }
+			| Express.Multer.File[]
+			| undefined
 	): Promise<BookDto | never> {
-		const { authorId, title, description, genresIds } = createBookDto;
+		const validationResult = await BookValidator.validateCreationData(
+			createBookDto,
+			files
+		);
+
+		const { author, bookFile, imageFile } = validationResult;
+		const { authorId, title, description, genresIds } =
+			validationResult.createBookDto;
 
 		const authorDir: string = author.full_name.replaceAll(' ', '_');
 		const bookDir: string = title.replaceAll(' ', '_');
@@ -101,6 +114,15 @@ class BooksService {
 		}
 
 		return await this.toDto(newBook);
+	}
+
+	public static async delete(id: number | undefined) {
+		const book: Book = await BookValidator.validateDeletingData(id);
+		await BookRepository.delete(book.id);
+		fs.rmSync(path.join('content', path.dirname(book.url)), {
+			recursive: true,
+			force: true,
+		});
 	}
 
 	private static async filter(

@@ -1,15 +1,4 @@
 import { Request, Response } from 'express';
-import fs from 'fs';
-import path from 'path';
-
-import { Book, BookRepository } from '../../models/book.model';
-import { Author, AuthorRepository } from '../../models/author.model';
-import { BookGenreRepository } from '../../models/book_genre.model';
-import { Genre, GenreRepository } from '../../models/genre.model';
-import { Role, RoleRepository } from '../../models/role.model';
-
-import { CONTENT_ROOT } from '../../configs/db.config';
-import { JWT_SECRET, JwtPayloadExt } from '../../services/jwt';
 
 import GetBooksDto from './dto/get_books.dto';
 import BookDto from './dto/book.dto';
@@ -17,6 +6,8 @@ import CreateBookDto from './dto/create_book.dto';
 
 import BooksService from '../../services/books.service';
 import BookValidator from '../../validation/book.validation';
+import BookValidation from '../../validation/book.validation';
+import { Book } from '../../models/book.model';
 
 class BooksController {
 	public static async getAll(
@@ -38,27 +29,10 @@ class BooksController {
 	): Promise<void> {
 		console.log(req.body);
 
-		let validationResult;
-		try {
-			validationResult = await BookValidator.validateCreationData(
-				req.body,
-				req.files
-			);
-		} catch (err: unknown) {
-			console.log(err.message);
-			return;
-		}
+		const newBook: BookDto = await BooksService.create(req.body, req.files);
 
-		const { createBookDto, imageFile, bookFile, author } = validationResult;
-
-		const newBook: BookDto = await BooksService.create(
-			createBookDto,
-			imageFile,
-			bookFile,
-			author
-		);
-
-		res.json(newBook);
+		res.status(201).json(newBook);
+		return;
 	}
 
 	// public static async update(
@@ -156,28 +130,13 @@ class BooksController {
 	// 	}
 	// }
 	//
-	// public static async delete(
-	// 	req: Request<{ id: number }, { token: string }>,
-	// 	res: Response
-	// ): Promise<void> {
-	// 	const { id } = req.params;
-	// 	const { token } = req.body;
-	// 	const decoded: JWTPayload = jwt.verify(token, JWT_SECRET) as JWTPayload;
-	//
-	// 	const role: Role | undefined = await RoleRepository.getById(decoded.role_id);
-	//
-	// 	let isPermitted: boolean = false;
-	//
-	// 	if (role) if (role.name === 'admin') isPermitted = true;
-	//
-	// 	if (isPermitted) {
-	// 		await BookRepository.delete(id);
-	//
-	// 		res.sendStatus(200);
-	// 	} else {
-	// 		res.sendStatus(400);
-	// 	}
-	// }
+	public static async delete(
+		req: Request<{ id: number }>,
+		res: Response
+	): Promise<void> {
+		await BooksService.delete(req.params.id);
+		res.sendStatus(200);
+	}
 }
 
 export default BooksController;

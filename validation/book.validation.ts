@@ -1,6 +1,8 @@
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
 import { Author, AuthorRepository } from '../models/author.model';
 import { Genre, GenreRepository } from '../models/genre.model';
+import BookDto from '../controllers/books/dto/book.dto';
+import { Book, BookRepository } from '../models/book.model';
 
 class BookValidator {
 	public static async validateCreationData(
@@ -52,6 +54,18 @@ class BookValidator {
 		if (!author) throw new Error(`Author with id ${authorId} does not exist`);
 
 		return { createBookDto, imageFile, bookFile, author };
+	}
+
+	public static async validateDeletingData(
+		id: number | undefined
+	): Promise<Book | never> {
+		if (!id) throw new Error('id is undefined');
+
+		const book: Book | undefined = await BookRepository.get(id);
+
+		if (!book) throw new Error(`Book with id ${id} does not exist`);
+
+		return book;
 	}
 }
 
