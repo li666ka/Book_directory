@@ -2,6 +2,7 @@ import CreateBookDto from '../controllers/books/dto/create_book.dto';
 import { Author, AuthorRepository } from '../models/author.model';
 import { Genre, GenreRepository } from '../models/genre.model';
 import { Book, BookRepository } from '../models/book.model';
+import DeleteBookDto from '../controllers/books/dto/delete_book.dto';
 
 class BookValidator {
 	public static async validateCreationData(
@@ -56,8 +57,9 @@ class BookValidator {
 	}
 
 	public static async validateDeletingData(
-		id: number | undefined
+		deleteBookDto: DeleteBookDto | undefined
 	): Promise<Book | never> {
+		const { id } = deleteBookDto;
 		if (!id) throw new Error('id is undefined');
 
 		const book: Book | undefined = await BookRepository.get(id);

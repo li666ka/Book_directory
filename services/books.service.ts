@@ -12,6 +12,7 @@ import BookDto from '../controllers/books/dto/book.dto';
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
 
 import BookValidator from '../validation/book.validation';
+import DeleteBookDto from '../controllers/books/dto/delete_book.dto';
 
 class BooksService {
 	public static async find(getBooksDto: GetBooksDto): Promise<BookDto[] | never> {
@@ -112,8 +113,8 @@ class BooksService {
 		return await this.toDto(newBook);
 	}
 
-	public static async delete(id: number | undefined) {
-		const book: Book = await BookValidator.validateDeletingData(id);
+	public static async delete(deleteBookDto: DeleteBookDto | undefined) {
+		const book: Book = await BookValidator.validateDeletingData(deleteBookDto);
 		await BookRepository.delete(book.id);
 		fs.rmSync(path.join('content', path.dirname(book.url)), {
 			recursive: true,

@@ -5,6 +5,7 @@ import BookDto from './dto/book.dto';
 import CreateBookDto from './dto/create_book.dto';
 
 import BooksService from '../../services/books.service';
+import DeleteBookDto from './dto/delete_book.dto';
 
 class BooksController {
 	public static async getAll(
@@ -132,7 +133,7 @@ class BooksController {
 	// }
 	//
 	public static async delete(
-		req: Request<{ id: number }>,
+		req: Request<DeleteBookDto>,
 		res: Response
 	): Promise<void> {
 		await BooksService.delete(req.params.id);
