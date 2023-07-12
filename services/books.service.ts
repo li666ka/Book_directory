@@ -176,8 +176,6 @@ class BooksService {
 	/**
 	 * Renames book folder, image file and book file.
 	 * Updates title, image_url and url in 'books' table.
-	 *
-	 * Returns updated book.
 	 */
 	private static async updateTitle(book: Book, newTitle: string) {
 		const [authorFolder, oldBookFolder] = book.url.split(path.sep);
