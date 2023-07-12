@@ -41,17 +41,24 @@ export class BookRepository {
 	}
 
 	public static async update(
-		n_authorId: number,
-		n_title: string,
-		n_imgUrl: string,
-		n_description: string,
-		n_url: string,
+		newAuthorId: number,
+		newTitle: string,
+		newImgUrl: string,
+		newDescription: string,
+		newUrl: string,
 		id: number
-	): Promise<Book[] | never> {
+	): Promise<OkPacket | never> {
 		const query: string = BooksQueries.Update;
-		const values: any[] = [n_authorId, n_title, n_imgUrl, n_description, n_url, id];
-		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
-		return rows;
+		const values: any[] = [
+			newAuthorId,
+			newTitle,
+			newImgUrl,
+			newDescription,
+			newUrl,
+			id,
+		];
+		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return res[0];
 	}
 
 	public static async delete(id: number): Promise<void | never> {

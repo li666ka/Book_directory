@@ -1,3 +1,0 @@
-interface GetBookDto {
-	id: number;
-}

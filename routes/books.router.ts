@@ -19,12 +19,16 @@ router.post(
 	]),
 	BooksController.create
 );
-// router.put(
-// 	'/:id',
-// 	AuthService.verify,
-// 	AuthService.requireAdminOrModerator,
-// 	BooksController.update
-// );
+router.put(
+	'/:id',
+	// AuthService.verify,
+	// AuthService.requireAdminOrModerator,
+	upload.fields([
+		{ name: 'book-image', maxCount: 1 },
+		{ name: 'book-file', maxCount: 1 },
+	]),
+	BooksController.update
+);
 router.delete(
 	'/:id',
 	// AuthService.verify,
