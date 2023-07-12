@@ -12,13 +12,13 @@ import BooksFiltersDto from '../controllers/books/dto/books_filters.dto';
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
 import UpdateBookDto from '../controllers/books/dto/update_book.dto';
 
-import BookValidator from '../validation/book.validation';
+import BookValidator from '../validators/book.validator';
 
 class BooksService {
 	public static async find(
 		booksFilters: BooksFiltersDto | undefined
 	): Promise<BookDto[] | never> {
-		await BookValidator.validateGetting(booksFilters);
+		await BookValidator.validateGettingAll(booksFilters);
 
 		let books: Book[] = await BookRepository.getAll();
 
@@ -42,12 +42,8 @@ class BooksService {
 		return booksDto;
 	}
 
-	public static async findOne(id: number | undefined): Promise<BookDto | never> {
-		if (!id) throw new Error('id is undefined');
-
-		const book: Book | undefined = await BookRepository.get(id);
-		if (!book) throw new Error(`Book with id ${id} does not exist`);
-
+	public static async findOne(id: string | undefined): Promise<BookDto | never> {
+		const book = await BookValidator.validateGetting(id);
 		return await this.parseToDto(book);
 	}
 
@@ -140,6 +136,73 @@ class BooksService {
 			recursive: true,
 			force: true,
 		});
+	}
+
+	private static async filter(
+		books: Book[],
+		title?: string,
+		authorFullName?: string,
+		genresIds?: number[]
+	): Promise<Book[] | never> {
+		if (title) {
+			books = await this.filterByTitle(books, title);
+		}
+
+		if (authorFullName) {
+			books = await this.filterByAuthor(books, authorFullName);
+		}
+
+		if (genresIds) {
+			books = await this.filterByGenres(books, genresIds);
+		}
+
+		return books;
+	}
+
+	private static async filterByTitle(books: Book[], title: string): Promise<Book[]> {
+		books = books.filter((book) => {
+			const regExp = new RegExp(title, 'i');
+			return regExp.test(book.title);
+		});
+
+		return books;
+	}
+
+	private static async filterByAuthor(
+		books: Book[],
+		authorFullName: string
+	): Promise<Book[]> {
+		const booksFiltered: Book[] = [];
+		for (const book of books) {
+			const author: Author | undefined = await AuthorRepository.get(book.author_id);
+			if (author) {
+				const regExp = new RegExp(authorFullName, 'i');
+				const res: boolean = regExp.test(author.full_name);
+				if (res) booksFiltered.push(book);
+			}
+		}
+
+		return booksFiltered;
+	}
+
+	private static async filterByGenres(
+		books: Book[],
+		searchGenresIds: number[]
+	): Promise<Book[]> {
+		books = books.filter(async (book) => {
+			const booksGenresAll: BookGenre[] = await BookGenreRepository.getAll();
+			const bookGenresIds = booksGenresAll
+				.filter((bookGenre) => bookGenre.book_id === book.id)
+				.map((bookGenre) => bookGenre.genre_id);
+
+			const intersection = searchGenresIds.filter((genreId) => {
+				bookGenresIds.includes(genreId);
+			});
+
+			return intersection.length === searchGenresIds.length;
+		});
+
+		return books;
 	}
 
 	/**
@@ -287,71 +350,6 @@ class BooksService {
 				await BookGenreRepository.create(book.id, genreId);
 			}
 		}
-	}
-
-	private static async filter(
-		books: Book[],
-		title?: string,
-		authorFullName?: string,
-		genresIds?: number[]
-	): Promise<Book[] | never> {
-		if (title) {
-			books = await this.filterByTitle(books, title);
-		}
-
-		if (authorFullName) {
-			books = await this.filterByAuthor(books, authorFullName);
-		}
-
-		if (genresIds) {
-			books = await this.filterByGenres(books, genresIds);
-		}
-
-		return books;
-	}
-
-	private static async filterByTitle(books: Book[], title: string): Promise<Book[]> {
-		books = books.filter((book) => {
-			const regExp = new RegExp(title, 'i');
-			return regExp.test(book.title);
-		});
-
-		return books;
-	}
-
-	private static async filterByAuthor(
-		books: Book[],
-		authorFullName: string
-	): Promise<Book[]> {
-		books = books.filter(async (book) => {
-			const author: Author | undefined = await AuthorRepository.get(book.author_id);
-			if (author) {
-				const regExp = new RegExp(authorFullName, 'i');
-				return regExp.test(author.full_name);
-			}
-		});
-
-		return books;
-	}
-
-	private static async filterByGenres(
-		books: Book[],
-		searchGenresIds: number[]
-	): Promise<Book[]> {
-		books = books.filter(async (book) => {
-			const booksGenresAll: BookGenre[] = await BookGenreRepository.getAll();
-			const bookGenresIds = booksGenresAll
-				.filter((bookGenre) => bookGenre.book_id === book.id)
-				.map((bookGenre) => bookGenre.genre_id);
-
-			const intersection = searchGenresIds.filter((genreId) => {
-				bookGenresIds.includes(genreId);
-			});
-
-			return intersection.length === searchGenresIds.length;
-		});
-
-		return books;
 	}
 
 	private static async parseToDto(book: Book): Promise<BookDto> {

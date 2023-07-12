@@ -7,7 +7,7 @@ export interface Review extends RowDataPacket {
 	user_id: number;
 	book_id: number;
 	score: number;
-	comment?: string;
+	comment: string | null;
 	created_at: string;
 }
 

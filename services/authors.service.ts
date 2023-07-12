@@ -1,6 +1,10 @@
 import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
 import AuthorDto from '../controllers/authors/dto/author.dto';
 import { Author, AuthorRepository } from '../models/author.model';
+import { Book, BookRepository } from '../models/book.model';
+import AuthorValidator from '../validators/author.validator';
+import BooksService from './books.service';
+import BookDto from '../controllers/books/dto/book.dto';
 
 class AuthorsService {
 	public static async find(
@@ -13,7 +17,6 @@ class AuthorsService {
 
 			if (searchFullName) {
 				authors = await this.filterByFullName(authors, searchFullName);
-				// console.log(authors);
 			}
 		}
 
@@ -26,18 +29,33 @@ class AuthorsService {
 		return authorsDto;
 	}
 
+	public static async findOne(id: string | undefined): Promise<AuthorDto | never> {
+		const author: Author = await AuthorValidator.validateGetting(id);
+		return this.parseToDto(author);
+	}
+
 	private static async filterByFullName(
 		authors: Author[],
 		fullName: string
 	): Promise<Author[]> {
-		authors = authors.filter((author) => {
+		return authors.filter((author) => {
 			const regExp = new RegExp(fullName, 'i');
 			return regExp.test(author.full_name);
 		});
-		return authors;
 	}
 
-	private static parseToDto(author: Author): AuthorDto {
+	private static async parseToDto(author: Author): Promise<AuthorDto> {
+		const books = (
+			await BooksService.find({ searchAuthorFullName: author.full_name })
+		).map((book) => {
+			return {
+				id: book.id,
+				title: book.title,
+				genres: book.genres,
+				imgUrl: book.imgUrl,
+			};
+		});
+
 		return {
 			id: author.id,
 			fullName: author.full_name,
@@ -46,7 +64,8 @@ class AuthorsService {
 			imgUrl: author.img_url,
 			info: author.info,
 			createdAt: author.created_at,
-		};
+			books,
+		} as AuthorDto;
 	}
 }
 

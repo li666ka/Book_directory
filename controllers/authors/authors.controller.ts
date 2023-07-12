@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import AuthorsFiltersDto from './dto/authors_filters.dto';
+
 import AuthorDto from './dto/author.dto';
+import AuthorsFiltersDto from './dto/authors_filters.dto';
+
 import AuthorsService from '../../services/authors.service';
 
 class AuthorsController {
@@ -17,16 +19,19 @@ class AuthorsController {
 		return;
 	}
 
-	// public static async get(
-	// 	req: Request<{ id: number }>,
-	// 	res: Response<Author>
-	// ): Promise<void> {
-	// 	const { id } = req.params;
-	//
-	// 	const author: Author | undefined = await AuthorRepository.getById(id);
-	//
-	// 	res.json(author);
-	// }
+	public static async get(
+		req: Request<{ id: string }>,
+		res: Response<AuthorDto>
+	): Promise<void> {
+		try {
+			const author: AuthorDto = await AuthorsService.findOne(req.params.id);
+			res.json(author);
+		} catch (err: unknown) {
+			res.sendStatus(400);
+		}
+		return;
+	}
+
 	//
 	// public static async books(
 	// 	req: Request<{ id: number }>,

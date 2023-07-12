@@ -7,7 +7,7 @@ export interface Author extends RowDataPacket {
 	id: number;
 	full_name: string;
 	born_at: string;
-	died_at?: string;
+	died_at: string | null;
 	img_url: string;
 	info: string;
 	created_at: string;

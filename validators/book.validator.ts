@@ -7,7 +7,7 @@ import { Genre, GenreRepository } from '../models/genre.model';
 import { Book, BookRepository } from '../models/book.model';
 
 class BookValidator {
-	public static async validateGetting(
+	public static async validateGettingAll(
 		booksFilters: BooksFiltersDto | undefined
 	): Promise<void | never> {
 		if (!booksFilters) return;
@@ -24,6 +24,18 @@ class BookValidator {
 			if (!genre)
 				throw new Error(`Genre with id ${searchGenresIds[i]} does not exist`);
 		}
+	}
+
+	public static async validateGetting(id: string | undefined): Promise<Book | never> {
+		if (!id) throw new Error('id is undefined');
+
+		const parsedId: number = +id;
+		if (isNaN(parsedId)) throw new Error('id is invalid');
+
+		const book: Book | undefined = await BookRepository.get(parsedId);
+		if (!book) throw new Error(`Book with id ${id} does not exist`);
+
+		return book;
 	}
 
 	public static async validateCreating(
@@ -87,6 +99,8 @@ class BookValidator {
 		newImageFile?: Express.Multer.File;
 		newBookFile?: Express.Multer.File;
 	}> {
+		if (!id) throw new Error('id is undefined');
+
 		const idParsed: number = +id;
 		if (isNaN(idParsed)) throw new Error('id is invalid');
 

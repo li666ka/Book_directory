@@ -1,5 +1,3 @@
-import { Genre } from '../../../models/genre.model';
-
 interface BookDto {
 	id: number;
 	author: {
@@ -7,7 +5,10 @@ interface BookDto {
 		fullName: string;
 	};
 	title: string;
-	genres: Genre[];
+	genres: {
+		id: number;
+		name: string;
+	}[];
 	imgUrl: string;
 	description: string;
 	url: string;
