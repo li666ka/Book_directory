@@ -34,8 +34,8 @@ class BooksService {
 		}
 
 		const booksDto: BookDto[] = [];
-		for (let i = 0; i < books.length; ++i) {
-			const bookDto: BookDto = await this.parseToDto(books[i]);
+		for (const book of books) {
+			const bookDto: BookDto = await this.parseToDto(book);
 			booksDto.push(bookDto);
 		}
 
@@ -312,7 +312,7 @@ class BooksService {
 
 	private static async filterByTitle(books: Book[], title: string): Promise<Book[]> {
 		books = books.filter((book) => {
-			const regExp = new RegExp(title);
+			const regExp = new RegExp(title, 'i');
 			return regExp.test(book.title);
 		});
 
@@ -326,8 +326,8 @@ class BooksService {
 		books = books.filter(async (book) => {
 			const author: Author | undefined = await AuthorRepository.get(book.author_id);
 			if (author) {
-				const regExp = new RegExp(`${authorFullName}`);
-				return author.full_name.search(regExp);
+				const regExp = new RegExp(authorFullName, 'i');
+				return regExp.test(author.full_name);
 			}
 		});
 
