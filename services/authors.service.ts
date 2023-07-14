@@ -1,12 +1,17 @@
+import fs from 'fs';
+import path from 'path';
+
 import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
 import AuthorDto from '../controllers/authors/dto/author.dto';
 import { Author, AuthorRepository } from '../models/author.model';
-import { Book, BookRepository } from '../models/book.model';
 import AuthorValidator from '../validators/author.validator';
 import BooksService from './books.service';
-import BookDto from '../controllers/books/dto/book.dto';
+import { OkPacket } from 'mysql2';
 
 class AuthorsService {
+	/**
+	 *
+	 */
 	public static async find(
 		authorsFilters: AuthorsFiltersDto | undefined
 	): Promise<AuthorDto[] | never> {
@@ -34,6 +39,58 @@ class AuthorsService {
 		return this.parseToDto(author);
 	}
 
+	/**
+	 * Creates new author:
+	 * 	- creates new author directory
+	 * 	- adds author image file to new author directory
+	 * 	- inserts into 'authors' table new author
+	 * 	- creates new book of new author (delegated to BooksService)
+	 * @param createAuthorDto
+	 * @param files
+	 * @return newAuthor
+	 */
+	public static async create(
+		createAuthorDto: CreateAuthorDto | undefined,
+		files: { [key: string]: Express.Multer.File[] } | undefined
+	): Promise<AuthorDto | never> {
+		console.log('here');
+		const { bookImageFile, bookFile, authorImageFile } =
+			await AuthorValidator.validateCreating(createAuthorDto, files);
+
+		createAuthorDto = createAuthorDto as CreateAuthorDto;
+		const { fullName, bornAt, info, diedAt, book } = createAuthorDto;
+
+		// create new author directory
+		const authorFolder: string = fullName.replaceAll(' ', '_');
+		fs.mkdirSync(path.join('content', authorFolder));
+		// move author image to new directory
+		const imgUrl: string = this.moveNewFileToAuthorDir(authorImageFile, fullName);
+
+		// insert into 'books' table new book
+		const okPacket: OkPacket = await AuthorRepository.create(
+			fullName,
+			bornAt,
+			imgUrl,
+			info,
+			diedAt
+		);
+
+		const newAuthor = (await AuthorRepository.get(okPacket.insertId)) as Author;
+
+		// create new author book
+		await BooksService.create(
+			{
+				authorId: newAuthor.id,
+				title: book.title,
+				description: book.description,
+				genresIds: book.genresIds,
+			},
+			{ 'book-image': [bookImageFile], 'book-file': [bookFile] }
+		);
+
+		return this.parseToDto(newAuthor);
+	}
+
 	private static async filterByFullName(
 		authors: Author[],
 		fullName: string
@@ -42,6 +99,22 @@ class AuthorsService {
 			const regExp = new RegExp(fullName, 'i');
 			return regExp.test(author.full_name);
 		});
+	}
+
+	private static moveNewFileToAuthorDir(
+		file: Express.Multer.File,
+		fullName: string
+	): string {
+		const authorFolder: string = fullName.replaceAll(' ', '_');
+
+		const newFilename: string = authorFolder + path.extname(file.originalname);
+
+		const fileOldPath: string = file.path;
+		const fileNewPath: string = path.join('content', authorFolder, newFilename);
+
+		fs.renameSync(fileOldPath, fileNewPath);
+
+		return path.join(authorFolder, newFilename);
 	}
 
 	private static async parseToDto(author: Author): Promise<AuthorDto> {

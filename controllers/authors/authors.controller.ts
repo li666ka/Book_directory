@@ -32,61 +32,21 @@ class AuthorsController {
 		return;
 	}
 
-	//
-	// public static async books(
-	// 	req: Request<{ id: number }>,
-	// 	res: Response<Book[]>
-	// ): Promise<void> {
-	// 	const { id } = req.params;
-	// 	const books: Book[] = await BookRepository.getByAuthorId(id);
-	// 	res.json(books);
-	// }
-	//
-	// public static async create(
-	// 	req: Request<
-	// 		never,
-	// 		{
-	// 			fullName: string;
-	// 			bornAt: string;
-	// 			diedAt?: string;
-	// 			img: Buffer;
-	// 			info: string;
-	//
-	// 			token: string;
-	// 		}
-	// 	>,
-	// 	res: Response
-	// ): Promise<void> {
-	// 	const {
-	// 		fullName,
-	// 		bornAt,
-	// 		diedAt,
-	// 		img,
-	// 		info,
-	//
-	// 		token,
-	// 	} = req.body;
-	//
-	// 	const decoded: JWTPayload = jwt.verify(token, JWT_SECRET) as JWTPayload;
-	//
-	// 	const role: Role | undefined = await RoleRepository.getById(decoded.role_id);
-	//
-	// 	let isPermitted: boolean = false;
-	//
-	// 	if (role) if (role.name === 'admin') isPermitted = true;
-	//
-	// 	if (isPermitted) {
-	// 		await AuthorRepository.create(fullName, bornAt, img, info, diedAt);
-	//
-	// 		const newAuthor: Author | undefined = await AuthorRepository.getByName(
-	// 			fullName
-	// 		);
-	//
-	// 		if (newAuthor) res.json(newAuthor);
-	// 		else res.sendStatus(400);
-	// 	} else res.sendStatus(401);
-	// }
-	//
+	public static async create(
+		req: Request<never, never, CreateAuthorDto>,
+		res: Response<AuthorDto>
+	): Promise<void> {
+		try {
+			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
+			const newAuthor: AuthorDto = await AuthorsService.create(req.body, req.files);
+			res.json(newAuthor);
+		} catch (err: unknown) {
+			console.log(err.message);
+			res.sendStatus(400);
+		}
+		return;
+	}
+
 	// public static async delete(
 	// 	req: Request<{ id: number }, { token: string }>,
 	// 	res: Response

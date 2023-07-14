@@ -83,7 +83,6 @@ class BookValidator {
 		if (!bookFile) throw new Error('book file is undefined');
 
 		const author: Author | undefined = await AuthorRepository.get(authorId);
-
 		if (!author) throw new Error(`Author with id ${authorId} does not exist`);
 
 		return { author, imageFile, bookFile };

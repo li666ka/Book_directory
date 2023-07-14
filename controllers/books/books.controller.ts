@@ -21,7 +21,7 @@ class BooksController {
 
 	public static async get(req: Request<{ id: string }>, res: Response) {
 		try {
-			const book: BookDto = await BooksService.findOne(+req.params.id);
+			const book: BookDto = await BooksService.findOne(req.params.id);
 			res.json(book);
 		} catch (err: unknown) {
 			res.sendStatus(400);

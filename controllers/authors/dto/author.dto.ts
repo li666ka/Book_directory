@@ -13,7 +13,7 @@ interface AuthorDto {
 			name: string;
 		}[];
 		imgUrl: string;
-	};
+	}[];
 	createdAt: string;
 }
 

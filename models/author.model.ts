@@ -34,10 +34,11 @@ export class AuthorRepository {
 		imgUrl: string,
 		info: string,
 		diedAt?: string
-	): Promise<void | never> {
+	): Promise<OkPacket | never> {
 		const query: string = AuthorsQueries.Create;
 		const values: any[] = [fullName, bornAt, diedAt, imgUrl, info];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return res[0];
 	}
 
 	public static async update(
