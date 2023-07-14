@@ -91,6 +91,21 @@ class AuthorsService {
 		return this.parseToDto(newAuthor);
 	}
 
+	/**
+	 * Updates author.
+	 * @param updateAuthorDto
+	 * @param files
+	 */
+	public static async update(
+		updateAuthorDto: UpdateAuthorDto | undefined,
+		files: { [key: string]: Express.Multer.File[] } | undefined
+	) {
+		const validationResult = await AuthorValidator.validateUpdating(
+			updateAuthorDto,
+			files
+		);
+	}
+
 	private static async filterByFullName(
 		authors: Author[],
 		fullName: string

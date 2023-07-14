@@ -47,6 +47,21 @@ class AuthorsController {
 		return;
 	}
 
+	public static async update(
+		req: Request<never, never, UpdateAuthorDto>,
+		res: Response<AuthorDto>
+	): Promise<void> {
+		try {
+			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
+			const newAuthor: AuthorDto = await AuthorsService.update(req.body, req.files);
+			res.json(newAuthor);
+		} catch (err: unknown) {
+			console.log(err.message);
+			res.sendStatus(400);
+		}
+		return;
+	}
+
 	// public static async delete(
 	// 	req: Request<{ id: number }, { token: string }>,
 	// 	res: Response

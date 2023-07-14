@@ -79,7 +79,7 @@ class AuthorValidator {
 	}
 
 	public static async validateUpdating(
-		updateAuthorDto: UpdateAuthorDto,
+		updateAuthorDto: UpdateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<{ imageFile?: Express.Multer.File }> {
 		if (!updateAuthorDto) throw new Error('Dto is empty');

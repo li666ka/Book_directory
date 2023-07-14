@@ -20,7 +20,13 @@ router.post(
 	]),
 	AuthorsController.create
 );
-// // router.put('/:id', AuthorsController.update);
+router.put(
+	'/:id',
+	// AuthService.verify,
+	// AuthService.requireAdminOrModerator,
+	upload.fields([{ name: 'author-image', maxCount: 1 }]),
+	AuthorsController.update
+);
 // router.delete('/:id', AuthorsController.delete);
 
 export default router;
