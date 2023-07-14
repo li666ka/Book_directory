@@ -81,7 +81,7 @@ class AuthorValidator {
 	public static async validateUpdating(
 		updateAuthorDto: UpdateAuthorDto,
 		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<{ imageFile: Express.Multer.File }> {
+	): Promise<{ imageFile?: Express.Multer.File }> {
 		if (!updateAuthorDto) throw new Error('Dto is empty');
 
 		const { fullName, bornAt, info, diedAt } = updateAuthorDto;
@@ -103,6 +103,8 @@ class AuthorValidator {
 			if (author)
 				throw new Error(`Author with full name ${fullName} already exists`);
 		}
+
+		return { imageFile };
 	}
 }
 
