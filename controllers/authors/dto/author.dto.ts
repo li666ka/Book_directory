@@ -3,8 +3,8 @@ interface AuthorDto {
 	fullName: string;
 	bornAt: string;
 	diedAt?: string;
-	imgUrl: string;
 	info: string;
+	imageFile: string;
 	books: {
 		id: number;
 		title: string;
@@ -12,7 +12,7 @@ interface AuthorDto {
 			id: number;
 			name: string;
 		}[];
-		imgUrl: string;
+		imageFile: string;
 	}[];
 	createdAt: string;
 }

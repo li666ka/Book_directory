@@ -9,9 +9,9 @@ interface BookDto {
 		id: number;
 		name: string;
 	}[];
-	imgUrl: string;
 	description: string;
-	url: string;
+	imageFile: string;
+	bookFile: string;
 	createdAt: string;
 }
 

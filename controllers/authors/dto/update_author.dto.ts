@@ -4,3 +4,5 @@ interface UpdateAuthorDto {
 	diedAt?: string;
 	info?: string;
 }
+
+export default UpdateAuthorDto;
