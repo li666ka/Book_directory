@@ -4,39 +4,42 @@ USE booklist;
 CREATE TABLE IF NOT EXISTS authors
 (
     id         INT AUTO_INCREMENT,
+
     full_name  VARCHAR(255) NOT NULL,
     born_at    DATE         NOT NULL,
     died_at    DATE         NULL,
-    img_url    VARCHAR(255) NOT NULL,
     info       TEXT(3000)   NOT NULL,
+    image_file VARCHAR(255) NOT NULL,
     created_at DATETIME     NOT NULL,
 
     PRIMARY KEY (id),
     UNIQUE (full_name),
-    UNIQUE (img_url)
+    UNIQUE (image_file)
 );
 
 CREATE TABLE IF NOT EXISTS books
 (
-    id          INT          AUTO_INCREMENT,
+    id          INT AUTO_INCREMENT,
+
     author_id   INT          NOT NULL,
     title       VARCHAR(255) NOT NULL,
-    img_url     VARCHAR(255) NOT NULL,
     description TEXT(2000)   NOT NULL,
-    url         VARCHAR(255) NOT NULL,
+    image_file  VARCHAR(255) NOT NULL,
+    book_file   VARCHAR(255) NOT NULL,
     created_at  DATETIME     NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (author_id) REFERENCES authors (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    UNIQUE (url),
-    UNIQUE (img_url)
+    UNIQUE (book_file),
+    UNIQUE (image_file)
 );
 
 CREATE TABLE IF NOT EXISTS genres
 (
     id   INT AUTO_INCREMENT,
+
     name VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (id),
@@ -46,6 +49,7 @@ CREATE TABLE IF NOT EXISTS genres
 CREATE TABLE IF NOT EXISTS statuses
 (
     id   INT AUTO_INCREMENT,
+
     name VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (id)
