@@ -8,8 +8,8 @@ export interface Author extends RowDataPacket {
 	full_name: string;
 	born_at: string;
 	died_at: string | null;
-	img_url: string;
 	info: string;
+	image_file: string;
 	created_at: string;
 }
 
@@ -31,26 +31,33 @@ export class AuthorRepository {
 	public static async create(
 		fullName: string,
 		bornAt: string,
-		imgUrl: string,
-		info: string,
-		diedAt?: string
+		diedAt: string | null,
+		imageFile: string,
+		info: string
 	): Promise<OkPacket | never> {
 		const query: string = AuthorsQueries.Create;
-		const values: any[] = [fullName, bornAt, diedAt, imgUrl, info];
+		const values: any[] = [fullName, bornAt, diedAt, info, imageFile];
 		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
 		return res[0];
 	}
 
 	public static async update(
-		n_fullName: string,
-		n_bornAt: string,
-		n_diedAt: string,
-		n_imgUrl: string,
-		n_info: string,
+		newFullName: string,
+		newBornAt: string,
+		newDiedAt: string | null,
+		newInfo: string,
+		newImageFile: string,
 		id: number
 	): Promise<void | never> {
 		const query: string = AuthorsQueries.Update;
-		const values: any[] = [n_fullName, n_bornAt, n_diedAt, n_imgUrl, n_info, id];
+		const values: any[] = [
+			newFullName,
+			newBornAt,
+			newDiedAt,
+			newInfo,
+			newImageFile,
+			id,
+		];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
