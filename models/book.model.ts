@@ -7,9 +7,9 @@ export interface Book extends RowDataPacket {
 	id: number;
 	author_id: number;
 	title: string;
-	img_url: string;
 	description: string;
-	url: string;
+	image_file: string;
+	book_file: string;
 	created_at: string;
 }
 
@@ -30,12 +30,12 @@ export class BookRepository {
 	public static async create(
 		authorId: number,
 		title: string,
-		imgUrl: string,
 		description: string,
-		url: string
+		imageFile: string,
+		bookFile: string
 	): Promise<OkPacket | never> {
 		const query: string = BooksQueries.Create;
-		const values: any[] = [authorId, title, imgUrl, description, url];
+		const values: any[] = [authorId, title, description, imageFile, bookFile];
 		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
 		return res[0];
 	}
@@ -43,18 +43,18 @@ export class BookRepository {
 	public static async update(
 		newAuthorId: number,
 		newTitle: string,
-		newImgUrl: string,
 		newDescription: string,
-		newUrl: string,
+		newImageFile: string,
+		newBookFile: string,
 		id: number
 	): Promise<OkPacket | never> {
 		const query: string = BooksQueries.Update;
 		const values: any[] = [
 			newAuthorId,
 			newTitle,
-			newImgUrl,
 			newDescription,
-			newUrl,
+			newImageFile,
+			newBookFile,
 			id,
 		];
 		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);

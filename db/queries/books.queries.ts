@@ -9,12 +9,12 @@ const BooksQueries = {
         WHERE id = ?
 	`,
 	Create: `
-        INSERT INTO books (author_id, title, img_url, description, url, created_at)
+        INSERT INTO books (author_id, title, description, image_file, book_file, created_at)
         VALUES (?, ?, ?, ?, ?, NOW())
 	`,
 	Update: `
         UPDATE books
-        SET author_id = ?, title = ?, img_url = ?, description = ?, url = ?
+        SET author_id = ?, title = ?, description = ?, image_file = ?, book_file = ?
         WHERE id = ?
 	`,
 	Delete: `
