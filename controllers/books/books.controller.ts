@@ -33,13 +33,12 @@ class BooksController {
 		req: Request<never, never, CreateBookDto>,
 		res: Response<BookDto>
 	): Promise<void> {
-		console.log(req.body);
-
 		try {
 			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
 			const newBook: BookDto = await BooksService.create(req.body, req.files);
 			res.status(201).json(newBook);
 		} catch (err: unknown) {
+			console.log(err.message);
 			res.sendStatus(400);
 		}
 		return;
@@ -50,6 +49,7 @@ class BooksController {
 		res: Response
 	): Promise<void> {
 		try {
+			// console.log(req.body);
 			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
 			await BooksService.update(req.params.id, req.body, req.files);
 			res.sendStatus(200);

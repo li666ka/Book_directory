@@ -2,7 +2,7 @@ interface UpdateBookDto {
 	authorId?: number;
 	title?: string;
 	description?: string;
-	genresIds?: number[];
+	genreIds?: number[];
 }
 
 export default UpdateBookDto;

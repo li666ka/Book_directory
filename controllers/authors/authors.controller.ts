@@ -4,6 +4,7 @@ import AuthorDto from './dto/author.dto';
 import AuthorsFiltersDto from './dto/authors_filters.dto';
 
 import AuthorsService from '../../services/authors.service';
+import UpdateAuthorDto from './dto/update_author.dto';
 
 class AuthorsController {
 	public static async getAll(
@@ -48,13 +49,14 @@ class AuthorsController {
 	}
 
 	public static async update(
-		req: Request<never, never, UpdateAuthorDto>,
+		req: Request<{ id: string }, never, UpdateAuthorDto>,
 		res: Response<AuthorDto>
 	): Promise<void> {
 		try {
 			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
-			const newAuthor: AuthorDto = await AuthorsService.update(req.body, req.files);
-			res.json(newAuthor);
+			await AuthorsService.update(req.params.id, req.body, req.files);
+
+			res.sendStatus(200);
 		} catch (err: unknown) {
 			console.log(err.message);
 			res.sendStatus(400);
@@ -62,26 +64,18 @@ class AuthorsController {
 		return;
 	}
 
-	// public static async delete(
-	// 	req: Request<{ id: number }, { token: string }>,
-	// 	res: Response
-	// ): Promise<void> {
-	// 	const { id } = req.params;
-	// 	const { token } = req.body;
-	//
-	// 	const decoded: JWTPayload = jwt.verify(token, JWT_SECRET) as JWTPayload;
-	//
-	// 	const role: Role | undefined = await RoleRepository.getById(decoded.role_id);
-	//
-	// 	let isPermitted: boolean = false;
-	//
-	// 	if (role) if (role.name === 'admin') isPermitted = true;
-	//
-	// 	if (isPermitted) {
-	// 		await AuthorRepository.delete(id);
-	// 		res.sendStatus(200);
-	// 	} else res.json(401);
-	// }
+	public static async delete(
+		req: Request<{ id: string }>,
+		res: Response
+	): Promise<void> {
+		try {
+			await AuthorsService.delete(req.params.id);
+			res.sendStatus(200);
+		} catch (err: unknown) {
+			res.sendStatus(400);
+		}
+		return;
+	}
 }
 
 export default AuthorsController;

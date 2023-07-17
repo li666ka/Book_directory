@@ -2,7 +2,7 @@ interface AuthorDto {
 	id: number;
 	fullName: string;
 	bornAt: string;
-	diedAt?: string;
+	diedAt: string | null;
 	info: string;
 	imageFile: string;
 	books: {

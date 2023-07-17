@@ -2,6 +2,8 @@ import { Author, AuthorRepository } from '../models/author.model';
 import { Book, BookRepository } from '../models/book.model';
 import { Genre, GenreRepository } from '../models/genre.model';
 import update_bookDto from '../controllers/books/dto/update_book.dto';
+import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
+import AuthorsService from '../services/authors.service';
 
 class AuthorValidator {
 	public static async validateGetting(id: string | undefined): Promise<Author> {
@@ -20,9 +22,9 @@ class AuthorValidator {
 		createAuthorDto: CreateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<{
+		authorImageFile: string;
 		bookImageFile: Express.Multer.File;
 		bookFile: Express.Multer.File;
-		authorImageFile: Express.Multer.File;
 	}> {
 		// validate createAuthorDto
 		if (!createAuthorDto) throw new Error('Dto is empty');
@@ -41,13 +43,13 @@ class AuthorValidator {
 		if (!info) throw new Error('info is undefined');
 		if (!book) throw new Error('book is undefined');
 
-		const { title, genresIds, description } = book;
+		const { title, genreIds, description } = book;
 
 		if (!title) throw new Error('title is undefined');
-		if (!genresIds) throw new Error('genresIds is undefined');
+		if (!genreIds) throw new Error('genresIds is undefined');
 		if (!description) throw new Error('description is undefined');
 
-		for (const genreId of genresIds) {
+		for (const genreId of genreIds) {
 			const genre: Genre | undefined = await GenreRepository.get(genreId);
 			if (!genre) throw new Error(`Genre with id ${genreId} does not exist`);
 		}
@@ -65,9 +67,9 @@ class AuthorValidator {
 				? files['book-file'][0]
 				: undefined
 			: undefined;
-		const authorImageFile: Express.Multer.File | undefined = files
+		const authorImageFile: string | undefined = files
 			? files['author-image']
-				? files['author-image'][0]
+				? files['author-image'][0].filename
 				: undefined
 			: undefined;
 
@@ -79,16 +81,25 @@ class AuthorValidator {
 	}
 
 	public static async validateUpdating(
+		id: string | undefined,
 		updateAuthorDto: UpdateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<{ imageFile?: Express.Multer.File }> {
+	): Promise<{ author: Author; imageFile?: string }> {
+		if (!id) throw new Error('id is undefined');
+		const parsedId: number = +id;
+		if (isNaN(parsedId)) throw new Error('id is invalid');
+
 		if (!updateAuthorDto) throw new Error('Dto is empty');
+
+		const author: Author | undefined = await AuthorRepository.get(parsedId);
+
+		if (!author) throw new Error(`Author with id ${parsedId} does not exist`);
 
 		const { fullName, bornAt, info, diedAt } = updateAuthorDto;
 
-		const imageFile: Express.Multer.File | undefined = files
+		const imageFile: string | undefined = files
 			? files['author-image']
-				? files['author-image'][0]
+				? files['author-image'][0].filename
 				: undefined
 			: undefined;
 
@@ -96,15 +107,28 @@ class AuthorValidator {
 			throw new Error('No properties for updating');
 
 		if (fullName) {
-			const author: Author | undefined = (await AuthorRepository.getAll()).find(
+			const authorSame: Author | undefined = (await AuthorRepository.getAll()).find(
 				(author) => author.full_name === fullName
 			);
 
-			if (author)
+			if (authorSame)
 				throw new Error(`Author with full name ${fullName} already exists`);
 		}
 
-		return { imageFile };
+		return { author, imageFile };
+	}
+
+	public static async validateDeleting(
+		id: string | undefined
+	): Promise<Author | never> {
+		const idParsed: number = +id;
+		if (isNaN(idParsed)) throw new Error('id is invalid');
+
+		const author: Author | undefined = await AuthorRepository.get(idParsed);
+
+		if (!author) throw new Error(`Author with id ${id} does not exist`);
+
+		return author;
 	}
 }
 

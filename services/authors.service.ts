@@ -1,17 +1,16 @@
+import { OkPacket } from 'mysql2';
 import fs from 'fs';
 import path from 'path';
 
 import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
 import AuthorDto from '../controllers/authors/dto/author.dto';
-import { Author, AuthorRepository } from '../models/author.model';
+import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
 import AuthorValidator from '../validators/author.validator';
+import { Author, AuthorRepository } from '../models/author.model';
 import BooksService from './books.service';
-import { OkPacket } from 'mysql2';
+import { STATIC_DIR } from '../configs/multer.config';
 
 class AuthorsService {
-	/**
-	 *
-	 */
 	public static async find(
 		authorsFilters: AuthorsFiltersDto | undefined
 	): Promise<AuthorDto[] | never> {
@@ -39,40 +38,23 @@ class AuthorsService {
 		return this.parseToDto(author);
 	}
 
-	/**
-	 * Creates new author:
-	 * 	- creates new author directory
-	 * 	- adds author image file to new author directory
-	 * 	- inserts into 'authors' table new author
-	 * 	- creates new book of new author (delegated to BooksService)
-	 * @param createAuthorDto
-	 * @param files
-	 * @return newAuthor
-	 */
 	public static async create(
 		createAuthorDto: CreateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<AuthorDto | never> {
-		console.log('here');
 		const { bookImageFile, bookFile, authorImageFile } =
 			await AuthorValidator.validateCreating(createAuthorDto, files);
 
 		createAuthorDto = createAuthorDto as CreateAuthorDto;
 		const { fullName, bornAt, info, diedAt, book } = createAuthorDto;
 
-		// create new author directory
-		const authorFolder: string = fullName.replaceAll(' ', '_');
-		fs.mkdirSync(path.join('content', authorFolder));
-		// move author image to new directory
-		const imgUrl: string = this.moveNewFileToAuthorDir(authorImageFile, fullName);
-
 		// insert into 'books' table new book
 		const okPacket: OkPacket = await AuthorRepository.create(
 			fullName,
 			bornAt,
-			imgUrl,
-			info,
-			diedAt
+			diedAt ? diedAt : null,
+			authorImageFile,
+			info
 		);
 
 		const newAuthor = (await AuthorRepository.get(okPacket.insertId)) as Author;
@@ -83,7 +65,7 @@ class AuthorsService {
 				authorId: newAuthor.id,
 				title: book.title,
 				description: book.description,
-				genresIds: book.genresIds,
+				genreIds: book.genreIds,
 			},
 			{ 'book-image': [bookImageFile], 'book-file': [bookFile] }
 		);
@@ -91,18 +73,116 @@ class AuthorsService {
 		return this.parseToDto(newAuthor);
 	}
 
-	/**
-	 * Updates author.
-	 * @param updateAuthorDto
-	 * @param files
-	 */
 	public static async update(
+		id: string | undefined,
 		updateAuthorDto: UpdateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
-	) {
+	): Promise<void | never> {
 		const validationResult = await AuthorValidator.validateUpdating(
+			id,
 			updateAuthorDto,
 			files
+		);
+
+		updateAuthorDto = updateAuthorDto as UpdateAuthorDto;
+		const { fullName, bornAt, diedAt, info } = updateAuthorDto;
+		let { author } = validationResult;
+		const { imageFile } = validationResult;
+
+		if (fullName) {
+			await this.updateFullName(author, fullName);
+			author = (await AuthorRepository.get(author.id)) as Author;
+		}
+		if (bornAt) {
+			await this.updateBornAt(author, bornAt);
+			author = (await AuthorRepository.get(author.id)) as Author;
+		}
+		if (diedAt) {
+			await this.updateDiedAt(author, diedAt);
+			author = (await AuthorRepository.get(author.id)) as Author;
+		}
+		if (info) {
+			await this.updateInfo(author, info);
+			author = (await AuthorRepository.get(author.id)) as Author;
+		}
+		if (imageFile) {
+			await this.updateImageFile(author, imageFile);
+		}
+	}
+
+	public static async delete(id: string | undefined) {
+		const author: Author = await AuthorValidator.validateDeleting(id);
+		await AuthorRepository.delete(author.id);
+		fs.rmSync(path.join(STATIC_DIR, author.image_file));
+	}
+
+	private static async updateFullName(
+		author: Author,
+		newFullName: string
+	): Promise<void | never> {
+		await AuthorRepository.update(
+			newFullName,
+			author.born_at,
+			author.died_at,
+			author.info,
+			author.image_file,
+			author.id
+		);
+	}
+
+	private static async updateBornAt(
+		author: Author,
+		newBornAt: string
+	): Promise<void | never> {
+		await AuthorRepository.update(
+			author.full_name,
+			newBornAt,
+			author.died_at,
+			author.info,
+			author.image_file,
+			author.id
+		);
+	}
+
+	private static async updateDiedAt(
+		author: Author,
+		newDiedAt: string
+	): Promise<void | never> {
+		await AuthorRepository.update(
+			author.full_name,
+			author.born_at,
+			newDiedAt,
+			author.info,
+			author.image_file,
+			author.id
+		);
+	}
+
+	private static async updateInfo(
+		author: Author,
+		newInfo: string
+	): Promise<void | never> {
+		await AuthorRepository.update(
+			author.full_name,
+			author.born_at,
+			author.died_at,
+			newInfo,
+			author.image_file,
+			author.id
+		);
+	}
+
+	private static async updateImageFile(
+		author: Author,
+		newImageFile: string
+	): Promise<void | never> {
+		await AuthorRepository.update(
+			author.full_name,
+			author.born_at,
+			author.died_at,
+			author.info,
+			newImageFile,
+			author.id
 		);
 	}
 
@@ -116,22 +196,6 @@ class AuthorsService {
 		});
 	}
 
-	private static moveNewFileToAuthorDir(
-		file: Express.Multer.File,
-		fullName: string
-	): string {
-		const authorFolder: string = fullName.replaceAll(' ', '_');
-
-		const newFilename: string = authorFolder + path.extname(file.originalname);
-
-		const fileOldPath: string = file.path;
-		const fileNewPath: string = path.join('content', authorFolder, newFilename);
-
-		fs.renameSync(fileOldPath, fileNewPath);
-
-		return path.join(authorFolder, newFilename);
-	}
-
 	private static async parseToDto(author: Author): Promise<AuthorDto> {
 		const books = (
 			await BooksService.find({ searchAuthorFullName: author.full_name })
@@ -140,7 +204,7 @@ class AuthorsService {
 				id: book.id,
 				title: book.title,
 				genres: book.genres,
-				imgUrl: book.imgUrl,
+				imageFile: book.imageFile,
 			};
 		});
 
@@ -149,11 +213,11 @@ class AuthorsService {
 			fullName: author.full_name,
 			bornAt: author.born_at,
 			diedAt: author.died_at,
-			imgUrl: author.img_url,
 			info: author.info,
+			imageFile: author.image_file,
 			createdAt: author.created_at,
 			books,
-		} as AuthorDto;
+		};
 	}
 }
 

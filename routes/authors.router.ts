@@ -27,6 +27,11 @@ router.put(
 	upload.fields([{ name: 'author-image', maxCount: 1 }]),
 	AuthorsController.update
 );
-// router.delete('/:id', AuthorsController.delete);
+router.delete(
+	'/:id',
+	// AuthService.verify,
+	// AuthService.requireAdminOrModerator,
+	AuthorsController.delete
+);
 
 export default router;

@@ -1,7 +1,7 @@
 interface BooksFiltersDto {
 	searchTitle?: string;
 	searchAuthorFullName?: string;
-	searchGenresIds?: number[];
+	searchGenreIds?: number[];
 }
 
 export default BooksFiltersDto;

@@ -43,39 +43,36 @@ class BookValidator {
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<
 		| {
-				author: Author;
-				imageFile: Express.Multer.File;
-				bookFile: Express.Multer.File;
+				imageFile: string;
+				bookFile: string;
 		  }
 		| never
 	> {
 		if (!createBookDto) throw new Error('Dto is empty');
 
-		const { authorId, title, description, genresIds } = createBookDto;
+		const { authorId, title, description, genreIds } = createBookDto;
 
 		if (!authorId) throw new Error('authorId is undefined');
 		if (!title) throw new Error('title is undefined');
 		if (!description) throw new Error('description is undefined');
-		if (!genresIds) throw new Error('genresIds is undefined');
-		if (genresIds.length === 0) throw new Error('genresIds is empty');
+		if (!genreIds) throw new Error('genresIds is undefined');
+		if (genreIds.length === 0) throw new Error('genresIds is empty');
 
-		for (let i = 0; i < genresIds.length; ++i) {
-			const genreId: number = genresIds[i];
+		for (const genreId of genreIds) {
 			const genre: Genre | undefined = await GenreRepository.get(genreId);
-
 			if (!genre) throw new Error(`Genre with id ${genreId} does not exist`);
 		}
 
 		if (!files) throw new Error('Files is empty');
 
-		const imageFile: Express.Multer.File | undefined = files
+		const imageFile: string | undefined = files
 			? files['book-image']
-				? files['book-image'][0]
+				? files['book-image'][0].filename
 				: undefined
 			: undefined;
-		const bookFile: Express.Multer.File | undefined = files
+		const bookFile: string | undefined = files
 			? files['book-file']
-				? files['book-file'][0]
+				? files['book-file'][0].filename
 				: undefined
 			: undefined;
 
@@ -85,7 +82,7 @@ class BookValidator {
 		const author: Author | undefined = await AuthorRepository.get(authorId);
 		if (!author) throw new Error(`Author with id ${authorId} does not exist`);
 
-		return { author, imageFile, bookFile };
+		return { imageFile, bookFile };
 	}
 
 	public static async validateUpdating(
@@ -94,9 +91,8 @@ class BookValidator {
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<{
 		book: Book;
-		newAuthor?: Author;
-		newImageFile?: Express.Multer.File;
-		newBookFile?: Express.Multer.File;
+		newImageFile?: string;
+		newBookFile?: string;
 	}> {
 		if (!id) throw new Error('id is undefined');
 
@@ -105,19 +101,19 @@ class BookValidator {
 
 		if (!updateBookDto) throw new Error('Dto is undefined');
 
-		const { authorId, title, description, genresIds } = updateBookDto;
-		const imageFile: Express.Multer.File | undefined = files
+		const { authorId, title, description, genreIds } = updateBookDto;
+		const imageFile: string | undefined = files
 			? files['book-image']
-				? files['book-image'][0]
+				? files['book-image'][0].filename
 				: undefined
 			: undefined;
-		const bookFile: Express.Multer.File | undefined = files
+		const bookFile: string | undefined = files
 			? files['book-file']
-				? files['book-file'][0]
+				? files['book-file'][0].filename
 				: undefined
 			: undefined;
 
-		if (!(authorId || title || description || genresIds || imageFile || bookFile))
+		if (!(authorId || title || description || genreIds || imageFile || bookFile))
 			throw new Error('No properties for updating');
 
 		let author: Author | undefined = undefined;
@@ -132,7 +128,6 @@ class BookValidator {
 
 		return {
 			book,
-			newAuthor: author,
 			newImageFile: imageFile,
 			newBookFile: bookFile,
 		};

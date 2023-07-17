@@ -13,6 +13,7 @@ import CreateBookDto from '../controllers/books/dto/create_book.dto';
 import UpdateBookDto from '../controllers/books/dto/update_book.dto';
 
 import BookValidator from '../validators/book.validator';
+import { STATIC_DIR } from '../configs/multer.config';
 
 class BooksService {
 	public static async find(
@@ -56,35 +57,26 @@ class BooksService {
 			files
 		);
 
-		const { author, imageFile, bookFile } = validationResult;
+		const { imageFile, bookFile } = validationResult;
 
 		// createBookDto is valid
 		createBookDto = createBookDto as CreateBookDto;
-		const { authorId, title, description, genresIds } = createBookDto;
-
-		const imgUrl: string = this.moveNewFileAndGetUrl(
-			imageFile,
-			author.full_name,
-			title
-		);
-		const url: string = this.moveNewFileAndGetUrl(bookFile, author.full_name, title);
+		const { authorId, title, description, genreIds } = createBookDto;
 
 		const okPacket: OkPacket = await BookRepository.create(
 			authorId,
 			title,
-			imgUrl,
 			description,
-			url
+			imageFile,
+			bookFile
 		);
 
 		const newBook: Book | undefined = await BookRepository.get(okPacket.insertId);
 
 		if (!newBook) throw new Error('Book creation is failed');
 
-		/* Add Genres Connections */
-		for (let i = 0; i < genresIds.length; ++i) {
-			const genreId: number = genresIds[i];
-
+		/* Add Genre Connections */
+		for (const genreId of genreIds) {
 			await BookGenreRepository.create(newBook.id, genreId);
 		}
 
@@ -95,14 +87,14 @@ class BooksService {
 		id: string | undefined,
 		updateBookDto: UpdateBookDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<void> {
+	): Promise<void | never> {
 		const validationResult = await BookValidator.validateUpdating(
 			id,
 			updateBookDto,
 			files
 		);
 
-		const { newAuthor, newImageFile, newBookFile } = validationResult;
+		const { newImageFile, newBookFile } = validationResult;
 		let { book } = validationResult;
 
 		updateBookDto = updateBookDto as UpdateBookDto;
@@ -110,32 +102,40 @@ class BooksService {
 			authorId: newAuthorId,
 			title: newTitle,
 			description: newDescription,
-			genresIds: newGenresIds,
+			genreIds: newGenreIds,
 		} = updateBookDto;
 
-		if (newAuthor) {
-			await this.updateAuthor(book, newAuthor);
+		if (newAuthorId) {
+			await this.updateAuthor(book, newAuthorId);
 			book = (await BookRepository.get(book.id)) as Book;
 		}
-
 		if (newTitle) {
 			await this.updateTitle(book, newTitle);
 			book = (await BookRepository.get(book.id)) as Book;
 		}
 
-		if (newDescription) await this.updateDescription(book, newDescription);
-		if (newImageFile) await this.updateImageFile(book, newImageFile);
-		if (newBookFile) await this.updateBookFile(book, newImageFile);
-		if (newGenresIds) await this.updateGenres(book, newGenresIds);
+		if (newDescription) {
+			await this.updateDescription(book, newDescription);
+			book = (await BookRepository.get(book.id)) as Book;
+		}
+		if (newImageFile) {
+			await this.updateImageFile(book, newImageFile);
+			book = (await BookRepository.get(book.id)) as Book;
+		}
+		if (newBookFile) {
+			await this.updateBookFile(book, newBookFile);
+			book = (await BookRepository.get(book.id)) as Book;
+		}
+		if (newGenreIds) {
+			await this.updateGenres(book, newGenreIds);
+		}
 	}
 
 	public static async delete(id: string | undefined) {
 		const book: Book = await BookValidator.validateDeleting(id);
 		await BookRepository.delete(book.id);
-		fs.rmSync(path.join('content', path.dirname(book.url)), {
-			recursive: true,
-			force: true,
-		});
+		fs.rmSync(path.join(STATIC_DIR, book.image_file));
+		fs.rmSync(path.join(STATIC_DIR, book.book_file));
 	}
 
 	private static async filter(
@@ -205,86 +205,24 @@ class BooksService {
 		return books;
 	}
 
-	/**
-	 * Moves book folder (image file + book file)
-	 * from old author folder to new author folder,
-	 * updates author_id in 'books' table.
-	 */
-	private static async updateAuthor(book: Book, newAuthor: Author) {
-		const newAuthorFolder: string = this.formatStringForFs(newAuthor.full_name);
-		const bookFolder: string = this.formatStringForFs(book.title);
-
-		// content/OLD_author_full_name/book_title
-		const bookFolderOldPath: string = path.join('content', path.dirname(book.url));
-
-		// content/NEW_author_full_name/book_title
-		const bookFolderNewPath: string = path.join(
-			'content',
-			newAuthorFolder,
-			bookFolder
-		);
-
-		fs.renameSync(bookFolderOldPath, bookFolderNewPath);
-
+	private static async updateAuthor(book: Book, newAuthorId: number) {
 		await BookRepository.update(
-			newAuthor.id,
+			newAuthorId,
 			book.title,
-			book.img_url,
 			book.description,
-			book.url,
+			book.image_file,
+			book.book_file,
 			book.id
 		);
 	}
 
-	/**
-	 * Renames book folder, image file and book file.
-	 * Updates title, image_url and url in 'books' table.
-	 */
 	private static async updateTitle(book: Book, newTitle: string) {
-		const [authorFolder, oldBookFolder] = book.url.split(path.sep);
-		const newBookFolder = this.formatStringForFs(newTitle);
-
-		// content/author_full_name/OLD_book_title
-		const folderOldPath: string = path.join('content', authorFolder, oldBookFolder);
-
-		// content/author_full_name/NEW_book_title
-		const folderNewPath: string = path.join('content', authorFolder, newBookFolder);
-
-		fs.renameSync(folderOldPath, folderNewPath);
-
-		// rename files
-		const bookOldPath: string = path.join(folderNewPath, path.basename(book.url));
-		const bookNewPath: string = path.join(
-			folderNewPath,
-			this.formatStringForFs(newTitle) + path.extname(book.url)
-		);
-
-		fs.renameSync(bookOldPath, bookNewPath);
-
-		const imageOldPath: string = path.join(
-			folderNewPath,
-			path.basename(book.img_url)
-		);
-		const imageNewPath: string = path.join(
-			folderNewPath,
-			this.formatStringForFs(newTitle) + path.extname(book.img_url)
-		);
-
-		fs.renameSync(imageOldPath, imageNewPath);
-
-		const newImgUrl = path.join(
-			authorFolder,
-			newBookFolder,
-			path.basename(imageNewPath)
-		);
-		const newUrl = path.join(authorFolder, newBookFolder, path.basename(bookNewPath));
-
 		await BookRepository.update(
 			book.author_id,
 			newTitle,
-			newImgUrl,
 			book.description,
-			newUrl,
+			book.image_file,
+			book.book_file,
 			book.id
 		);
 	}
@@ -293,60 +231,60 @@ class BooksService {
 		await BookRepository.update(
 			book.author_id,
 			book.title,
-			book.img_url,
 			newDescription,
-			book.url,
+			book.image_file,
+			book.book_file,
 			book.id
 		);
 	}
 
-	/**
-	 * Deletes old image file,
-	 * moves new image file to book folder
-	 * (img_url stays the same).
-	 */
-	private static async updateImageFile(book: Book, newImageFile: Express.Multer.File) {
+	private static async updateImageFile(book: Book, newImageFile: string) {
 		//delete old image file
-		fs.rmSync(path.join('content', book.img_url));
-
-		const [authorFolder] = book.img_url.split(path.sep);
-		this.moveNewFileAndGetUrl(newImageFile, authorFolder, book.title);
+		fs.rmSync(path.join(STATIC_DIR, book.image_file));
+		await BookRepository.update(
+			book.author_id,
+			book.title,
+			book.description,
+			newImageFile,
+			book.book_file,
+			book.id
+		);
 	}
 
-	/**
-	 * Deletes old book file,
-	 * moves new book file to book folder
-	 * (url stays the same).
-	 */
-	private static async updateBookFile(book: Book, newBookFile: Express.Multer.File) {
+	private static async updateBookFile(book: Book, newBookFile: string) {
 		//delete old book file
-		fs.rmSync(path.join('content', book.url));
-
-		const [authorFolder] = book.url.split(path.sep);
-		this.moveNewFileAndGetUrl(newBookFile, authorFolder, book.title);
+		fs.rmSync(path.join(STATIC_DIR, book.book_file));
+		await BookRepository.update(
+			book.author_id,
+			book.title,
+			book.description,
+			book.image_file,
+			newBookFile,
+			book.id
+		);
 	}
 
-	private static async updateGenres(book: Book, newGenres: number[]) {
+	private static async updateGenres(book: Book, newGenreIds: number[]) {
 		// get genres ids only for book
-		let bookGenres: number[] = (await BookGenreRepository.getAll())
+		let bookGenreIds: number[] = (await BookGenreRepository.getAll())
 			.filter((bookGenre) => bookGenre.book_id === book.id)
 			.map((bookGenre) => bookGenre.genre_id);
 
 		// delete extra genres from book
-		for (const genreId of bookGenres) {
-			if (!newGenres.includes(genreId)) {
+		for (const genreId of bookGenreIds) {
+			if (!newGenreIds.includes(genreId)) {
 				await BookGenreRepository.delete(book.id, genreId);
 			}
 		}
 
 		// get updated genres ids
-		bookGenres = (await BookGenreRepository.getAll())
+		bookGenreIds = (await BookGenreRepository.getAll())
 			.filter((bookGenre) => book.id === bookGenre.book_id)
 			.map((bookGenre) => bookGenre.genre_id);
 
 		// add new genres to book
-		for (const genreId of newGenres) {
-			if (!bookGenres.includes(genreId)) {
+		for (const genreId of newGenreIds) {
+			if (!bookGenreIds.includes(genreId)) {
 				await BookGenreRepository.create(book.id, genreId);
 			}
 		}
@@ -357,9 +295,9 @@ class BooksService {
 
 		bookDto.id = book.id;
 		bookDto.title = book.title;
-		bookDto.imgUrl = book.img_url;
 		bookDto.description = book.description;
-		bookDto.url = book.url;
+		bookDto.imageFile = book.image_file;
+		bookDto.bookFile = book.book_file;
 		bookDto.createdAt = book.created_at;
 
 		const author = (await AuthorRepository.get(book.author_id)) as Author;
@@ -383,37 +321,6 @@ class BooksService {
 		bookDto.genres = genres;
 
 		return bookDto;
-	}
-
-	private static moveNewFileAndGetUrl(
-		file: Express.Multer.File,
-		authorFullName: string,
-		bookTitle: string
-	): string {
-		const authorFolder: string = authorFullName.replaceAll(' ', '_');
-		const bookFolder: string = bookTitle.replaceAll(' ', '_');
-
-		const newFilename: string = bookFolder + path.extname(file.originalname);
-
-		const fileOldPath: string = file.path;
-		const fileNewPath: string = path.join(
-			'content',
-			authorFolder,
-			bookFolder,
-			newFilename
-		);
-
-		const bookDir: string = path.join('content', authorFolder, bookFolder);
-
-		if (!fs.existsSync(bookDir)) fs.mkdirSync(bookDir);
-
-		fs.renameSync(fileOldPath, fileNewPath);
-
-		return path.join(authorFolder, bookFolder, newFilename);
-	}
-
-	private static formatStringForFs(str: string) {
-		return str.replaceAll(' ', '_');
 	}
 }
 
