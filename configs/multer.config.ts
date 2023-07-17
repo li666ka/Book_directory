@@ -3,13 +3,15 @@ import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 
+export const STATIC_DIR = `uploads`;
+
 const storage = multer.diskStorage({
 	destination(
 		req: Request,
 		file: Express.Multer.File,
 		callback: (error: Error | null, filename: string) => void
 	) {
-		callback(null, `uploads`);
+		callback(null, STATIC_DIR);
 	},
 	filename(
 		req: Request,
