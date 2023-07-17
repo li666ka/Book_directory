@@ -22,10 +22,11 @@ export class GenreRepository {
 		return rows[0];
 	}
 
-	public static async create(name: string): Promise<void | never> {
+	public static async create(name: string): Promise<OkPacket | never> {
 		const query: string = GenresQueries.Create;
 		const values: any[] = [name];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return res[0];
 	}
 
 	public static async update(n_name: string, id: number): Promise<void | never> {

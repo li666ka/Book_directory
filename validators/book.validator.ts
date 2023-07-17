@@ -1,4 +1,4 @@
-import BooksFiltersDto from '../controllers/books/dto/books_filters.dto';
+import BookFiltersDto from '../controllers/books/dto/book_filters.dto';
 import UpdateBookDto from '../controllers/books/dto/update_book.dto';
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
 
@@ -8,7 +8,7 @@ import { Book, BookRepository } from '../models/book.model';
 
 class BookValidator {
 	public static async validateGettingAll(
-		booksFilters: BooksFiltersDto | undefined
+		booksFilters: BookFiltersDto | undefined
 	): Promise<void | never> {
 		if (!booksFilters) return;
 

@@ -8,7 +8,7 @@ import { BookGenre, BookGenreRepository } from '../models/book_genre.model';
 import { Genre, GenreRepository } from '../models/genre.model';
 
 import BookDto from '../controllers/books/dto/book.dto';
-import BooksFiltersDto from '../controllers/books/dto/books_filters.dto';
+import BookFiltersDto from '../controllers/books/dto/book_filters.dto';
 import CreateBookDto from '../controllers/books/dto/create_book.dto';
 import UpdateBookDto from '../controllers/books/dto/update_book.dto';
 
@@ -17,7 +17,7 @@ import { STATIC_DIR } from '../configs/multer.config';
 
 class BooksService {
 	public static async find(
-		booksFilters: BooksFiltersDto | undefined
+		booksFilters: BookFiltersDto | undefined
 	): Promise<BookDto[] | never> {
 		await BookValidator.validateGettingAll(booksFilters);
 

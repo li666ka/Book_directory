@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import BookDto from './dto/book.dto';
-import BooksFiltersDto from './dto/books_filters.dto';
+import BookFiltersDto from './dto/book_filters.dto';
 import CreateBookDto from './dto/create_book.dto';
 import UpdateBookDto from './dto/update_book.dto';
 
@@ -10,10 +10,9 @@ import { Multer } from 'multer';
 
 class BooksController {
 	public static async getAll(
-		req: Request<never, never, never, BooksFiltersDto | undefined>,
+		req: Request<never, never, never, BookFiltersDto | undefined>,
 		res: Response<BookDto[]>
 	) {
-		console.log(req.query);
 		const books: BookDto[] = await BooksService.find(req.query);
 		res.json(books);
 		return;
@@ -45,11 +44,11 @@ class BooksController {
 	}
 
 	public static async update(
-		req: Request<{ id: string }, never, UpdateBookDto, never, never>,
+		req: Request<{ id: string }, never, UpdateBookDto>,
 		res: Response
 	): Promise<void> {
 		try {
-			// console.log(req.body);
+			console.log(req.body);
 			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
 			await BooksService.update(req.params.id, req.body, req.files);
 			res.sendStatus(200);
