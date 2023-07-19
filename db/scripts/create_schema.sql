@@ -96,11 +96,11 @@ CREATE TABLE IF NOT EXISTS users
     UNIQUE (username)
 );
 
-CREATE TABLE IF NOT EXISTS users_books
+CREATE TABLE IF NOT EXISTS booklist_items
 (
-    user_id   INT,
-    book_id   INT,
-    status_id INT,
+    user_id   INT NOT NULL,
+    book_id   INT NOT NULL,
+    status_id INT NOT NULL,
 
     PRIMARY KEY (user_id, book_id),
     FOREIGN KEY (user_id) REFERENCES users (id)
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS reviews
     created_at DATETIME   NOT NULL,
 
     PRIMARY KEY (user_id, book_id),
-    FOREIGN KEY (user_id, book_id) REFERENCES users_books (user_id, book_id)
+    FOREIGN KEY (user_id, book_id) REFERENCES booklist_items (user_id, book_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
