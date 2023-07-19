@@ -29,8 +29,6 @@
 `PUT /authors/:id` - updates author <br />
 `DELETE /authors/:id` - deletes author <br />
 
-`GET /authors/:id/books` - returns author's books <br />
-
 ### Books
 
 `GET /books` - returns all books <br />
@@ -38,13 +36,6 @@
 `POST /books/` - creates book <br />
 `PUT /books/:id` - updates book <br />
 `DELETE /books/:id` - deletes book <br />
-
-`GET /books/:id/author` - returns book's author <br />
-`GET /books/:bookId/genres` - returns book's genres <br />
-`PUT /books/:bookId/genres/:genreId` - adds genre to book <br />
-`DELETE /books/:bookId/genres/:genreId` - removes genre from book <br />
-
-`GET /books/:id/reviews` - returns book reviews <br />
 
 ### Genres
 
