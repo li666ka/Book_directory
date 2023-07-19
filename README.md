@@ -66,6 +66,8 @@
 `GET /users` - returns all users <br />
 `GET /users/:id` - returns user <br />
 `POST /users/signup` - creates user <br />
+`POST /users/signup/moderator` - creates moderator <br />
+`POST /users/signup/admin` - creates administrator <br />
 `POST /users/signin` - returns JWT <br />
 `PUT /users/:id` - updates user <br />
 `DELETE /users/:id` - deletes user <br />
