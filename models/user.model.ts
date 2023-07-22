@@ -30,21 +30,22 @@ export class UserRepository {
 		roleId: number,
 		username: string,
 		password: string
-	): Promise<void | never> {
+	): Promise<OkPacket | never> {
 		const query: string = UsersQueries.Create;
 		const values: any[] = [roleId, username, password];
 
-		await DB_CONNECTION.promise().execute<OkPacket>(query, values);
+		const [packet] = await DB_CONNECTION.promise().execute<OkPacket>(query, values);
+		return packet;
 	}
 
 	public static async update(
-		n_roleId: number,
-		n_username: string,
-		n_password: string,
+		newRoleId: number,
+		newUsername: string,
+		newPassword: string,
 		id: number
 	): Promise<void | never> {
 		const query: string = UsersQueries.Update;
-		const values: any[] = [n_roleId, n_username, n_password, id];
+		const values: any[] = [newRoleId, newUsername, newPassword, id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 

@@ -2,13 +2,17 @@ import { OkPacket } from 'mysql2';
 import fs from 'fs';
 import path from 'path';
 
-import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
 import AuthorDto from '../controllers/authors/dto/author.dto';
+import AuthorDetailsDto from '../controllers/authors/dto/author_details.dto';
+import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
 import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
+
 import AuthorValidator from '../validators/author.validator';
+
 import { Author, AuthorRepository } from '../models/author.model';
-import BooksService from './books.service';
+
 import { STATIC_DIR } from '../configs/multer.config';
+import BooksService from './books.service';
 
 class AuthorsService {
 	public static async find(
@@ -33,15 +37,15 @@ class AuthorsService {
 		return authorsDto;
 	}
 
-	public static async findOne(id: string | undefined): Promise<AuthorDto | never> {
+	public static async findOne(id: string): Promise<AuthorDetailsDto | never> {
 		const author: Author = await AuthorValidator.validateGetting(id);
-		return this.parseToDto(author);
+		return this.parseToDetailsDto(author);
 	}
 
 	public static async create(
 		createAuthorDto: CreateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<AuthorDto | never> {
+	): Promise<AuthorDetailsDto | never> {
 		const { bookImageFile, bookFile, authorImageFile } =
 			await AuthorValidator.validateCreating(createAuthorDto, files);
 
@@ -70,11 +74,11 @@ class AuthorsService {
 			{ 'book-image': [bookImageFile], 'book-file': [bookFile] }
 		);
 
-		return this.parseToDto(newAuthor);
+		return this.parseToDetailsDto(newAuthor);
 	}
 
 	public static async update(
-		id: string | undefined,
+		id: string,
 		updateAuthorDto: UpdateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<void | never> {
@@ -110,7 +114,7 @@ class AuthorsService {
 		}
 	}
 
-	public static async delete(id: string | undefined) {
+	public static async delete(id: string) {
 		const author: Author = await AuthorValidator.validateDeleting(id);
 		await AuthorRepository.delete(author.id);
 		fs.rmSync(path.join(STATIC_DIR, author.image_file));
@@ -196,7 +200,16 @@ class AuthorsService {
 		});
 	}
 
-	private static async parseToDto(author: Author): Promise<AuthorDto> {
+	private static parseToDto(author: Author): AuthorDto {
+		return {
+			id: author.id,
+			fullName: author.full_name,
+			imageFile: author.image_file,
+			createdAt: author.created_at,
+		};
+	}
+
+	private static async parseToDetailsDto(author: Author): Promise<AuthorDetailsDto> {
 		const books = (
 			await BooksService.find({ searchAuthorFullName: author.full_name })
 		).map((book) => {

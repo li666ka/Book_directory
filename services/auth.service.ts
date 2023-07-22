@@ -1,70 +1,55 @@
+import { OkPacket } from 'mysql2';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Request, Response } from 'express';
-import { JWT_SECRET, JwtPayloadExt } from './jwt';
-import { Roles } from '../models/role.model';
+
+import CreateUserDto from '../controllers/auth/dto/create_user.dto';
+import LoginUserDto from '../controllers/auth/dto/login_user.dto';
+import { JWT_SECRET } from './jwt';
+import { UserRepository } from '../models/user.model';
+import { Role, RoleRepository } from '../models/role.model';
+import AuthValidator from '../validators/auth.validator';
+import RoleName from '../configs/roles.config';
 
 class AuthService {
-	/*
-	 * Authentication
-	 */
+	public static async register(
+		createUserDto: CreateUserDto | never,
+		role: RoleName
+	): Promise<string | never> {
+		const roleId: number = await AuthValidator.validateCreating(createUserDto, role);
 
-	/* Authorization */
+		createUserDto = createUserDto as CreateUserDto;
 
-	public static async verify(req: Request, res: Response, next: any) {
-		const token: string | undefined = req.headers.authorization?.replace(
-			'Bearer ',
-			''
+		const { username, password } = createUserDto;
+		const hash = bcrypt.hashSync(password, 10);
+
+		const okPacket: OkPacket = await UserRepository.create(roleId, username, hash);
+		const newUser = await UserRepository.get(okPacket.insertId);
+
+		return jwt.sign(
+			{ userId: newUser.id, username: newUser.username, role: role.valueOf() },
+			JWT_SECRET
 		);
-
-		if (!token) {
-			return res.sendStatus(400); // Bad Request
-		}
-
-		try {
-			req.body.user = jwt.verify(token, JWT_SECRET) as JwtPayloadExt;
-			return next();
-		} catch (err) {
-			return res.sendStatus(401); // Unauthorized
-		}
 	}
 
-	public static async requireAdmin(req: Request, res: Response, next: any) {
-		const roleId: number | undefined = req.body.user.role_id;
+	public static async login(
+		loginUserDto: LoginUserDto | undefined
+	): Promise<string | never> {
+		const user = await AuthValidator.validateLogin(loginUserDto);
 
-		try {
-			await this.validateRoleId(roleId, [Roles.Admin]);
-		} catch (err) {
-			return res.sendStatus(401); // Unauthorized
-		}
+		loginUserDto = loginUserDto as LoginUserDto;
 
-		return next();
-	}
+		const { password } = loginUserDto;
 
-	public static async requireAdminOrModerator(req: Request, res: Response, next: any) {
-		const roleId: number | undefined = req.body.user.role_id;
+		const isPasswordCorrect: boolean = bcrypt.compareSync(password, user.password);
 
-		try {
-			await this.validateRoleId(roleId, [Roles.Admin, Roles.Moderator]);
-		} catch (err) {
-			return res.sendStatus(401); // Unauthorized
-		}
+		if (!isPasswordCorrect) throw new Error('Incorrect password');
 
-		return next();
-	}
+		const role: string = ((await RoleRepository.get(user.role_id)) as Role).name;
 
-	private static async validateRoleId(
-		roleId: number | undefined,
-		requireRoles: Roles[]
-	): Promise<void | never> {
-		if (!roleId) throw new Error('RoleId is undefined');
-
-		for (let i = 0; i < requireRoles.length; ++i) {
-			if (roleId === requireRoles[i].valueOf()) {
-				return;
-			}
-		}
-
-		throw new Error('Incorrect role');
+		return jwt.sign(
+			{ userId: user.id, username: user.username, role: role },
+			JWT_SECRET
+		);
 	}
 }
 

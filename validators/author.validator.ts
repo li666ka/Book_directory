@@ -1,18 +1,13 @@
 import { Author, AuthorRepository } from '../models/author.model';
-import { Book, BookRepository } from '../models/book.model';
 import { Genre, GenreRepository } from '../models/genre.model';
-import update_bookDto from '../controllers/books/dto/update_book.dto';
 import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
-import AuthorsService from '../services/authors.service';
 
 class AuthorValidator {
-	public static async validateGetting(id: string | undefined): Promise<Author> {
-		if (!id) throw new Error('id is undefined');
+	public static async validateGetting(id: string): Promise<Author> {
+		const idParsed: number = parseInt(id, 10);
+		if (isNaN(idParsed)) throw new Error('id is invalid');
 
-		const parsedId: number = +id;
-		if (isNaN(parsedId)) throw new Error('id is invalid');
-
-		const author: Author | undefined = await AuthorRepository.get(parsedId);
+		const author: Author | undefined = await AuthorRepository.get(idParsed);
 		if (!author) throw new Error(`Author with id ${id} does not exist`);
 
 		return author;
@@ -81,19 +76,18 @@ class AuthorValidator {
 	}
 
 	public static async validateUpdating(
-		id: string | undefined,
+		id: string,
 		updateAuthorDto: UpdateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<{ author: Author; imageFile?: string }> {
-		if (!id) throw new Error('id is undefined');
-		const parsedId: number = +id;
-		if (isNaN(parsedId)) throw new Error('id is invalid');
+		const idParsed: number = parseInt(id, 10);
+		if (isNaN(idParsed)) throw new Error('id is invalid');
 
 		if (!updateAuthorDto) throw new Error('Dto is empty');
 
-		const author: Author | undefined = await AuthorRepository.get(parsedId);
+		const author: Author | undefined = await AuthorRepository.get(idParsed);
 
-		if (!author) throw new Error(`Author with id ${parsedId} does not exist`);
+		if (!author) throw new Error(`Author with id ${idParsed} does not exist`);
 
 		const { fullName, bornAt, info, diedAt } = updateAuthorDto;
 
@@ -118,10 +112,8 @@ class AuthorValidator {
 		return { author, imageFile };
 	}
 
-	public static async validateDeleting(
-		id: string | undefined
-	): Promise<Author | never> {
-		const idParsed: number = +id;
+	public static async validateDeleting(id: string): Promise<Author | never> {
+		const idParsed: number = parseInt(id, 10);
 		if (isNaN(idParsed)) throw new Error('id is invalid');
 
 		const author: Author | undefined = await AuthorRepository.get(idParsed);

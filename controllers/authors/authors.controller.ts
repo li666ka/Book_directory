@@ -5,6 +5,7 @@ import AuthorsFiltersDto from './dto/authors_filters.dto';
 
 import AuthorsService from '../../services/authors.service';
 import UpdateAuthorDto from './dto/update_author.dto';
+import AuthorDetailsDto from './dto/author_details.dto';
 
 class AuthorsController {
 	public static async getAll(
@@ -22,10 +23,10 @@ class AuthorsController {
 
 	public static async get(
 		req: Request<{ id: string }>,
-		res: Response<AuthorDto>
+		res: Response<AuthorDetailsDto>
 	): Promise<void> {
 		try {
-			const author: AuthorDto = await AuthorsService.findOne(req.params.id);
+			const author: AuthorDetailsDto = await AuthorsService.findOne(req.params.id);
 			res.json(author);
 		} catch (err: unknown) {
 			res.sendStatus(400);
@@ -35,11 +36,14 @@ class AuthorsController {
 
 	public static async create(
 		req: Request<never, never, CreateAuthorDto>,
-		res: Response<AuthorDto>
+		res: Response<AuthorDetailsDto>
 	): Promise<void> {
 		try {
 			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
-			const newAuthor: AuthorDto = await AuthorsService.create(req.body, req.files);
+			const newAuthor: AuthorDetailsDto = await AuthorsService.create(
+				req.body,
+				req.files
+			);
 			res.json(newAuthor);
 		} catch (err: unknown) {
 			console.log(err.message);
@@ -50,7 +54,7 @@ class AuthorsController {
 
 	public static async update(
 		req: Request<{ id: string }, never, UpdateAuthorDto>,
-		res: Response<AuthorDto>
+		res: Response
 	): Promise<void> {
 		try {
 			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;

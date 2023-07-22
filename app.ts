@@ -23,5 +23,5 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/books', routes.books);
 app.use('/authors', routes.authors);
 app.use('/genres', routes.genres);
-// app.use('/users', routes.users);
+app.use('/users', routes.users);
 // app.use('/statuses', routes.statuses);

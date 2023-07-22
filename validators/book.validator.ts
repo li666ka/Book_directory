@@ -12,27 +12,26 @@ class BookValidator {
 	): Promise<void | never> {
 		if (!booksFilters) return;
 
-		const { searchGenresIds } = booksFilters;
+		booksFilters.searchGenreIds = booksFilters.searchGenreIds
+			? booksFilters.searchGenreIds.map((genreId) => parseInt(String(genreId), 10))
+			: undefined;
 
-		if (!searchGenresIds) return;
+		const { searchGenreIds } = booksFilters;
 
-		for (let i = 0; i < searchGenresIds.length; ++i) {
-			const genre: Genre | undefined = await GenreRepository.get(
-				searchGenresIds[i]
-			);
+		if (!searchGenreIds) return;
 
-			if (!genre)
-				throw new Error(`Genre with id ${searchGenresIds[i]} does not exist`);
+		for (const searchGenreId of searchGenreIds) {
+			const genre: Genre | undefined = await GenreRepository.get(searchGenreId);
+
+			if (!genre) throw new Error(`Genre with id ${searchGenreId} does not exist`);
 		}
 	}
 
-	public static async validateGetting(id: string | undefined): Promise<Book | never> {
-		if (!id) throw new Error('id is undefined');
+	public static async validateGetting(id: string): Promise<Book | never> {
+		const idParsed: number = parseInt(id, 10);
+		if (isNaN(idParsed)) throw new Error('id is invalid');
 
-		const parsedId: number = +id;
-		if (isNaN(parsedId)) throw new Error('id is invalid');
-
-		const book: Book | undefined = await BookRepository.get(parsedId);
+		const book: Book | undefined = await BookRepository.get(idParsed);
 		if (!book) throw new Error(`Book with id ${id} does not exist`);
 
 		return book;
@@ -86,7 +85,7 @@ class BookValidator {
 	}
 
 	public static async validateUpdating(
-		id: string | undefined,
+		id: string,
 		updateBookDto: UpdateBookDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
 	): Promise<{
@@ -94,9 +93,7 @@ class BookValidator {
 		newImageFile?: string;
 		newBookFile?: string;
 	}> {
-		if (!id) throw new Error('id is undefined');
-
-		const idParsed: number = +id;
+		const idParsed: number = parseInt(id, 10);
 		if (isNaN(idParsed)) throw new Error('id is invalid');
 
 		if (!updateBookDto) throw new Error('Dto is undefined');
@@ -133,7 +130,7 @@ class BookValidator {
 		};
 	}
 
-	public static async validateDeleting(id: string | undefined): Promise<Book | never> {
+	public static async validateDeleting(id: string): Promise<Book | never> {
 		const idParsed: number = +id;
 		if (isNaN(idParsed)) throw new Error('id is invalid');
 

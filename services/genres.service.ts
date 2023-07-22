@@ -20,7 +20,7 @@ class GenresService {
 		return genres;
 	}
 
-	public static async findOne(id: string | undefined): Promise<GenreDto | never> {
+	public static async findOne(id: string): Promise<GenreDto | never> {
 		const genre: Genre = await GenreValidator.validateGetting(id);
 		return this.parseToDto(genre);
 	}
@@ -40,7 +40,7 @@ class GenresService {
 	}
 
 	public static async update(
-		id: string | undefined,
+		id: string,
 		updateGenreDto: UpdateGenreDto | undefined
 	): Promise<void | never> {
 		await GenreValidator.validateUpdating(id, updateGenreDto);
@@ -48,7 +48,7 @@ class GenresService {
 		await GenreRepository.update(name, +id);
 	}
 
-	public static async delete(id: string | undefined): Promise<void | never> {
+	public static async delete(id: string): Promise<void | never> {
 		await GenreValidator.validateDeleting(id);
 		await GenreRepository.delete(+id);
 	}

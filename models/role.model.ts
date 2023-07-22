@@ -8,12 +8,6 @@ export interface Role extends RowDataPacket {
 	name: string;
 }
 
-export enum Roles {
-	User = 1,
-	Moderator,
-	Admin,
-}
-
 export class RoleRepository {
 	public static async getAll(): Promise<Role[] | never> {
 		const query: string = RolesQueries.GetAll;

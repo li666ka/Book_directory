@@ -7,22 +7,25 @@ import UpdateBookDto from './dto/update_book.dto';
 
 import BooksService from '../../services/books.service';
 import { Multer } from 'multer';
+import BookDetailsDto from './dto/book_details.dto';
 
 class BooksController {
 	public static async getAll(
 		req: Request<never, never, never, BookFiltersDto | undefined>,
 		res: Response<BookDto[]>
 	) {
+		console.log(req.query);
 		const books: BookDto[] = await BooksService.find(req.query);
 		res.json(books);
 		return;
 	}
 
-	public static async get(req: Request<{ id: string }>, res: Response) {
+	public static async get(req: Request<{ id: string }>, res: Response<BookDetailsDto>) {
 		try {
-			const book: BookDto = await BooksService.findOne(req.params.id);
+			const book: BookDetailsDto = await BooksService.findOne(req.params.id);
 			res.json(book);
 		} catch (err: unknown) {
+			console.log(err.message);
 			res.sendStatus(400);
 		}
 		return;
@@ -67,6 +70,7 @@ class BooksController {
 			await BooksService.delete(req.params.id);
 			res.sendStatus(200);
 		} catch (err: unknown) {
+			console.log(err.message);
 			res.sendStatus(400);
 		}
 		return;
