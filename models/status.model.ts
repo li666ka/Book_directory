@@ -22,23 +22,22 @@ export class StatusRepository {
 		return rows[0];
 	}
 
-	public static async create(name: string): Promise<void | never> {
+	public static async create(name: string): Promise<OkPacket> {
 		const query: string = StatusesQueries.Create;
 		const values: any[] = [name];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return okPacket;
 	}
 
-	public static async update(n_name: string, id: number): Promise<void | never> {
+	public static async update(newName: string, id: number): Promise<void> {
 		const query: string = StatusesQueries.Update;
-		const values: any[] = [n_name, id];
+		const values: any[] = [newName, id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
-	public static async delete(id: number): Promise<void | never> {
+	public static async delete(id: number): Promise<void> {
 		const query: string = StatusesQueries.Delete;
 		const values: any[] = [id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 }
-
-export default Status;

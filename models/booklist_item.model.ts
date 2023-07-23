@@ -10,7 +10,7 @@ export interface BooklistItem extends RowDataPacket {
 }
 
 export class BooklistItemRepository {
-	public static async getAll(): Promise<BooklistItem[] | never> {
+	public static async getAll(): Promise<BooklistItem[]> {
 		const query: string = BooklistItemsQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<BooklistItem[]>(query);
 		return rows;
@@ -19,7 +19,7 @@ export class BooklistItemRepository {
 	public static async get(
 		userId: number,
 		bookId: number
-	): Promise<BooklistItem | never> {
+	): Promise<BooklistItem | undefined> {
 		const query: string = BooklistItemsQueries.Get;
 		const values: any[] = [userId, bookId];
 		const [rows] = await DB_CONNECTION.promise().query<BooklistItem[]>(query, values);
@@ -30,23 +30,24 @@ export class BooklistItemRepository {
 		userId: number,
 		bookId: number,
 		statusId: number
-	): Promise<void | never> {
+	): Promise<OkPacket> {
 		const query: string = BooklistItemsQueries.Create;
 		const values: any[] = [userId, bookId, statusId];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return okPacket;
 	}
 
 	public static async update(
-		n_statusId: number,
-		userId: number,
+		newStatusId: number,
+		newUserId: number,
 		bookId: number
-	): Promise<void | never> {
+	): Promise<void> {
 		const query: string = BooklistItemsQueries.Update;
-		const values: any[] = [n_statusId, userId, bookId];
+		const values: any[] = [newStatusId, newUserId, bookId];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
-	public static async delete(userId: number, bookId: number): Promise<void | never> {
+	public static async delete(userId: number, bookId: number): Promise<void> {
 		const query: string = BooklistItemsQueries.Delete;
 		const values: any[] = [userId, bookId];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);

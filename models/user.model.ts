@@ -12,13 +12,13 @@ export interface User extends RowDataPacket {
 }
 
 export class UserRepository {
-	public static async getAll(): Promise<User[] | never> {
+	public static async getAll(): Promise<User[]> {
 		const query: string = UsersQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<User[]>(query);
 		return rows;
 	}
 
-	public static async get(id: number): Promise<User> {
+	public static async get(id: number): Promise<User | undefined> {
 		const query: string = UsersQueries.Get;
 		const values: any[] = [id];
 
@@ -30,12 +30,12 @@ export class UserRepository {
 		roleId: number,
 		username: string,
 		password: string
-	): Promise<OkPacket | never> {
+	): Promise<OkPacket> {
 		const query: string = UsersQueries.Create;
 		const values: any[] = [roleId, username, password];
 
-		const [packet] = await DB_CONNECTION.promise().execute<OkPacket>(query, values);
-		return packet;
+		const [okPacket] = await DB_CONNECTION.promise().execute<OkPacket>(query, values);
+		return okPacket;
 	}
 
 	public static async update(
@@ -43,13 +43,13 @@ export class UserRepository {
 		newUsername: string,
 		newPassword: string,
 		id: number
-	): Promise<void | never> {
+	): Promise<void> {
 		const query: string = UsersQueries.Update;
 		const values: any[] = [newRoleId, newUsername, newPassword, id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
-	public static async delete(id: number): Promise<void | never> {
+	public static async delete(id: number): Promise<void> {
 		const query: string = UsersQueries.Delete;
 		const values: any[] = [id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);

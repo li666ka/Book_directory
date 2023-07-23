@@ -12,13 +12,13 @@ export interface Review extends RowDataPacket {
 }
 
 export class ReviewRepository {
-	public static async getAll(): Promise<Review[] | never> {
+	public static async getAll(): Promise<Review[]> {
 		const query: string = ReviewsQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Review[]>(query);
 		return rows;
 	}
 
-	public static async get(bookId: number, userId: number): Promise<Review | never> {
+	public static async get(bookId: number, userId: number): Promise<Review | undefined> {
 		const query: string = ReviewsQueries.Get;
 		const values: any[] = [bookId, userId];
 		const [rows] = await DB_CONNECTION.promise().query<Review[]>(query, values);
@@ -29,30 +29,28 @@ export class ReviewRepository {
 		userId: number,
 		bookId: number,
 		score: number,
-		comment?: string
-	): Promise<void | never> {
+		comment: string | null
+	): Promise<OkPacket> {
 		const query: string = ReviewsQueries.Create;
 		const values: any[] = [userId, bookId, score, comment];
-
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return okPacket;
 	}
 
 	public static async update(
-		n_score: number,
-		n_comment: string,
+		newScore: number,
+		newComment: string,
 		userId: number,
 		bookId: number
-	): Promise<void | never> {
+	): Promise<void> {
 		const query: string = ReviewsQueries.Update;
-		const values: any[] = [n_score, n_comment, userId, bookId];
-
+		const values: any[] = [newScore, newComment, userId, bookId];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
-	public static async delete(userId: number, bookId: number): Promise<void | never> {
+	public static async delete(userId: number, bookId: number): Promise<void> {
 		const query: string = ReviewsQueries.Delete;
 		const values: any[] = [userId, bookId];
-
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 }

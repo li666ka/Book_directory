@@ -20,7 +20,7 @@ export class BookRepository {
 		return rows;
 	}
 
-	public static async get(id: number): Promise<Book | never> {
+	public static async get(id: number): Promise<Book> {
 		const query: string = BooksQueries.Get;
 		const values: any[] = [id];
 		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query, values);
@@ -33,11 +33,11 @@ export class BookRepository {
 		description: string,
 		imageFile: string,
 		bookFile: string
-	): Promise<OkPacket | never> {
+	): Promise<OkPacket> {
 		const query: string = BooksQueries.Create;
 		const values: any[] = [authorId, title, description, imageFile, bookFile];
-		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
-		return res[0];
+		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return okPacket;
 	}
 
 	public static async update(
@@ -47,7 +47,7 @@ export class BookRepository {
 		newImageFile: string,
 		newBookFile: string,
 		id: number
-	): Promise<OkPacket | never> {
+	): Promise<OkPacket> {
 		const query: string = BooksQueries.Update;
 		const values: any[] = [
 			newAuthorId,
@@ -61,7 +61,7 @@ export class BookRepository {
 		return res[0];
 	}
 
-	public static async delete(id: number): Promise<void | never> {
+	public static async delete(id: number): Promise<void> {
 		const query: string = BooksQueries.Delete;
 		const values: any[] = [id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);

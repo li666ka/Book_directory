@@ -14,7 +14,7 @@ export interface Author extends RowDataPacket {
 }
 
 export class AuthorRepository {
-	public static async getAll(): Promise<Author[] | never> {
+	public static async getAll(): Promise<Author[]> {
 		let query: string = AuthorsQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Author[]>(query);
 		return rows;
@@ -34,11 +34,11 @@ export class AuthorRepository {
 		diedAt: string | null,
 		imageFile: string,
 		info: string
-	): Promise<OkPacket | never> {
+	): Promise<OkPacket> {
 		const query: string = AuthorsQueries.Create;
 		const values: any[] = [fullName, bornAt, diedAt, info, imageFile];
-		const res = await DB_CONNECTION.promise().query<OkPacket>(query, values);
-		return res[0];
+		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return okPacket;
 	}
 
 	public static async update(
@@ -48,7 +48,7 @@ export class AuthorRepository {
 		newInfo: string,
 		newImageFile: string,
 		id: number
-	): Promise<void | never> {
+	): Promise<void> {
 		const query: string = AuthorsQueries.Update;
 		const values: any[] = [
 			newFullName,
@@ -61,7 +61,7 @@ export class AuthorRepository {
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
-	public static async delete(id: number): Promise<void | never> {
+	public static async delete(id: number): Promise<void> {
 		const query: string = AuthorsQueries.Delete;
 		const values: any[] = [id];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);

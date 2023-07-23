@@ -9,7 +9,7 @@ export interface BookGenre extends RowDataPacket {
 }
 
 export class BookGenreRepository {
-	public static async getAll(): Promise<BookGenre[] | never> {
+	public static async getAll(): Promise<BookGenre[]> {
 		const query: string = BooksGenresQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<BookGenre[]>(query);
 		return rows;
@@ -18,20 +18,21 @@ export class BookGenreRepository {
 	public static async get(
 		bookId: number,
 		genreId: number
-	): Promise<BookGenre[] | never> {
+	): Promise<BookGenre | undefined> {
 		const query: string = BooksGenresQueries.Get;
 		const values: any[] = [bookId, genreId];
 		const [rows] = await DB_CONNECTION.promise().query<BookGenre[]>(query, values);
-		return rows;
+		return rows[0];
 	}
 
-	public static async create(bookId: number, genreId: number): Promise<void | never> {
+	public static async create(bookId: number, genreId: number): Promise<OkPacket> {
 		const query: string = BooksGenresQueries.Create;
 		const values: number[] = [bookId, genreId];
-		await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
+		return okPacket;
 	}
 
-	public static async delete(bookId: number, genreId: number): Promise<void | never> {
+	public static async delete(bookId: number, genreId: number): Promise<void> {
 		const query: string = BooksGenresQueries.Delete;
 		const values: any[] = [bookId, genreId];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
