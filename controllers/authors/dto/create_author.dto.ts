@@ -9,3 +9,5 @@ interface CreateAuthorDto {
 		description: string;
 	};
 }
+
+export default CreateAuthorDto;

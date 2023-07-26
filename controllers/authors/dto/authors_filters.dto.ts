@@ -1,4 +1,6 @@
-interface AuthorsFiltersDto {
+import { ParsedQs } from 'qs';
+
+interface AuthorsFiltersDto extends ParsedQs {
 	searchFullName?: string;
 }
 

@@ -1,4 +1,6 @@
-interface GenreFiltersDto {
+import { ParsedQs } from 'qs';
+
+interface GenreFiltersDto extends ParsedQs {
 	searchName?: string;
 }
 

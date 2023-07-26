@@ -1,7 +1,7 @@
 interface UpdateAuthorDto {
 	fullName?: string;
 	bornAt?: string;
-	diedAt?: string;
+	diedAt?: string | null;
 	info?: string;
 }
 

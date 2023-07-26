@@ -4,7 +4,6 @@ import CreateUserDto from './dto/create_user.dto';
 import LoginUserDto from './dto/login_user.dto';
 
 import AuthService from '../../services/auth.service';
-import RoleName from '../../configs/roles.config';
 
 class AuthController {
 	public static async createUser(
@@ -12,7 +11,7 @@ class AuthController {
 		res: Response<string>
 	) {
 		try {
-			const token: string = await AuthService.register(req.body, RoleName.User);
+			const token: string = await AuthService.register(req.body, 'user');
 			res.json(token);
 		} catch (err: unknown) {
 			console.log(err.message);
@@ -26,10 +25,7 @@ class AuthController {
 		res: Response<string>
 	) {
 		try {
-			const token: string = await AuthService.register(
-				req.body,
-				RoleName.Moderator
-			);
+			const token: string = await AuthService.register(req.body, 'moderator');
 			res.json(token);
 		} catch (err: unknown) {
 			console.log(err.message);
@@ -43,7 +39,7 @@ class AuthController {
 		res: Response<string>
 	) {
 		try {
-			const token: string = await AuthService.register(req.body, RoleName.Admin);
+			const token: string = await AuthService.register(req.body, 'admin');
 			res.json(token);
 		} catch (err: unknown) {
 			console.log(err.message);

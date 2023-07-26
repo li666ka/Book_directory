@@ -1,9 +1,16 @@
-import { Author, AuthorRepository } from '../models/author.model';
-import { Genre, GenreRepository } from '../models/genre.model';
+import CreateAuthorDto from '../controllers/authors/dto/create_author.dto';
 import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
 
+import { Author, AuthorRepository } from '../models/author.model';
+import { Genre, GenreRepository } from '../models/genre.model';
+
 class AuthorValidator {
-	public static async validateGetting(id: string): Promise<Author> {
+	/**
+	 * Validates input author id.
+	 * @param id
+	 * Returns Author by input id ot throws Error.
+	 */
+	public static async validateGetting(id: string): Promise<Author | never> {
 		const idParsed: number = parseInt(id, 10);
 		if (isNaN(idParsed)) throw new Error('id is invalid');
 
@@ -13,14 +20,23 @@ class AuthorValidator {
 		return author;
 	}
 
+	/**
+	 * Validates input createAuthorDto and multer files.
+	 * @param createAuthorDto
+	 * @param files
+	 * Returns object with author image filename and book files or throws Error.
+	 */
 	public static async validateCreating(
 		createAuthorDto: CreateAuthorDto | undefined,
 		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<{
-		authorImageFile: string;
-		bookImageFile: Express.Multer.File;
-		bookFile: Express.Multer.File;
-	}> {
+	): Promise<
+		| {
+				authorImageFile: string;
+				bookImageFile: Express.Multer.File;
+				bookFile: Express.Multer.File;
+		  }
+		| never
+	> {
 		// validate createAuthorDto
 		if (!createAuthorDto) throw new Error('Dto is empty');
 
@@ -43,11 +59,6 @@ class AuthorValidator {
 		if (!title) throw new Error('title is undefined');
 		if (!genreIds) throw new Error('genresIds is undefined');
 		if (!description) throw new Error('description is undefined');
-
-		for (const genreId of genreIds) {
-			const genre: Genre | undefined = await GenreRepository.get(genreId);
-			if (!genre) throw new Error(`Genre with id ${genreId} does not exist`);
-		}
 
 		// validate files
 		if (!files) throw new Error('Files is empty');
@@ -75,6 +86,13 @@ class AuthorValidator {
 		return { bookImageFile, authorImageFile, bookFile };
 	}
 
+	/**
+	 * Validates input id, updateAuthorDto and multer files.
+	 * @param id
+	 * @param updateAuthorDto
+	 * @param files
+	 * Returns object with Author by input id and author image filename or throws Error.
+	 */
 	public static async validateUpdating(
 		id: string,
 		updateAuthorDto: UpdateAuthorDto | undefined,
@@ -112,6 +130,11 @@ class AuthorValidator {
 		return { author, imageFile };
 	}
 
+	/**
+	 * Validates input id.
+	 * @param id
+	 * Returns Author by input id or throws Error.
+	 */
 	public static async validateDeleting(id: string): Promise<Author | never> {
 		const idParsed: number = parseInt(id, 10);
 		if (isNaN(idParsed)) throw new Error('id is invalid');

@@ -1,25 +1,28 @@
 import { Router } from 'express';
 import GenresController from '../controllers/genres/genres.controller';
-import AuthMiddleware from '../middlewares/auth.middleware';
-import RoleName from '../configs/roles.config';
+import { authorize } from '../middlewares/authorization';
+import { validate } from '../middlewares/validation';
 
 const router: Router = Router();
 
-router.get('/', GenresController.getAll);
-router.get('/', GenresController.get);
+router.get('/', validate('genres-get-all'), GenresController.getAll);
+router.get('/', validate('genres-get'), GenresController.get);
 router.post(
 	'/',
-	AuthMiddleware.require(false, RoleName.Admin, RoleName.Moderator),
+	authorize(false, 'admin', 'moderator'),
+	validate('genres-create'),
 	GenresController.create
 );
 router.put(
 	'/:id',
-	AuthMiddleware.require(false, RoleName.Admin, RoleName.Moderator),
+	authorize(false, 'admin', 'moderator'),
+	validate('genres-update'),
 	GenresController.update
 );
 router.delete(
 	'/:id',
-	AuthMiddleware.require(false, RoleName.Admin, RoleName.Moderator),
+	authorize(false, 'admin', 'moderator'),
+	validate('genres-delete'),
 	GenresController.delete
 );
 

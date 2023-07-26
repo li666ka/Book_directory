@@ -3,16 +3,17 @@ import { Router } from 'express';
 import BooksController from '../controllers/books/books.controller';
 
 import { upload } from '../configs/multer.config';
-import AuthMiddleware from '../middlewares/auth.middleware';
-import RoleName from '../configs/roles.config';
+import { authorize } from '../middlewares/authorization';
+import { validate } from '../middlewares/validation';
 
 const router: Router = Router();
 
-router.get('/', BooksController.getAll);
-router.get('/:id', BooksController.get);
+router.get('/', validate('books-get-all'), BooksController.getAll);
+router.get('/:id', validate('books-get'), BooksController.get);
 router.post(
 	'/',
-	AuthMiddleware.require(false, RoleName.Admin, RoleName.Moderator),
+	authorize(false, 'admin', 'moderator'),
+	validate('books-create'),
 	upload.fields([
 		{ name: 'book-image', maxCount: 1 },
 		{ name: 'book-file', maxCount: 1 },
@@ -21,7 +22,8 @@ router.post(
 );
 router.put(
 	'/:id',
-	AuthMiddleware.require(false, RoleName.Admin, RoleName.Moderator),
+	authorize(false, 'admin', 'moderator'),
+	validate('books-update'),
 	upload.fields([
 		{ name: 'book-image', maxCount: 1 },
 		{ name: 'book-file', maxCount: 1 },
@@ -30,7 +32,8 @@ router.put(
 );
 router.delete(
 	'/:id',
-	AuthMiddleware.require(false, RoleName.Admin, RoleName.Moderator),
+	authorize(false, 'admin', 'moderator'),
+	validate('books-update'),
 	BooksController.delete
 );
 

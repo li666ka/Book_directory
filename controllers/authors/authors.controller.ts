@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 
 import AuthorDto from './dto/author.dto';
 import AuthorsFiltersDto from './dto/authors_filters.dto';
-
-import AuthorsService from '../../services/authors.service';
 import UpdateAuthorDto from './dto/update_author.dto';
 import AuthorDetailsDto from './dto/author_details.dto';
+import CreateAuthorDto from './dto/create_author.dto';
+
+import AuthorsService from '../../services/authors.service';
 
 class AuthorsController {
 	public static async getAll(

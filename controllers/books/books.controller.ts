@@ -4,14 +4,12 @@ import BookDto from './dto/book.dto';
 import BookFiltersDto from './dto/book_filters.dto';
 import CreateBookDto from './dto/create_book.dto';
 import UpdateBookDto from './dto/update_book.dto';
-
-import BooksService from '../../services/books.service';
-import { Multer } from 'multer';
 import BookDetailsDto from './dto/book_details.dto';
+import BooksService from '../../services/books.service';
 
 class BooksController {
 	public static async getAll(
-		req: Request<never, never, never, BookFiltersDto | undefined>,
+		req: Request<never, never, never, BookFiltersDto>,
 		res: Response<BookDto[]>
 	) {
 		console.log(req.query);

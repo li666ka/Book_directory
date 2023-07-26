@@ -1,4 +1,6 @@
-interface BookFiltersDto {
+import { ParsedQs } from 'qs';
+
+interface BookFiltersDto extends ParsedQs {
 	searchTitle?: string;
 	searchAuthorFullName?: string;
 	searchGenreIds?: number[];
