@@ -1,13 +1,15 @@
 import express, { Express } from 'express';
+import 'dotenv/config';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from 'morgan';
+
 import routes from './routes/_all';
 import corsOption from './configs/cors.config';
 import { STATIC_DIR } from './configs/multer.config';
 
 const app: Express = express();
-const port: number = 4000;
+const port: number = process.env.PORT;
 
 app.listen(port, () => {
 	console.log(`Server is listening on port ${port}`);
