@@ -5,7 +5,7 @@ interface CreateAuthorDto {
 	info: string;
 	book: {
 		title: string;
-		genreIds: number[];
+		genreIds: Set<number>;
 		description: string;
 	};
 }

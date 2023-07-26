@@ -1,9 +1,9 @@
-import UpdateUserRoleDto from '../controllers/users/dto/update_user_role.dto';
-import UpdateUserDto from '../controllers/users/dto/update_user.dto';
-import UserFiltersDto from '../controllers/users/dto/user_filters.dto';
+import UpdateUserRoleDto from '../../controllers/users/dto/update_user_role.dto';
+import UpdateUserDto from '../../controllers/users/dto/update_user.dto';
+import UserFiltersDto from '../../controllers/users/dto/user_filters.dto';
 
-import { Role, RoleRepository } from '../models/role.model';
-import { User, UserRepository } from '../models/user.model';
+import { Role, RoleRepository } from '../../models/role.model';
+import { User, UserRepository } from '../../models/user.model';
 
 class UserValidator {
 	/**
@@ -12,7 +12,7 @@ class UserValidator {
 	 * @param userFiltersDto
 	 */
 	public static async validateGettingAll(
-		userFiltersDto: UserFiltersDto | undefined
+		userFiltersDto: UserFiltersDto
 	): Promise<void> {
 		if (!userFiltersDto) return;
 
@@ -43,12 +43,9 @@ class UserValidator {
 
 	public static async validateUpdating(
 		id: string,
-		updateUserDto: UpdateUserDto | undefined
+		updateUserDto: UpdateUserDto
 	): Promise<User> {
 		const idParsed: number = parseInt(id, 10);
-		if (isNaN(idParsed)) throw new Error('id is invalid');
-
-		if (!updateUserDto) throw new Error('Dto is undefined');
 
 		const user: User | undefined = await UserRepository.get(idParsed);
 		if (!user) throw new Error(`Book with id ${id} does not exist`);
@@ -58,16 +55,11 @@ class UserValidator {
 
 	public static async validateUpdatingRole(
 		id: string,
-		updateUserRoleDto: UpdateUserRoleDto | undefined
+		updateUserRoleDto: UpdateUserRoleDto
 	): Promise<User> {
 		const idParsed: number = parseInt(id, 10);
-		if (isNaN(idParsed)) throw new Error('id is invalid');
-
-		if (!updateUserRoleDto) throw new Error('Dto is undefined');
 
 		const { roleId } = updateUserRoleDto;
-
-		if (!roleId) throw new Error('roleId is undefined');
 
 		const role: Role | undefined = await RoleRepository.get(roleId);
 
@@ -81,7 +73,6 @@ class UserValidator {
 
 	public static async validateDeleting(id: string): Promise<User> {
 		const idParsed: number = parseInt(id, 10);
-		if (isNaN(idParsed)) throw new Error('id is invalid');
 
 		const user: User | undefined = await UserRepository.get(idParsed);
 

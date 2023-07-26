@@ -1,7 +1,8 @@
 import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
 import CreateAuthorDto from '../controllers/authors/dto/create_author.dto';
 import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
-import { isInteger, isNull, isObject, isString } from './primitive_types.guards';
+import { isNull, isObject, isString } from './primitive_types.guards';
+import { isSetNumber } from './set.guards';
 
 export function isAuthorsFiltersDto(
 	input: AuthorsFiltersDto
@@ -22,8 +23,7 @@ export function isCreateAuthorDto(input: any): input is CreateAuthorDto {
 		isObject(book) &&
 		isString(title) &&
 		isString(description) &&
-		Array.isArray(genreIds) &&
-		genreIds.every(isInteger)
+		isSetNumber(genreIds)
 	);
 }
 
