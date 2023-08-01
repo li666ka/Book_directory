@@ -1,5 +1,3 @@
-interface CreateBooklistItemDto {
+export interface CreateBooklistItemDto {
 	statusId: number;
 }
-
-export default CreateBooklistItemDto;

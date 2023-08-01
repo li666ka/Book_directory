@@ -1,23 +1,24 @@
-import { OkPacket } from 'mysql2';
 import fs from 'fs';
 import path from 'path';
+import { OkPacket } from 'mysql2';
 
-import AuthorDto from '../controllers/authors/dto/author.dto';
-import AuthorDetailsDto from '../controllers/authors/dto/author_details.dto';
-import AuthorsFiltersDto from '../controllers/authors/dto/authors_filters.dto';
-import UpdateAuthorDto from '../controllers/authors/dto/update_author.dto';
-
-import AuthorValidator from '../validators/author.validator';
-
+import AuthorValidator from './validators/author.validator';
+import BooksService from './books.service';
 import { Author, AuthorRepository } from '../models/author.model';
 
-import { STATIC_DIR } from '../configs/multer.config';
-import BooksService from './books.service';
+import { BookDto } from '../controllers/books/dto/book.dto';
+import { AuthorsFiltersDto } from '../controllers/authors/dto/authors_filters.dto';
+import { AuthorDto } from '../controllers/authors/dto/author.dto';
+import { AuthorDetailsDto } from '../controllers/authors/dto/author_details.dto';
+import { CreateAuthorDto } from '../controllers/authors/dto/create_author.dto';
+import { UpdateAuthorDto } from '../controllers/authors/dto/update_author.dto';
+
+import { STATIC_DIR } from '../utils/multer.util';
 
 class AuthorsService {
 	public static async find(
 		authorsFilters: AuthorsFiltersDto | undefined
-	): Promise<AuthorDto[] | never> {
+	): Promise<AuthorDto[]> {
 		let authors: Author[] = await AuthorRepository.getAll();
 
 		if (authorsFilters) {
@@ -37,19 +38,15 @@ class AuthorsService {
 		return authorsDto;
 	}
 
-	public static async findOne(id: string): Promise<AuthorDetailsDto | never> {
+	public static async findOne(id: number): Promise<AuthorDetailsDto> {
 		const author: Author = await AuthorValidator.validateGetting(id);
 		return this.parseToDetailsDto(author);
 	}
 
 	public static async create(
-		createAuthorDto: CreateAuthorDto | undefined,
-		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<AuthorDetailsDto | never> {
-		const { bookImageFile, bookFile, authorImageFile } =
-			await AuthorValidator.validateCreating(createAuthorDto, files);
-
-		createAuthorDto = createAuthorDto as CreateAuthorDto;
+		createAuthorDto: CreateAuthorDto
+	): Promise<AuthorDetailsDto> {
+		await AuthorValidator.validateCreating(createAuthorDto);
 		const { fullName, bornAt, info, diedAt, book } = createAuthorDto;
 
 		// insert into 'books' table new book
@@ -57,73 +54,77 @@ class AuthorsService {
 			fullName,
 			bornAt,
 			diedAt ? diedAt : null,
-			authorImageFile,
+			null,
 			info
 		);
 
 		const newAuthor = (await AuthorRepository.get(okPacket.insertId)) as Author;
 
 		// create new author book
-		await BooksService.create(
-			{
-				authorId: newAuthor.id,
-				title: book.title,
-				description: book.description,
-				genreIds: book.genreIds,
-			},
-			{ 'book-image': [bookImageFile], 'book-file': [bookFile] }
-		);
+		await BooksService.create({
+			authorId: newAuthor.id,
+			title: book.title,
+			description: book.description,
+			genreIds: book.genreIds,
+		});
 
 		return this.parseToDetailsDto(newAuthor);
 	}
 
-	public static async update(
-		id: string,
-		updateAuthorDto: UpdateAuthorDto | undefined,
-		files: { [key: string]: Express.Multer.File[] } | undefined
-	): Promise<void | never> {
+	public static async update(id: number, updateAuthorDto: UpdateAuthorDto) {
 		const validationResult = await AuthorValidator.validateUpdating(
 			id,
-			updateAuthorDto,
-			files
+			updateAuthorDto
 		);
 
-		updateAuthorDto = updateAuthorDto as UpdateAuthorDto;
-		const { fullName, bornAt, diedAt, info } = updateAuthorDto;
 		let { author } = validationResult;
-		const { imageFile } = validationResult;
 
-		if (fullName) {
-			await this.updateFullName(author, fullName);
-			author = (await AuthorRepository.get(author.id)) as Author;
-		}
-		if (bornAt) {
-			await this.updateBornAt(author, bornAt);
-			author = (await AuthorRepository.get(author.id)) as Author;
-		}
-		if (diedAt) {
-			await this.updateDiedAt(author, diedAt);
-			author = (await AuthorRepository.get(author.id)) as Author;
-		}
-		if (info) {
-			await this.updateInfo(author, info);
-			author = (await AuthorRepository.get(author.id)) as Author;
-		}
-		if (imageFile) {
-			await this.updateImageFile(author, imageFile);
+		if (updateAuthorDto) {
+			const { fullName, bornAt, diedAt, info } = updateAuthorDto;
+
+			if (fullName) {
+				await this.updateFullName(author, fullName);
+				author = (await AuthorRepository.get(author.id)) as Author;
+			}
+			if (bornAt) {
+				await this.updateBornAt(author, bornAt);
+				author = (await AuthorRepository.get(author.id)) as Author;
+			}
+			if (diedAt) {
+				await this.updateDiedAt(author, diedAt);
+				author = (await AuthorRepository.get(author.id)) as Author;
+			}
+			if (info) {
+				await this.updateInfo(author, info);
+				author = (await AuthorRepository.get(author.id)) as Author;
+			}
 		}
 	}
 
-	public static async delete(id: string) {
+	public static async uploadImage(id: number, image: Express.Multer.File) {
+		const author = await AuthorValidator.validateGetting(id);
+
+		const { filename } = image;
+		//delete old image file
+		if (author.image_file) fs.rmSync(path.join(STATIC_DIR, author.image_file));
+
+		await AuthorRepository.update(
+			author.full_name,
+			author.born_at,
+			author.died_at,
+			author.info,
+			filename,
+			author.id
+		);
+	}
+
+	public static async delete(id: number) {
 		const author: Author = await AuthorValidator.validateDeleting(id);
 		await AuthorRepository.delete(author.id);
 		fs.rmSync(path.join(STATIC_DIR, author.image_file));
 	}
 
-	private static async updateFullName(
-		author: Author,
-		newFullName: string
-	): Promise<void | never> {
+	private static async updateFullName(author: Author, newFullName: string) {
 		await AuthorRepository.update(
 			newFullName,
 			author.born_at,
@@ -134,10 +135,7 @@ class AuthorsService {
 		);
 	}
 
-	private static async updateBornAt(
-		author: Author,
-		newBornAt: string
-	): Promise<void | never> {
+	private static async updateBornAt(author: Author, newBornAt: string) {
 		await AuthorRepository.update(
 			author.full_name,
 			newBornAt,
@@ -148,10 +146,7 @@ class AuthorsService {
 		);
 	}
 
-	private static async updateDiedAt(
-		author: Author,
-		newDiedAt: string
-	): Promise<void | never> {
+	private static async updateDiedAt(author: Author, newDiedAt: string) {
 		await AuthorRepository.update(
 			author.full_name,
 			author.born_at,
@@ -162,30 +157,13 @@ class AuthorsService {
 		);
 	}
 
-	private static async updateInfo(
-		author: Author,
-		newInfo: string
-	): Promise<void | never> {
+	private static async updateInfo(author: Author, newInfo: string) {
 		await AuthorRepository.update(
 			author.full_name,
 			author.born_at,
 			author.died_at,
 			newInfo,
 			author.image_file,
-			author.id
-		);
-	}
-
-	private static async updateImageFile(
-		author: Author,
-		newImageFile: string
-	): Promise<void | never> {
-		await AuthorRepository.update(
-			author.full_name,
-			author.born_at,
-			author.died_at,
-			author.info,
-			newImageFile,
 			author.id
 		);
 	}
@@ -210,9 +188,10 @@ class AuthorsService {
 	}
 
 	private static async parseToDetailsDto(author: Author): Promise<AuthorDetailsDto> {
+		const authorDto: AuthorDto = this.parseToDto(author);
 		const books = (
 			await BooksService.find({ searchAuthorFullName: author.full_name })
-		).map((book) => {
+		).map((book: BookDto) => {
 			return {
 				id: book.id,
 				title: book.title,
@@ -220,15 +199,11 @@ class AuthorsService {
 				imageFile: book.imageFile,
 			};
 		});
-
 		return {
-			id: author.id,
-			fullName: author.full_name,
+			...authorDto,
 			bornAt: author.born_at,
 			diedAt: author.died_at,
 			info: author.info,
-			imageFile: author.image_file,
-			createdAt: author.created_at,
 			books,
 		};
 	}

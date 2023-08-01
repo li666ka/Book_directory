@@ -1,15 +1,17 @@
-import GenreFiltersDto from '../controllers/genres/dto/genre_filters.dto';
-import GenreDto from '../controllers/genres/dto/genre.dto';
-import { Genre, GenreRepository } from '../models/genre.model';
-import GenreValidator from '../validators/genre.validator';
 import { OkPacket } from 'mysql2';
-import CreateGenreDto from '../controllers/genres/dto/create_genre.dto';
-import UpdateGenreDto from '../controllers/genres/dto/update_genre.dto';
+
+import { Genre, GenreRepository } from '../models/genre.model';
+
+import GenreValidator from './validators/genre.validator';
+import { GenreFiltersDto } from '../controllers/genres/dto/genre_filters.dto';
+import { GenreDto } from '../controllers/genres/dto/genre.dto';
+import { CreateGenreDto } from '../controllers/genres/dto/create_genre.dto';
+import { UpdateGenreDto } from '../controllers/genres/dto/update_genre.dto';
 
 class GenresService {
 	public static async find(
 		genreFiltersDto: GenreFiltersDto | undefined
-	): Promise<GenreDto[] | never> {
+	): Promise<GenreDto[]> {
 		let genres: Genre[] = await GenreRepository.getAll();
 
 		if (genreFiltersDto) {
@@ -20,14 +22,12 @@ class GenresService {
 		return genres;
 	}
 
-	public static async findOne(id: string): Promise<GenreDto | never> {
+	public static async findOne(id: number): Promise<GenreDto> {
 		const genre: Genre = await GenreValidator.validateGetting(id);
 		return this.parseToDto(genre);
 	}
 
-	public static async create(
-		createGenreDto: CreateGenreDto | undefined
-	): Promise<GenreDto | never> {
+	public static async create(createGenreDto: CreateGenreDto): Promise<GenreDto> {
 		await GenreValidator.validateCreating(createGenreDto);
 
 		const { name } = createGenreDto;
@@ -40,17 +40,17 @@ class GenresService {
 	}
 
 	public static async update(
-		id: string,
-		updateGenreDto: UpdateGenreDto | undefined
-	): Promise<void | never> {
+		id: number,
+		updateGenreDto: UpdateGenreDto
+	): Promise<void> {
 		await GenreValidator.validateUpdating(id, updateGenreDto);
 		const { name } = updateGenreDto;
 		await GenreRepository.update(name, +id);
 	}
 
-	public static async delete(id: string): Promise<void | never> {
-		await GenreValidator.validateDeleting(id);
-		await GenreRepository.delete(+id);
+	public static async delete(id: number): Promise<void> {
+		const genre: Genre = await GenreValidator.validateDeleting(id);
+		await GenreRepository.delete(genre.id);
 	}
 
 	private static filterByName(genres: Genre[], name: string): Genre[] {

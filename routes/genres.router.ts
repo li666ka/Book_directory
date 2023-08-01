@@ -6,7 +6,7 @@ import { validate } from '../middlewares/validation';
 const router: Router = Router();
 
 router.get('/', validate('genres-get-all'), GenresController.getAll);
-router.get('/', validate('genres-get'), GenresController.get);
+router.get('/', GenresController.get);
 router.post(
 	'/',
 	authorize(false, 'admin', 'moderator'),
@@ -19,11 +19,6 @@ router.put(
 	validate('genres-update'),
 	GenresController.update
 );
-router.delete(
-	'/:id',
-	authorize(false, 'admin', 'moderator'),
-	validate('genres-delete'),
-	GenresController.delete
-);
+router.delete('/:id', authorize(false, 'admin', 'moderator'), GenresController.delete);
 
 export default router;

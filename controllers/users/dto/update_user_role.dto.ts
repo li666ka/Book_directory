@@ -1,5 +1,3 @@
-interface UpdateUserRoleDto {
+export interface UpdateUserRoleDto {
 	roleId: number;
 }
-
-export default UpdateUserRoleDto;

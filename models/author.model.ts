@@ -1,6 +1,6 @@
 import { RowDataPacket, OkPacket } from 'mysql2';
 
-import DB_CONNECTION from '../services/db.service';
+import DB_CONNECTION from '../utils/db.util';
 import AuthorsQueries from '../db/queries/authors.queries';
 
 export interface Author extends RowDataPacket {
@@ -32,7 +32,7 @@ export class AuthorRepository {
 		fullName: string,
 		bornAt: string,
 		diedAt: string | null,
-		imageFile: string,
+		imageFile: string | null,
 		info: string
 	): Promise<OkPacket> {
 		const query: string = AuthorsQueries.Create;

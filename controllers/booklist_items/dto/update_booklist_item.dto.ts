@@ -1,5 +1,3 @@
-interface UpdateBooklistItemDto {
-	statusId?: number;
+export interface UpdateBooklistItemDto {
+	statusId: number;
 }
-
-export default UpdateBooklistItemDto;

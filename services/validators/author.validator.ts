@@ -1,20 +1,27 @@
-import CreateAuthorDto from '../../controllers/authors/dto/create_author.dto';
-import UpdateAuthorDto from '../../controllers/authors/dto/update_author.dto';
-
 import { Author, AuthorRepository } from '../../models/author.model';
 import { Genre, GenreRepository } from '../../models/genre.model';
+import {
+	AUTHOR_IMAGE_FIELD,
+	BOOK_FILE_FIELD,
+	BOOK_IMAGE_FIELD,
+} from '../../utils/multer.util';
+import { UpdateAuthorDto } from '../../controllers/authors/dto/update_author.dto';
+import { CreateAuthorDto } from '../../controllers/authors/dto/create_author.dto';
+import { AppError, HttpCode } from '../../exceptions/app_error';
 
 class AuthorValidator {
 	/**
 	 * Validates input author id.
 	 * @param id
-	 * Returns Author by input id ot throws Error.
+	 * Returns Author by input id if it exists.
 	 */
-	public static async validateGetting(id: string): Promise<Author> {
-		const idParsed: number = parseInt(id, 10);
-
-		const author: Author | undefined = await AuthorRepository.get(idParsed);
-		if (!author) throw new Error(`Author with id ${id} does not exist`);
+	public static async validateGetting(id: number): Promise<Author> {
+		const author: Author | undefined = await AuthorRepository.get(id);
+		if (!author)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Author with id ${id} does not exist`
+			);
 
 		return author;
 	}
@@ -23,46 +30,30 @@ class AuthorValidator {
 	 * Validates input createAuthorDto and multer files.
 	 * @param createAuthorDto
 	 * @param files
-	 * Returns object with author image filename and book files or throws Error.
+	 * Returns object with author image filename and book files.
 	 */
-	public static async validateCreating(
-		createAuthorDto: CreateAuthorDto,
-		files: { [key: string]: Express.Multer.File[] }
-	): Promise<{
-		authorImageFile: string;
-		bookImageFile: Express.Multer.File;
-		bookFile: Express.Multer.File;
-	}> {
+	public static async validateCreating(createAuthorDto: CreateAuthorDto) {
 		const { fullName, book } = createAuthorDto;
 
-		const author: Author | undefined = (await AuthorRepository.getAll()).find(
-			(author) => author.full_name === fullName
-		);
+		const authorSameFullName: Author | undefined = (
+			await AuthorRepository.getAll()
+		).find((author) => author.full_name === fullName);
 
-		if (author) throw new Error(`Author with full name ${fullName} already exists`);
+		if (authorSameFullName)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Author with full name ${fullName} already exists`
+			);
 
 		const { genreIds } = book;
 		for (const genreId of genreIds) {
 			const genre: Genre | undefined = await GenreRepository.get(genreId);
-			if (!genre) throw new Error(`Genre with id ${genreId} does not exist`);
+			if (!genre)
+				throw new AppError(
+					HttpCode.BAD_REQUEST,
+					`Genre with id ${genreId} does not exist`
+				);
 		}
-
-		// validate files
-		const bookImageFile: Express.Multer.File | undefined = files['book-image']
-			? files['book-image'][0]
-			: undefined;
-		const bookFile: Express.Multer.File | undefined = files['book-file']
-			? files['book-file'][0]
-			: undefined;
-		const authorImageFile: string | undefined = files['author-image']
-			? files['author-image'][0].filename
-			: undefined;
-
-		if (!bookImageFile) throw new Error('image file is undefined');
-		if (!bookFile) throw new Error('book file is undefined');
-		if (!authorImageFile) throw new Error('author image file is undefined');
-
-		return { bookImageFile, authorImageFile, bookFile };
 	}
 
 	/**
@@ -73,24 +64,13 @@ class AuthorValidator {
 	 * Returns object with Author by input id and author image filename or throws Error.
 	 */
 	public static async validateUpdating(
-		id: string,
-		updateAuthorDto: UpdateAuthorDto,
-		files: { [key: string]: Express.Multer.File[] }
-	): Promise<{ author: Author; imageFile?: string }> {
-		const idParsed: number = parseInt(id, 10);
+		id: number,
+		updateAuthorDto: UpdateAuthorDto
+	): Promise<Author> {
+		const author: Author | undefined = await AuthorRepository.get(id);
+		if (!author) throw new Error(`Author with id ${id} does not exist`);
 
-		const author: Author | undefined = await AuthorRepository.get(idParsed);
-
-		if (!author) throw new Error(`Author with id ${idParsed} does not exist`);
-
-		const { fullName, bornAt, info, diedAt } = updateAuthorDto;
-
-		const imageFile: string | undefined = files['author-image']
-			? files['author-image'][0].filename
-			: undefined;
-
-		if (!(fullName || bornAt || diedAt || info || imageFile))
-			throw new Error('No properties for updating');
+		const { fullName } = updateAuthorDto;
 
 		if (fullName) {
 			const authorSame: Author | undefined = (await AuthorRepository.getAll()).find(
@@ -98,10 +78,13 @@ class AuthorValidator {
 			);
 
 			if (authorSame)
-				throw new Error(`Author with full name ${fullName} already exists`);
+				throw new AppError(
+					HttpCode.BAD_REQUEST,
+					`Author with full name ${fullName} already exists`
+				);
 		}
 
-		return { author, imageFile };
+		return author;
 	}
 
 	/**
@@ -109,12 +92,14 @@ class AuthorValidator {
 	 * @param id
 	 * Returns Author by input id or throws Error.
 	 */
-	public static async validateDeleting(id: string): Promise<Author> {
-		const idParsed: number = parseInt(id, 10);
+	public static async validateDeleting(id: number): Promise<Author> {
+		const author: Author | undefined = await AuthorRepository.get(id);
 
-		const author: Author | undefined = await AuthorRepository.get(idParsed);
-
-		if (!author) throw new Error(`Author with id ${id} does not exist`);
+		if (!author)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Author with id ${id} does not exist`
+			);
 
 		return author;
 	}

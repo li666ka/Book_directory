@@ -1,5 +1,3 @@
-interface UpdateGenreDto {
+export interface UpdateGenreDto {
 	name: string;
 }
-
-export default UpdateGenreDto;

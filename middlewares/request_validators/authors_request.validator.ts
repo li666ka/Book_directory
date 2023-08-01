@@ -1,102 +1,58 @@
 import { Request, Response } from 'express';
 
-import { AuthorsRequest } from '../../types/authors_request.type';
 import {
 	isAuthorsFiltersDto,
 	isCreateAuthorDto,
 	isUpdateAuthorDto,
 } from '../../guards/authors_dto.guards';
-import { isInteger } from '../../guards/primitive_types.guards';
-import { isFilesObject } from '../../guards/files.guards';
+import { isFile } from '../../guards/files.guards';
+import { AuthorsRequest } from '../../types/request.types';
+import { AppError, HttpCode } from '../../exceptions/app_error';
 
 class AuthorsRequestValidator {
 	public static validate(req: AuthorsRequest) {
 		switch (req) {
 			case 'authors-get-all':
 				return this.validateGetAll;
-			case 'authors-get':
-				return this.validateGet;
 			case 'authors-create':
 				return this.validateCreate;
+			case 'authors-upload-image':
+				return this.validateUploadImage;
 			case 'authors-update':
 				return this.validateUpdate;
-			case 'authors-delete':
-				return this.validateDelete;
+			default:
+				return (req: Request, res: Response, next: any) => {
+					next();
+				};
 		}
 	}
 
 	private static validateGetAll(req: Request, res: Response, next: any) {
 		const { query } = req;
-		if (!isAuthorsFiltersDto(query)) res.sendStatus(400);
-		next();
-	}
-
-	private static validateGet(req: Request, res: Response, next: any) {
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
-
-		if (!isInteger(idParsed)) res.sendStatus(400);
-
+		if (query) {
+			if (!isAuthorsFiltersDto(query))
+				throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect AuthorsFiltersDto');
+		}
 		next();
 	}
 
 	private static validateCreate(req: Request, res: Response, next: any) {
-		const { body, files } = req;
+		const { body } = req;
+		if (!isCreateAuthorDto(body))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect CreateAuthorDto');
+		next();
+	}
 
-		// body
-		// parse `genreIds` to number[]
-		const { genreIds } = body.book;
-		body.book.genreIds = Array.isArray(genreIds)
-			? genreIds.map((genreId) => Number(genreId))
-			: genreIds;
-
-		if (!isCreateAuthorDto(body)) res.sendStatus(400);
-
-		// files
-		if (!isFilesObject(files)) res.sendStatus(400);
-
-		const bookImageFile: Express.Multer.File | undefined = files
-			? files['book-image']
-				? files['book-image'][0]
-				: undefined
-			: undefined;
-		const bookFile: Express.Multer.File | undefined = files
-			? files['book-file']
-				? files['book-file'][0]
-				: undefined
-			: undefined;
-		const authorImageFile: string | undefined = files
-			? files['author-image']
-				? files['author-image'][0].filename
-				: undefined
-			: undefined;
-
-		if (!bookImageFile || !bookFile || !authorImageFile) res.sendStatus(400);
-
+	private static validateUploadImage(req: Request, res: Response, next: any) {
+		const { file } = req;
+		if (!isFile(file)) throw new AppError(HttpCode.BAD_REQUEST, 'No author image');
 		next();
 	}
 
 	private static validateUpdate(req: Request, res: Response, next: any) {
-		const { body, files } = req;
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
-
-		if (!isInteger(idParsed)) res.sendStatus(400);
-		if (!isUpdateAuthorDto(body)) res.sendStatus(400);
-		if (!isFilesObject(files)) res.sendStatus(400);
-
-		next();
-	}
-
-	private static validateDelete(req: Request, res: Response, next: any) {
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
-
-		if (!isInteger(idParsed)) res.sendStatus(400);
-
+		const { body } = req;
+		if (!isUpdateAuthorDto(body))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect UpdateAuthorDto');
 		next();
 	}
 }

@@ -1,80 +1,67 @@
 import { Request, Response } from 'express';
-import UserDto from './dto/user.dto';
-import UserDetailsDto from './dto/user_details.dto';
-import UserFiltersDto from './dto/user_filters.dto';
-import CreateUserDto from '../auth/dto/create_user.dto';
+
 import UsersService from '../../services/users.service';
-import { Jwt } from 'jsonwebtoken';
-import UpdateUserRoleDto from './dto/update_user_role.dto';
+
+import { parseId, parseUserFiltersDto } from '../../utils/parsing.util';
+import { HttpCode } from '../../exceptions/app_error';
+import { UserFiltersDto } from './dto/user_filters.dto';
+import { UserDto } from './dto/user.dto';
+import { UserDetailsDto } from './dto/user_details.dto';
+import { UpdateUserDto } from './dto/update_user.dto';
+import { UpdateUserRoleDto } from './dto/update_user_role.dto';
 
 class UsersController {
 	public static async getAll(
-		req: Request<never, never, never, UserFiltersDto>,
+		req: Request<never, never, never, UserFiltersDto | undefined>,
 		res: Response<UserDto[]>
-	): Promise<void> {
-		try {
-			console.log(req.query);
-			const users: UserDto[] = await UsersService.find(req.query);
-			res.json(users);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { query } = req;
+		const userFiltersParsed = query ? parseUserFiltersDto(query) : undefined;
+		const users: UserDto[] = await UsersService.find(userFiltersParsed);
+		res.json(users);
 	}
 
 	public static async get(
-		req: Request<{ id: string }>,
+		req: Request<{ userId: string }>,
 		res: Response<UserDetailsDto>
-	): Promise<void> {
-		try {
-			const user: UserDetailsDto = await UsersService.findOne(req.params.id);
-			res.json(user);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { userId } = req.params;
+		const idParsed = parseId(userId);
+		const user: UserDetailsDto = await UsersService.findOne(idParsed);
+		res.json(user);
 	}
 
 	public static async update(
-		req: Request<{ id: string }, never, UpdateUserDto>,
-		res: Response<UserDetailsDto>
-	): Promise<void> {
-		try {
-			const user: UserDetailsDto = await UsersService.update(
-				req.params.id,
-				req.body
-			);
-			res.json(user);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+		req: Request<{ userId: string }, never, UpdateUserDto>,
+		res: Response
+	) {
+		const { userId } = req.params;
+		const { body } = req;
+
+		const idParsed = parseId(userId);
+
+		await UsersService.update(idParsed, body);
+		res.sendStatus(HttpCode.OK);
 	}
 
 	public static async updateRole(
-		req: Request<{ id: string }, never, UpdateUserRoleDto>,
-		res: Response<UserDetailsDto>
-	): Promise<void> {
-		try {
-			const user: UserDetailsDto = await UsersService.updateRole(
-				req.params.id,
-				req.body
-			);
-			res.json(user);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+		req: Request<{ userId: string }, never, UpdateUserRoleDto>,
+		res: Response
+	) {
+		const { userId } = req.params;
+		const { body } = req;
+
+		const idParsed = parseId(userId);
+		await UsersService.updateRole(idParsed, body);
+		res.sendStatus(HttpCode.OK);
 	}
 
-	public static async delete(
-		req: Request<{ id: string }, never, UpdateUserRoleDto>,
-		res: Response<UserDetailsDto>
-	): Promise<void> {}
+	public static async delete(req: Request<{ userId: string }>, res: Response) {
+		const { userId } = req.params;
+		const idParsed = parseId(userId);
+		await UsersService.delete(idParsed);
+		res.sendStatus(HttpCode.OK);
+	}
 }
 
 export default UsersController;

@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../services/db.service';
+import DB_CONNECTION from '../utils/db.util';
 import GenresQueries from '../db/queries/genres.queries';
 
 export interface Genre extends RowDataPacket {

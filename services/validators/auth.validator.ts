@@ -1,8 +1,11 @@
-import LoginUserDto from '../../controllers/auth/dto/login_user.dto';
 import { User, UserRepository } from '../../models/user.model';
-import CreateUserDto from '../../controllers/auth/dto/create_user.dto';
-import { Role as RoleName } from '../../types/role.type';
 import { RoleRepository } from '../../models/role.model';
+
+import { CreateUserDto } from '../../controllers/auth/dto/create_user.dto';
+import { LoginUserDto } from '../../controllers/auth/dto/login_user.dto';
+
+import { Role as RoleName } from '../../types/role.type';
+import { AppError, HttpCode } from '../../exceptions/app_error';
 
 class AuthValidator {
 	/**
@@ -17,15 +20,25 @@ class AuthValidator {
 	): Promise<number> {
 		const { username } = createUserDto;
 
-		const userSame: User | undefined = (await UserRepository.getAll()).find(
+		const userSameUsername: User | undefined = (await UserRepository.getAll()).find(
 			(user) => user.username === username
 		);
 
-		if (userSame) throw new Error(`User with username ${username} already exists`);
+		if (userSameUsername)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`User with username ${username} already exists`
+			);
 
-		const roleId = (await RoleRepository.getAll()).find((r) => r.name === role).id;
+		const roleId: number | undefined = (await RoleRepository.getAll()).find(
+			(r) => r.name === role
+		)?.id;
 
-		if (!roleId) throw new Error(`Role with name ${role} does not exist`);
+		if (!roleId)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Role with name ${role} does not exist`
+			);
 
 		return roleId;
 	}
@@ -42,7 +55,11 @@ class AuthValidator {
 			(user) => user.username === username
 		);
 
-		if (!user) throw new Error(`User with username ${username} does not exist`);
+		if (!user)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`User with username ${username} does not exist`
+			);
 
 		return user;
 	}

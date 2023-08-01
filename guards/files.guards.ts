@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { isInteger, isObject, isString } from './primitive_types.guards';
+import { isInteger, isObject, isString } from './_base.guards';
 
 export function isFilesObject(
 	input: any
@@ -10,7 +10,7 @@ export function isFilesObject(
 	);
 }
 
-function isFile(input: any): input is Express.Multer.File {
+export function isFile(input: any): input is Express.Multer.File {
 	const {
 		fieldname,
 		originalname,
@@ -30,10 +30,10 @@ function isFile(input: any): input is Express.Multer.File {
 		isString(encoding) &&
 		isString(mimetype) &&
 		isInteger(size) &&
-		stream instanceof Readable &&
+		// stream instanceof Readable &&
 		isString(destination) &&
 		isString(filename) &&
-		isString(path) &&
-		buffer instanceof Buffer
+		isString(path) // &&
+		// buffer instanceof Buffer
 	);
 }

@@ -1,37 +1,36 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
+
 import { Role } from '../types/role.type';
-import { JWT_SECRET, JwtPayloadExt } from '../configs/jwt.config';
+import { JWT_SECRET, JwtPayloadExt } from '../utils/jwt.util';
+import { isString } from '../guards/_base.guards';
+import { AppError, HttpCode } from '../exceptions/app_error';
 
 export function authorize(
 	accountOwner: boolean,
 	...roles: Role[]
 ): (req: Request, res: Response, next: any) => any {
 	return (req: Request, res: Response, next: any) => {
-		try {
-			const authHeader = req.headers.authorization;
-			if (!authHeader) throw new Error('No bearer token');
+		const authHeader = req.headers.authorization;
+		if (!authHeader) throw new AppError(HttpCode.UNAUTHORIZED, 'No bearer token');
 
-			const token: string = authHeader.replace('Bearer ', '');
+		const token: string = authHeader.replace('Bearer ', '');
+		const decoded = jwt.verify(token, JWT_SECRET);
+		if (isString(decoded)) throw new AppError(HttpCode.FORBIDDEN, 'Incorrect token');
 
-			const user = jwt.verify(token, JWT_SECRET) as JwtPayloadExt;
+		const user = decoded as JwtPayloadExt;
+		const { role: userRole } = user;
 
-			const { role: userRole } = user;
+		if (!userRole) throw new AppError(HttpCode.FORBIDDEN, 'RoleId is undefined');
 
-			if (!userRole) throw new Error('RoleId is undefined');
-
-			if (accountOwner) {
-				if (user.userId === +req.params.id) return next();
-			}
-
-			for (const requireRole of roles) {
-				if (userRole === requireRole.valueOf()) return next();
-			}
-
-			throw new Error('Incorrect role');
-		} catch (err: unknown) {
-			console.log(err.message);
-			return res.sendStatus(403); // Forbidden
+		if (accountOwner) {
+			if (user.userId === +req.params.userId) return next();
 		}
+
+		for (const requireRole of roles) {
+			if (userRole === requireRole.valueOf()) return next();
+		}
+
+		throw new AppError(HttpCode.FORBIDDEN, 'Incorrect role');
 	};
 }

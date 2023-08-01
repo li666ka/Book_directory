@@ -1,9 +1,9 @@
-import UpdateUserRoleDto from '../../controllers/users/dto/update_user_role.dto';
-import UpdateUserDto from '../../controllers/users/dto/update_user.dto';
-import UserFiltersDto from '../../controllers/users/dto/user_filters.dto';
-
 import { Role, RoleRepository } from '../../models/role.model';
 import { User, UserRepository } from '../../models/user.model';
+import { UserFiltersDtoParsed } from '../../types/dto_parsed.types';
+import { UpdateUserDto } from '../../controllers/users/dto/update_user.dto';
+import { UpdateUserRoleDto } from '../../controllers/users/dto/update_user_role.dto';
+import { AppError, HttpCode } from '../../exceptions/app_error';
 
 class UserValidator {
 	/**
@@ -12,71 +12,82 @@ class UserValidator {
 	 * @param userFiltersDto
 	 */
 	public static async validateGettingAll(
-		userFiltersDto: UserFiltersDto
+		userFiltersDto: UserFiltersDtoParsed
 	): Promise<void> {
 		if (!userFiltersDto) return;
 
 		const { roleIds } = userFiltersDto;
 
 		if (roleIds) {
-			const roleIdsParsed = roleIds.map((roleId) => parseInt(roleId as string, 10));
-			for (const roleId of roleIdsParsed) {
-				if (isNaN(roleId)) throw new Error('Incorrect roleId');
-
+			for (const roleId of roleIds) {
 				const role: Role | undefined = await RoleRepository.get(roleId);
 
-				if (!role) throw new Error(`Role with is ${roleId} does not exist`);
+				if (!role)
+					throw new AppError(
+						HttpCode.BAD_REQUEST,
+						`Role with is ${roleId} does not exist`
+					);
 			}
-			userFiltersDto.roleIds = roleIdsParsed;
+			userFiltersDto.roleIds = roleIds;
 		}
 	}
 
-	public static async validateGetting(id: string): Promise<User> {
-		const idParsed: number = parseInt(id, 10);
-		if (isNaN(idParsed)) throw new Error('id is invalid');
-
-		const user: User | undefined = await UserRepository.get(idParsed);
-		if (!user) throw new Error(`User with id ${id} does not exist`);
+	public static async validateGetting(id: number): Promise<User> {
+		const user: User | undefined = await UserRepository.get(id);
+		if (!user)
+			throw new AppError(HttpCode.BAD_REQUEST, `User with id ${id} does not exist`);
 
 		return user;
 	}
 
 	public static async validateUpdating(
-		id: string,
+		id: number,
 		updateUserDto: UpdateUserDto
 	): Promise<User> {
-		const idParsed: number = parseInt(id, 10);
-
-		const user: User | undefined = await UserRepository.get(idParsed);
+		const user: User | undefined = await UserRepository.get(id);
 		if (!user) throw new Error(`Book with id ${id} does not exist`);
+
+		const { username } = updateUserDto;
+		if (username) {
+			const userWithSameUsername = (await UserRepository.getAll()).find(
+				(user) => user.username === username
+			);
+			if (userWithSameUsername)
+				throw new AppError(
+					HttpCode.BAD_REQUEST,
+					`User with username ${username} already exists`
+				);
+		}
 
 		return user;
 	}
 
 	public static async validateUpdatingRole(
-		id: string,
+		id: number,
 		updateUserRoleDto: UpdateUserRoleDto
 	): Promise<User> {
-		const idParsed: number = parseInt(id, 10);
-
 		const { roleId } = updateUserRoleDto;
 
 		const role: Role | undefined = await RoleRepository.get(roleId);
 
-		if (!role) throw new Error(`Role with id ${roleId} does not exist`);
+		if (!role)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Role with id ${roleId} does not exist`
+			);
 
-		const user: User | undefined = await UserRepository.get(idParsed);
-		if (!user) throw new Error(`Book with id ${id} does not exist`);
+		const user: User | undefined = await UserRepository.get(id);
+		if (!user)
+			throw new AppError(HttpCode.BAD_REQUEST, `Book with id ${id} does not exist`);
 
 		return user;
 	}
 
-	public static async validateDeleting(id: string): Promise<User> {
-		const idParsed: number = parseInt(id, 10);
+	public static async validateDeleting(id: number): Promise<User> {
+		const user: User | undefined = await UserRepository.get(id);
 
-		const user: User | undefined = await UserRepository.get(idParsed);
-
-		if (!user) throw new Error(`User with id ${id} does not exist`);
+		if (!user)
+			throw new AppError(HttpCode.BAD_REQUEST, `User with id ${id} does not exist`);
 
 		return user;
 	}

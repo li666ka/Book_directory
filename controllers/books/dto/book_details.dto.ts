@@ -1,14 +1,8 @@
-import BookDto from './book.dto';
+import { BookDto } from './book.dto';
+import { ReviewDto } from '../../reviews/dto/review.dto';
 
-interface BookDetailsDto extends BookDto {
-	reviews: {
-		userId: number;
-		score: number;
-		comment: string | null;
-		createdAt: string;
-	}[];
+export interface BookDetailsDto extends BookDto {
+	reviews: Omit<ReviewDto, 'book'>[];
 	averageScore: number;
 	additionNumber: number;
 }
-
-export default BookDetailsDto;

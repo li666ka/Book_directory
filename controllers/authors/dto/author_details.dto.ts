@@ -1,18 +1,9 @@
-import AuthorDto from './author.dto';
+import { AuthorDto } from './author.dto';
+import { BookDto } from '../../books/dto/book.dto';
 
-interface AuthorDetailsDto extends AuthorDto {
+export interface AuthorDetailsDto extends AuthorDto {
 	bornAt: string;
 	diedAt: string | null;
 	info: string;
-	books: {
-		id: number;
-		title: string;
-		genres: {
-			id: number;
-			name: string;
-		}[];
-		imageFile: string;
-	}[];
+	books: Pick<BookDto, 'id' | 'title' | 'genres' | 'imageFile'>[];
 }
-
-export default AuthorDetailsDto;

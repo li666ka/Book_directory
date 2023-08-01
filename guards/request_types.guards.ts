@@ -1,9 +1,11 @@
-import { AuthRequest } from '../types/auth_request.type';
-import { AuthorsRequest } from '../types/authors_request.type';
-import { BooklistItemsRequest } from '../types/booklist_items_request.type';
-import { BooksRequest } from '../types/books_request.type';
-import { UsersRequest } from '../types/users_request.type';
-import { GenresRequest } from '../types/genres_request.type';
+import {
+	AuthorsRequest,
+	AuthRequest,
+	BooklistItemsRequest,
+	BooksRequest,
+	GenresRequest,
+	UsersRequest,
+} from '../types/request.types';
 
 export function isAuthRequest(input: any): input is AuthRequest {
 	return (
@@ -19,6 +21,7 @@ export function isAuthorsRequest(input: any): input is AuthorsRequest {
 		input === 'authors-get-all' ||
 		input === 'authors-get' ||
 		input === 'authors-create' ||
+		input === 'authors-upload-image' ||
 		input === 'authors-update' ||
 		input === 'authors-delete'
 	);
@@ -37,6 +40,8 @@ export function isBooksRequest(input: any): input is BooksRequest {
 		input === 'books-get-all' ||
 		input === 'books-get' ||
 		input === 'books-create' ||
+		input === 'books-upload-image' ||
+		input === 'books-upload-file' ||
 		input === 'books-update' ||
 		input === 'books-delete'
 	);

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS authors
     born_at    DATE         NOT NULL,
     died_at    DATE         NULL,
     info       TEXT(3000)   NOT NULL,
-    image_file VARCHAR(255) NOT NULL,
+    image_file VARCHAR(255) NULL,
     created_at DATETIME     NOT NULL,
 
     PRIMARY KEY (id),
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS books
     author_id   INT          NOT NULL,
     title       VARCHAR(255) NOT NULL,
     description TEXT(2000)   NOT NULL,
-    image_file  VARCHAR(255) NOT NULL,
-    book_file   VARCHAR(255) NOT NULL,
+    image_file  VARCHAR(255) NULL,
+    book_file   VARCHAR(255) NULL,
     created_at  DATETIME     NOT NULL,
 
     PRIMARY KEY (id),

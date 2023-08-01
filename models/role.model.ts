@@ -1,7 +1,7 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
 import RolesQueries from '../db/queries/roles.queries';
-import DB_CONNECTION from '../services/db.service';
+import DB_CONNECTION from '../utils/db.util';
 
 export interface Role extends RowDataPacket {
 	id: number;

@@ -1,14 +1,6 @@
-import UserDto from './user.dto';
+import { UserDto } from './user.dto';
+import { BooklistItemDto } from '../../booklist_items/dto/booklist_item.dto';
 
-interface UserDetailsDto extends UserDto {
-	booklist: {
-		bookId: number;
-		bookTitle: string;
-		author: { id: number; fullName: string };
-		genres: { id: number; name: string }[];
-		status: { id: number; name: string };
-		review: { score: number; comment: string | null; createdAt: string } | null;
-	}[];
+export interface UserDetailsDto extends UserDto {
+	booklist: Omit<BooklistItemDto, 'user'>[];
 }
-
-export default UserDetailsDto;

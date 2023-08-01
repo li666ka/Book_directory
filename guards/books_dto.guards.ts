@@ -1,37 +1,37 @@
-import BookFiltersDto from '../controllers/books/dto/book_filters.dto';
-import CreateBookDto from '../controllers/books/dto/create_book.dto';
-import UpdateBookDto from '../controllers/books/dto/update_book.dto';
-import { isInteger, isObject, isString } from './primitive_types.guards';
-import { isSetNumber } from './set.guards';
+import { isInteger, isIntSet, isObject, isString, isStringArray } from './_base.guards';
+import { BookFiltersDto } from '../controllers/books/dto/book_filters.dto';
+import { CreateBookDto } from '../controllers/books/dto/create_book.dto';
+import { UpdateBookDto } from '../controllers/books/dto/update_book.dto';
 
 export function isBookFiltersDto(input: any): input is BookFiltersDto {
-	const { searchTitle, searchAuthorFullName, searchGenreIds } = input;
 	return (
 		isObject(input) &&
-		(searchTitle ? isString(searchTitle) : true) &&
-		(searchAuthorFullName ? isString(searchAuthorFullName) : true) &&
-		(searchGenreIds ? isSetNumber(searchGenreIds) : true)
+		(('searchTitle' in input && isString(input.searchTitle)) ||
+			('searchAuthorFullName' in input && isString(input.searchAuthorFullName)) ||
+			('searchGenreIds' in input && isStringArray(input.searchGenreIds)))
 	);
 }
 
 export function isCreateBookDto(input: any): input is CreateBookDto {
-	const { authorId, title, description, genreIds } = input;
 	return (
 		isObject(input) &&
-		isInteger(authorId) &&
-		isString(title) &&
-		isString(description) &&
-		(genreIds ? isSetNumber(genreIds) : false)
+		'authorId' in input &&
+		isInteger(input.authorId) &&
+		'title' in input &&
+		isString(input.title) &&
+		'description' in input &&
+		isString(input.description) &&
+		'genreIds' in input &&
+		isIntSet(input.genreIds)
 	);
 }
 
 export function isUpdateBookDto(input: any): input is UpdateBookDto {
-	const { authorId, title, description, genreIds } = input;
 	return (
 		isObject(input) &&
-		(authorId ? isInteger(authorId) : true) &&
-		(title ? isString(title) : true) &&
-		(description ? isString(description) : true) &&
-		(genreIds ? isSetNumber(genreIds) : true)
+		(('authorId' in input && isInteger(input.authorId)) ||
+			('title' in input && isString(input.title)) ||
+			('description' in input && isString(input.description)) ||
+			('genreIds' in input && isIntSet(input.genreIds)))
 	);
 }

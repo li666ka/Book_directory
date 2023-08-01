@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../services/db.service';
+import DB_CONNECTION from '../utils/db.util';
 import BooksQueries from '../db/queries/books.queries';
 
 export interface Book extends RowDataPacket {
@@ -31,8 +31,8 @@ export class BookRepository {
 		authorId: number,
 		title: string,
 		description: string,
-		imageFile: string,
-		bookFile: string
+		imageFile: string | null,
+		bookFile: string | null
 	): Promise<OkPacket> {
 		const query: string = BooksQueries.Create;
 		const values: any[] = [authorId, title, description, imageFile, bookFile];

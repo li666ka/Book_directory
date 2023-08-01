@@ -1,7 +1,7 @@
-interface CreateAuthorDto {
+export interface CreateAuthorDto {
 	fullName: string;
 	bornAt: string;
-	diedAt?: string;
+	diedAt: string | null;
 	info: string;
 	book: {
 		title: string;
@@ -9,5 +9,3 @@ interface CreateAuthorDto {
 		description: string;
 	};
 }
-
-export default CreateAuthorDto;

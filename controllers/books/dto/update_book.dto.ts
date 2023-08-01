@@ -1,8 +1,6 @@
-interface UpdateBookDto {
+export interface UpdateBookDto {
 	authorId?: number;
 	title?: string;
 	description?: string;
-	genreIds?: number[];
+	genreIds?: Set<number>;
 }
-
-export default UpdateBookDto;

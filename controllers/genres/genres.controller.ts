@@ -1,71 +1,58 @@
 import { Request, Response } from 'express';
 import GenresService from '../../services/genres.service';
-import GenreFiltersDto from './dto/genre_filters.dto';
-import GenreDto from './dto/genre.dto';
-import CreateGenreDto from './dto/create_genre.dto';
-import UpdateGenreDto from './dto/update_genre.dto';
+
+import { HttpCode } from '../../exceptions/app_error';
+import { parseId } from '../../utils/parsing.util';
+import { GenreFiltersDto } from './dto/genre_filters.dto';
+import { GenreDto } from './dto/genre.dto';
+import { CreateGenreDto } from './dto/create_genre.dto';
+import { UpdateGenreDto } from './dto/update_genre.dto';
 
 class GenresController {
 	public static async getAll(
 		req: Request<never, never, never, GenreFiltersDto>,
 		res: Response<GenreDto[]>
-	): Promise<void> {
-		const genres: GenreDto[] = await GenresService.find(req.query);
+	) {
+		const { query } = req;
+		const genres: GenreDto[] = await GenresService.find(query);
 		res.json(genres);
-		return;
 	}
 
-	public static async get(
-		req: Request<{ id: string }>,
-		res: Response<GenreDto>
-	): Promise<void> {
-		try {
-			const genre: GenreDto = await GenresService.findOne(req.params.id);
-			res.json(genre);
-		} catch (err: unknown) {
-			res.sendStatus(400);
-		}
-		return;
+	public static async get(req: Request<{ id: string }>, res: Response<GenreDto>) {
+		const { id } = req.params;
+		const idParsed = parseId(id);
+		const genre: GenreDto = await GenresService.findOne(idParsed);
+		res.json(genre);
 	}
 
 	public static async create(
 		req: Request<never, never, CreateGenreDto>,
 		res: Response<GenreDto>
-	): Promise<void> {
-		try {
-			const genre: GenreDto = await GenresService.create(req.body);
-			res.json(genre);
-		} catch (err: unknown) {
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { body } = req;
+		const genre: GenreDto = await GenresService.create(body);
+		res.json(genre);
 	}
 
 	public static async update(
 		req: Request<{ id: string }, never, UpdateGenreDto>,
 		res: Response
-	): Promise<void> {
-		try {
-			await GenresService.update(req.params.id, req.body);
-			res.sendStatus(200);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { id } = req.params;
+		const { body } = req;
+
+		const idParsed = parseId(id);
+
+		await GenresService.update(idParsed, body);
+		res.sendStatus(HttpCode.OK);
 	}
 
-	public static async delete(
-		req: Request<{ id: string }>,
-		res: Response<GenreDto>
-	): Promise<void> {
-		try {
-			await GenresService.delete(req.params.id);
-			res.sendStatus(200);
-		} catch (err: unknown) {
-			res.sendStatus(400);
-		}
-		return;
+	public static async delete(req: Request<{ id: string }>, res: Response<GenreDto>) {
+		const { id } = req.params;
+		const idParsed = parseId(id);
+
+		await GenresService.delete(idParsed);
+		res.sendStatus(HttpCode.OK);
 	}
 }
 

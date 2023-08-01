@@ -1,4 +1,4 @@
-import { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload, Secret } from 'jsonwebtoken';
 import 'dotenv/config';
 
 export interface JwtPayloadExt extends JwtPayload {
@@ -7,4 +7,4 @@ export interface JwtPayloadExt extends JwtPayload {
 	role: string;
 }
 
-export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_SECRET = process.env.JWT_SECRET as Secret;

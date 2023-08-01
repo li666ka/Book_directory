@@ -1,6 +1,4 @@
-interface UpdateUserDto {
+export interface UpdateUserDto {
 	username?: string;
-	password?: string; // add some validation with old password
+	password?: string;
 }
-
-export default UpdateUserDto;

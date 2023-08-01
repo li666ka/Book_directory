@@ -1,74 +1,52 @@
-import { UsersRequest } from '../../types/users_request.type';
 import { Request, Response } from 'express';
 import {
 	isUpdateUserDto,
 	isUpdateUserRoleDto,
 	isUserFiltersDto,
 } from '../../guards/users_dto.guards';
-import { isInteger } from '../../guards/primitive_types.guards';
+import { UsersRequest } from '../../types/request.types';
+import { AppError, HttpCode } from '../../exceptions/app_error';
 
 class UsersRequestValidator {
 	public static validate(req: UsersRequest) {
 		switch (req) {
 			case 'users-get-all':
 				return this.validateGetAll;
-			case 'users-get':
-				return this.validateGet;
 			case 'users-update':
 				return this.validateUpdate;
 			case 'users-update-role':
 				return this.validateUpdateRole;
-			case 'users-delete':
-				return this.validateDelete;
+			default:
+				return (req: Request, res: Response, next: any) => {
+					next();
+				};
 		}
 	}
 
 	private static validateGetAll(req: Request, res: Response, next: any) {
-		// parse `roleIds` to number[] if this property exists
-		const { roleIds } = req.body;
-		req.body.roleIds = Array.isArray(roleIds)
-			? roleIds.map((roleId) => parseInt(roleId as string, 10))
-			: roleIds;
-
-		if (!isUserFiltersDto(req.body)) res.sendStatus(400);
-
-		next();
-	}
-
-	private static validateGet(req: Request, res: Response, next: any) {
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
-
-		if (!isInteger(idParsed)) res.sendStatus(400);
+		const { query } = req;
+		if (Object.keys(query).length === 0) {
+			next();
+			return;
+		}
+		if (!isUserFiltersDto(query))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect UserFiltersDto');
 
 		next();
 	}
 
 	private static validateUpdate(req: Request, res: Response, next: any) {
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
+		const { body } = req;
+		if (!isUpdateUserDto(body))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect UpdateUserDto');
 
-		if (!isInteger(idParsed) || !isUpdateUserDto(req.body)) res.sendStatus(400);
 		next();
 	}
 
 	private static validateUpdateRole(req: Request, res: Response, next: any) {
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
-
-		if (!isInteger(idParsed) || !isUpdateUserRoleDto(req.body)) res.sendStatus(400);
-		next();
-	}
-
-	private static validateDelete(req: Request, res: Response, next: any) {
-		// parse `id` to number
-		const { id } = req.params;
-		const idParsed = Number(id);
-
-		if (!isInteger(idParsed)) res.sendStatus(400);
+		const { body } = req;
+		if (!isUpdateUserRoleDto(body))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect UpdateUserRoleDto');
 
 		next();
 	}

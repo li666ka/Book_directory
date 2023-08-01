@@ -1,6 +1,7 @@
 import { Genre, GenreRepository } from '../../models/genre.model';
-import CreateGenreDto from '../../controllers/genres/dto/create_genre.dto';
-import UpdateGenreDto from '../../controllers/genres/dto/update_genre.dto';
+import { CreateGenreDto } from '../../controllers/genres/dto/create_genre.dto';
+import { UpdateGenreDto } from '../../controllers/genres/dto/update_genre.dto';
+import { AppError, HttpCode } from '../../exceptions/app_error';
 
 class GenreValidator {
 	/**
@@ -8,11 +9,13 @@ class GenreValidator {
 	 * @param id
 	 * Returns Genre object by input id.
 	 */
-	public static async validateGetting(id: string): Promise<Genre> {
-		const idParsed: number = parseInt(id, 10);
-
-		const genre: Genre | undefined = await GenreRepository.get(idParsed);
-		if (!genre) throw new Error(`Genre with id ${id} does not exist`);
+	public static async validateGetting(id: number): Promise<Genre> {
+		const genre: Genre | undefined = await GenreRepository.get(id);
+		if (!genre)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Genre with id ${id} does not exist`
+			);
 
 		return genre;
 	}
@@ -28,7 +31,11 @@ class GenreValidator {
 			await GenreRepository.getAll()
 		).find((genre) => genre.name === name);
 
-		if (genreWithSameName) throw new Error(`Genre with name ${name} already exists`);
+		if (genreWithSameName)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Genre with name ${name} already exists`
+			);
 	}
 
 	/**
@@ -37,13 +44,15 @@ class GenreValidator {
 	 * @param updateGenreDto
 	 */
 	public static async validateUpdating(
-		id: string,
+		id: number,
 		updateGenreDto: UpdateGenreDto
 	): Promise<void | never> {
-		const idParsed: number = parseInt(id, 10);
-
-		const genre: Genre | undefined = await GenreRepository.get(idParsed);
-		if (!genre) throw new Error(`Genre with id ${id} does not exist`);
+		const genre: Genre | undefined = await GenreRepository.get(id);
+		if (!genre)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Genre with id ${id} does not exist`
+			);
 
 		const { name } = updateGenreDto;
 
@@ -51,7 +60,11 @@ class GenreValidator {
 			await GenreRepository.getAll()
 		).find((genre) => genre.name === name);
 
-		if (genreWithSameName) throw new Error(`Genre with name ${name} already exists`);
+		if (genreWithSameName)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Genre with name ${name} already exists`
+			);
 	}
 
 	/**
@@ -59,11 +72,13 @@ class GenreValidator {
 	 * @param id
 	 * Returns Genre object by input id.
 	 */
-	public static async validateDeleting(id: string): Promise<Genre> {
-		const idParsed: number = parseInt(id, 10);
-
-		const genre: Genre | undefined = await GenreRepository.get(idParsed);
-		if (!genre) throw new Error(`Genre with id ${id} does not exist`);
+	public static async validateDeleting(id: number): Promise<Genre> {
+		const genre: Genre | undefined = await GenreRepository.get(id);
+		if (!genre)
+			throw new AppError(
+				HttpCode.BAD_REQUEST,
+				`Genre with id ${id} does not exist`
+			);
 
 		return genre;
 	}

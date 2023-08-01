@@ -1,85 +1,71 @@
 import { Request, Response } from 'express';
 
-import AuthorDto from './dto/author.dto';
-import AuthorsFiltersDto from './dto/authors_filters.dto';
-import UpdateAuthorDto from './dto/update_author.dto';
-import AuthorDetailsDto from './dto/author_details.dto';
-import CreateAuthorDto from './dto/create_author.dto';
-
 import AuthorsService from '../../services/authors.service';
+import { parseId } from '../../utils/parsing.util';
+import { HttpCode } from '../../exceptions/app_error';
+import { AuthorsFiltersDto } from './dto/authors_filters.dto';
+import { AuthorDto } from './dto/author.dto';
+import { AuthorDetailsDto } from './dto/author_details.dto';
+import { CreateAuthorDto } from './dto/create_author.dto';
+import { UpdateAuthorDto } from './dto/update_author.dto';
 
 class AuthorsController {
 	public static async getAll(
-		req: Request<never, never, never, AuthorsFiltersDto>,
+		req: Request<never, never, never, AuthorsFiltersDto | undefined>,
 		res: Response<AuthorDto[]>
-	): Promise<void> {
-		try {
-			const authors: AuthorDto[] = await AuthorsService.find(req.query);
-			res.json(authors);
-		} catch (err: unknown) {
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { query } = req;
+		const authors: AuthorDto[] = await AuthorsService.find(query);
+		res.json(authors);
 	}
 
 	public static async get(
 		req: Request<{ id: string }>,
 		res: Response<AuthorDetailsDto>
-	): Promise<void> {
-		try {
-			const author: AuthorDetailsDto = await AuthorsService.findOne(req.params.id);
-			res.json(author);
-		} catch (err: unknown) {
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { id } = req.params;
+		const idParsed: number = parseId(id);
+		const author: AuthorDetailsDto = await AuthorsService.findOne(idParsed);
+		res.json(author);
 	}
 
 	public static async create(
 		req: Request<never, never, CreateAuthorDto>,
 		res: Response<AuthorDetailsDto>
-	): Promise<void> {
-		try {
-			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
-			const newAuthor: AuthorDetailsDto = await AuthorsService.create(
-				req.body,
-				req.files
-			);
-			res.json(newAuthor);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+	) {
+		const { body } = req;
+		const newAuthor: AuthorDetailsDto = await AuthorsService.create(body);
+		res.json(newAuthor);
 	}
 
 	public static async update(
 		req: Request<{ id: string }, never, UpdateAuthorDto>,
 		res: Response
-	): Promise<void> {
-		try {
-			req.files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
-			await AuthorsService.update(req.params.id, req.body, req.files);
+	) {
+		const { id } = req.params;
+		const { body } = req;
+		const idParsed: number = parseId(id);
 
-			res.sendStatus(200);
-		} catch (err: unknown) {
-			console.log(err.message);
-			res.sendStatus(400);
-		}
-		return;
+		await AuthorsService.update(idParsed, body);
+
+		res.sendStatus(HttpCode.OK);
 	}
 
-	public static async delete(
-		req: Request<{ id: string }>,
-		res: Response
-	): Promise<void> {
-		try {
-			await AuthorsService.delete(req.params.id);
-			res.sendStatus(200);
-		} catch (err: unknown) {
-			res.sendStatus(400);
-		}
-		return;
+	public static async uploadImage(req: Request<{ id: string }>, res: Response) {
+		const { id } = req.params;
+		let { file } = req;
+		const idParsed: number = parseId(id);
+		file = file as Express.Multer.File;
+		await AuthorsService.uploadImage(idParsed, file);
+
+		res.sendStatus(HttpCode.OK);
+	}
+
+	public static async delete(req: Request<{ id: string }>, res: Response) {
+		const { id } = req.params;
+		const idParsed: number = parseId(id);
+		await AuthorsService.delete(idParsed);
+		res.sendStatus(HttpCode.OK);
 	}
 }
 

@@ -1,8 +1,6 @@
 import { ParsedQs } from 'qs';
 
-interface UserFiltersDto extends ParsedQs {
+export interface UserFiltersDto extends ParsedQs {
 	searchUsername?: string;
-	roleIds?: number[];
+	roleIds?: string[];
 }
-
-export default UserFiltersDto;

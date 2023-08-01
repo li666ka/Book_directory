@@ -5,6 +5,10 @@ import path from 'path';
 
 export const STATIC_DIR = `uploads`;
 
+export const BOOK_IMAGE_FIELD = 'book-image';
+export const BOOK_FILE_FIELD = 'book-file';
+export const AUTHOR_IMAGE_FIELD = 'author-image';
+
 const storage = multer.diskStorage({
 	destination(
 		req: Request,
