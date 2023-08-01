@@ -6,10 +6,11 @@ import logger from 'morgan';
 
 import routes from './routes/_all';
 import corsOption from './configs/cors.config';
-import { STATIC_DIR } from './configs/multer.config';
+import { STATIC_DIR } from './utils/multer.util';
+import { handleError } from './middlewares/error_handling';
 
 const app: Express = express();
-const port: number = process.env.PORT;
+const port: number = Number(process.env.PORT) || 4000;
 
 app.listen(port, () => {
 	console.log(`Server is listening on port ${port}`);
@@ -27,3 +28,5 @@ app.use('/authors', routes.authors);
 app.use('/genres', routes.genres);
 app.use('/users', routes.users);
 // app.use('/statuses', routes.statuses);
+
+app.use(handleError);
