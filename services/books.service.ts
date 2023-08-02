@@ -18,18 +18,15 @@ import { BookDetailsDto } from '../controllers/books/dto/book_details.dto';
 import { CreateBookDto } from '../controllers/books/dto/create_book.dto';
 import { UpdateBookDto } from '../controllers/books/dto/update_book.dto';
 import { GenreDto } from '../controllers/genres/dto/genre.dto';
-import UsersService from './users.service';
 import { User, UserRepository } from '../models/user.model';
 
 class BooksService {
-	public static async find(
-		booksFilters: BookFiltersDtoParsed | undefined
-	): Promise<BookDto[]> {
-		if (booksFilters) await BookValidator.validateGettingAll(booksFilters);
-
+	public static async find(booksFilters: BookFiltersDtoParsed): Promise<BookDto[]> {
 		let books: Book[] = await BookRepository.getAll();
 
-		if (booksFilters) {
+		if (Object.keys(booksFilters).length !== 0) {
+			await BookValidator.validateGettingAll(booksFilters);
+
 			const { searchTitle, searchAuthorFullName, searchGenreIds } = booksFilters;
 
 			books = await this.filter(

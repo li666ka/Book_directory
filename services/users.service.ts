@@ -15,13 +15,14 @@ import { BooklistItemDto } from '../controllers/booklist_items/dto/booklist_item
 import BooklistItemsService from './booklist_items.service';
 
 class UsersService {
-	public static async find(
-		userFiltersDto: UserFiltersDtoParsed | undefined
-	): Promise<UserDto[]> {
-		if (userFiltersDto) await UserValidator.validateGettingAll(userFiltersDto);
-
+	public static async find(userFiltersDto: UserFiltersDtoParsed): Promise<UserDto[]> {
 		let users: User[] = await UserRepository.getAll();
-		if (userFiltersDto) users = this.filter(users, userFiltersDto);
+
+		if (Object.keys(userFiltersDto).length !== 0) {
+			await UserValidator.validateGettingAll(userFiltersDto);
+
+			users = this.filter(users, userFiltersDto);
+		}
 
 		const usersDto: UserDto[] = [];
 		for (const user of users) {

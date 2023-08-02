@@ -9,15 +9,11 @@ import { CreateGenreDto } from '../controllers/genres/dto/create_genre.dto';
 import { UpdateGenreDto } from '../controllers/genres/dto/update_genre.dto';
 
 class GenresService {
-	public static async find(
-		genreFiltersDto: GenreFiltersDto | undefined
-	): Promise<GenreDto[]> {
+	public static async find(genreFiltersDto: GenreFiltersDto): Promise<GenreDto[]> {
 		let genres: Genre[] = await GenreRepository.getAll();
 
-		if (genreFiltersDto) {
-			if (genreFiltersDto.searchName)
-				genres = this.filterByName(genres, genreFiltersDto.searchName);
-		}
+		const { searchName } = genreFiltersDto;
+		if (searchName) genres = this.filterByName(genres, searchName);
 
 		return genres;
 	}

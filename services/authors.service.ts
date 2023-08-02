@@ -16,17 +16,13 @@ import { UpdateAuthorDto } from '../controllers/authors/dto/update_author.dto';
 import { STATIC_DIR } from '../utils/multer.util';
 
 class AuthorsService {
-	public static async find(
-		authorsFilters: AuthorsFiltersDto | undefined
-	): Promise<AuthorDto[]> {
+	public static async find(authorsFilters: AuthorsFiltersDto): Promise<AuthorDto[]> {
 		let authors: Author[] = await AuthorRepository.getAll();
 
-		if (authorsFilters) {
-			const { searchFullName } = authorsFilters;
+		const { searchFullName } = authorsFilters;
 
-			if (searchFullName) {
-				authors = await this.filterByFullName(authors, searchFullName);
-			}
+		if (searchFullName) {
+			authors = await this.filterByFullName(authors, searchFullName);
 		}
 
 		const authorsDto: AuthorDto[] = [];
