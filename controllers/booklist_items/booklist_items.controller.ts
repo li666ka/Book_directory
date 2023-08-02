@@ -6,7 +6,7 @@ import { BooklistItemDto } from './dto/booklist_item.dto';
 
 import BooklistItemsService from '../../services/booklist_items.service';
 import { HttpCode } from '../../exceptions/app_error';
-import { parseId } from '../../utils/parsing.util';
+import { parseToInt } from '../../utils/parsing.util';
 
 class BooklistItemsController {
 	public static async create(
@@ -14,8 +14,8 @@ class BooklistItemsController {
 		res: Response
 	) {
 		const { userId, bookId } = req.params;
-		const userIdParsed: number = parseId(userId),
-			bookIdParsed: number = parseId(bookId);
+		const userIdParsed: number = parseToInt(userId),
+			bookIdParsed: number = parseToInt(bookId);
 		const { body } = req;
 
 		const newBooklistItem: BooklistItemDto = await BooklistItemsService.create(
@@ -32,8 +32,8 @@ class BooklistItemsController {
 		res: Response
 	) {
 		const { userId, bookId } = req.params;
-		const userIdParsed: number = parseId(userId),
-			bookIdParsed: number = parseId(bookId);
+		const userIdParsed: number = parseToInt(userId),
+			bookIdParsed: number = parseToInt(bookId);
 		const { body } = req;
 		await BooklistItemsService.update(userIdParsed, bookIdParsed, body);
 		res.sendStatus(HttpCode.OK);
@@ -44,8 +44,8 @@ class BooklistItemsController {
 		res: Response
 	) {
 		const { userId, bookId } = req.params;
-		const userIdParsed: number = parseId(userId),
-			bookIdParsed: number = parseId(bookId);
+		const userIdParsed: number = parseToInt(userId),
+			bookIdParsed: number = parseToInt(bookId);
 		await BooklistItemsService.delete(userIdParsed, bookIdParsed);
 		res.sendStatus(HttpCode.OK);
 	}
