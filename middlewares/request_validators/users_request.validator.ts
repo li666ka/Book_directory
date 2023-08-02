@@ -25,10 +25,6 @@ class UsersRequestValidator {
 
 	private static validateGetAll(req: Request, res: Response, next: any) {
 		const { query } = req;
-		if (Object.keys(query).length === 0) {
-			next();
-			return;
-		}
 		if (!isUserFiltersDto(query))
 			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect UserFiltersDto');
 

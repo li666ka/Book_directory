@@ -31,10 +31,9 @@ class BooksRequestValidator {
 
 	private static validateGetAll(req: Request, res: Response, next: any) {
 		const { query } = req;
-		if (query) {
-			if (!isBookFiltersDto(query))
-				throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect BookFiltersDto');
-		}
+		if (!isBookFiltersDto(query))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect BookFiltersDto');
+
 		next();
 	}
 

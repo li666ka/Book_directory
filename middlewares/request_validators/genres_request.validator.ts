@@ -25,10 +25,8 @@ class GenresRequestValidator {
 
 	private static validateGetAll(req: Request, res: Response, next: any) {
 		const { query } = req;
-		if (query) {
-			if (!isGenreFiltersDto(query))
-				throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect GenreFiltersDto');
-		}
+		if (!isGenreFiltersDto(query))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect GenreFiltersDto');
 		next();
 	}
 

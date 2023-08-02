@@ -29,10 +29,8 @@ class AuthorsRequestValidator {
 
 	private static validateGetAll(req: Request, res: Response, next: any) {
 		const { query } = req;
-		if (query) {
-			if (!isAuthorsFiltersDto(query))
-				throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect AuthorsFiltersDto');
-		}
+		if (!isAuthorsFiltersDto(query))
+			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect AuthorsFiltersDto');
 		next();
 	}
 
