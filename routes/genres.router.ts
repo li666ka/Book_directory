@@ -6,7 +6,7 @@ import { validate } from '../middlewares/validation';
 const router: Router = Router();
 
 router.get('/', validate('genres-get-all'), GenresController.getAll);
-router.get('/', GenresController.get);
+router.get('/:id', GenresController.get);
 router.post(
 	'/',
 	authorize(false, 'admin', 'moderator'),
