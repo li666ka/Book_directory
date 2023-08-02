@@ -174,5 +174,25 @@ VALUES ('planned'),
 
 INSERT INTO users (role_id, username, password, created_at)
 VALUES (3, 'admin', '$2b$10$A0wPUFoa9YzvbfcJCONnQujDovH3fd8/DJ0Dnle/HUAOX4.KwWDUi', '2023-01-11 00:00:00'),
-       (1, 'test_user', '$2b$10$MuhF.fcelwibTCxc.L2xFOROQufzjyZs/khKiVZBMn5BjjL79qqvS', '2023-01-18 00:00:00')
+       (1, 'user1', '$2b$10$MuhF.fcelwibTCxc.L2xFOROQufzjyZs/khKiVZBMn5BjjL79qqvS', '2023-01-18 00:00:00'),
+       (1, 'user2', '$2b$10$MuhF.fcelwibTCxc.L2xFOROQufzjyZs/khKiVZBMn5BjjL79qqvS', '2023-01-18 00:00:00')
+;
+
+INSERT INTO booklist_items (user_id, book_id, status_id)
+VALUES
+    -- user1
+    (2, 7, 1),
+    (2, 8, 5),
+    -- user 2
+    (3, 9, 2),
+    (3, 11, 4)
+;
+
+INSERT INTO reviews (user_id, book_id, score, comment, created_at)
+VALUES
+    -- user1
+    (2, 8, 8, 'Love King and his horrors', '2023-01-11 00:00:00'),
+    -- user 2
+    (3, 9, 7, 'Feel so upset', '2023-01-11 00:00:00'),
+    (3, 11, 10, null, '2023-01-11 00:00:00')
 ;
