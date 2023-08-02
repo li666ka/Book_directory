@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import AuthorsService from '../../services/authors.service';
-import { parseId } from '../../utils/parsing.util';
+import { parseToInt } from '../../utils/parsing.util';
 import { HttpCode } from '../../exceptions/app_error';
 import { AuthorsFiltersDto } from './dto/authors_filters.dto';
 import { AuthorDto } from './dto/author.dto';
@@ -11,7 +11,7 @@ import { UpdateAuthorDto } from './dto/update_author.dto';
 
 class AuthorsController {
 	public static async getAll(
-		req: Request<never, never, never, AuthorsFiltersDto | undefined>,
+		req: Request<never, never, never, AuthorsFiltersDto>,
 		res: Response<AuthorDto[]>
 	) {
 		const { query } = req;
@@ -24,7 +24,7 @@ class AuthorsController {
 		res: Response<AuthorDetailsDto>
 	) {
 		const { id } = req.params;
-		const idParsed: number = parseId(id);
+		const idParsed: number = parseToInt(id);
 		const author: AuthorDetailsDto = await AuthorsService.findOne(idParsed);
 		res.json(author);
 	}
@@ -44,7 +44,7 @@ class AuthorsController {
 	) {
 		const { id } = req.params;
 		const { body } = req;
-		const idParsed: number = parseId(id);
+		const idParsed: number = parseToInt(id);
 
 		await AuthorsService.update(idParsed, body);
 
@@ -54,7 +54,7 @@ class AuthorsController {
 	public static async uploadImage(req: Request<{ id: string }>, res: Response) {
 		const { id } = req.params;
 		let { file } = req;
-		const idParsed: number = parseId(id);
+		const idParsed: number = parseToInt(id);
 		file = file as Express.Multer.File;
 		await AuthorsService.uploadImage(idParsed, file);
 
@@ -63,7 +63,7 @@ class AuthorsController {
 
 	public static async delete(req: Request<{ id: string }>, res: Response) {
 		const { id } = req.params;
-		const idParsed: number = parseId(id);
+		const idParsed: number = parseToInt(id);
 		await AuthorsService.delete(idParsed);
 		res.sendStatus(HttpCode.OK);
 	}
