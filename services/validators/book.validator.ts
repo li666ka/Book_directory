@@ -14,9 +14,7 @@ class BookValidator {
 	 * Changes BookFiltersDto object (parse searchGenreIds to number[]).
 	 * @param booksFiltersDto
 	 */
-	public static async validateGettingAll(
-		booksFiltersDto: BookFiltersDtoParsed
-	): Promise<void> {
+	public static async validateGettingAll(booksFiltersDto: BookFiltersDtoParsed) {
 		if (!booksFiltersDto) return;
 
 		const { searchGenreIds } = booksFiltersDto;
