@@ -6,9 +6,11 @@ import { UpdateBookDto } from '../controllers/books/dto/update_book.dto';
 export function isBookFiltersDto(input: any): input is BookFiltersDto {
 	return (
 		isObject(input) &&
-		(('searchTitle' in input && isString(input.searchTitle)) ||
-			('searchAuthorFullName' in input && isString(input.searchAuthorFullName)) ||
-			('searchGenreIds' in input && isStringArray(input.searchGenreIds)))
+		(('searchTitle' in input ? isString(input.searchTitle) : true) ||
+			('searchAuthorFullName' in input
+				? isString(input.searchAuthorFullName)
+				: true) ||
+			('searchGenreIds' in input ? isStringArray(input.searchGenreIds) : true))
 	);
 }
 

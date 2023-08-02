@@ -8,7 +8,7 @@ export function isCreateGenreDto(input: any): input is CreateGenreDto {
 }
 
 export function isGenreFiltersDto(input: any): input is GenreFiltersDto {
-	return isObject(input) && 'searchName' in input && isString(input.searchName);
+	return isObject(input) && ('searchName' in input ? isString(input.searchName) : true);
 }
 
 export function isUpdateGenreDto(input: any): input is UpdateGenreDto {

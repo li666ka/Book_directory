@@ -6,8 +6,10 @@ import { UpdateAuthorDto } from '../controllers/authors/dto/update_author.dto';
 export function isAuthorsFiltersDto(
 	input: AuthorsFiltersDto
 ): input is AuthorsFiltersDto {
-	const { searchFullName } = input;
-	return isObject(input) && (searchFullName ? isString(searchFullName) : true);
+	return (
+		isObject(input) &&
+		('searchFullName' in input ? isString(input.searchFullName) : true)
+	);
 }
 
 export function isCreateAuthorDto(input: any): input is CreateAuthorDto {

@@ -8,8 +8,8 @@ import { UpdateUserRoleDto } from '../controllers/users/dto/update_user_role.dto
 export function isUserFiltersDto(input: any): input is UserFiltersDto {
 	return (
 		isObject(input) &&
-		(('searchUsername' in input && isString(input.searchUsername)) ||
-			('roleIds' in input && isStringArray(input.roleIds)))
+		(('searchUsername' in input ? isString(input.searchUsername) : true) ||
+			('roleIds' in input ? isStringArray(input.roleIds) : true))
 	);
 }
 
