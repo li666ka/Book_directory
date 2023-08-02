@@ -18,9 +18,9 @@ export class ReviewRepository {
 		return rows;
 	}
 
-	public static async get(bookId: number, userId: number): Promise<Review | undefined> {
+	public static async get(userId: number, bookId: number): Promise<Review | undefined> {
 		const query: string = ReviewsQueries.Get;
-		const values: any[] = [bookId, userId];
+		const values: any[] = [userId, bookId];
 		const [rows] = await DB_CONNECTION.promise().query<Review[]>(query, values);
 		return rows[0];
 	}
@@ -39,7 +39,7 @@ export class ReviewRepository {
 
 	public static async update(
 		newScore: number,
-		newComment: string,
+		newComment: string | null,
 		userId: number,
 		bookId: number
 	): Promise<void> {
