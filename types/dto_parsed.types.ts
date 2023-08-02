@@ -8,3 +8,10 @@ export type BookFiltersDtoParsed = Omit<BookFiltersDto, 'searchGenreIds'> & {
 export type UserFiltersDtoParsed = Omit<UserFiltersDto, 'roleIds'> & {
 	roleIds?: Set<number>;
 };
+
+export type ReviewFiltersDtoParsed = {
+	userId?: number;
+	bookId?: number;
+	scoreMin?: number;
+	scoreMax?: number;
+};
