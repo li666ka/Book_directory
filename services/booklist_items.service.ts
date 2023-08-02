@@ -11,6 +11,8 @@ import { User, UserRepository } from '../models/user.model';
 import BooksService from './books.service';
 import BooklistItemsValidator from './validators/booklist_items.validator';
 import { AppError, HttpCode } from '../exceptions/app_error';
+import { ReviewRepository } from '../models/review.model';
+import ReviewsService from './reviews.service';
 
 class BooklistItemsService {
 	public static async create(
@@ -59,6 +61,7 @@ class BooklistItemsService {
 		const user = (await UserRepository.get(user_id)) as User;
 		const book = (await BookRepository.get(book_id)) as Book;
 		const status = (await StatusRepository.get(status_id)) as Status;
+		const review = await ReviewRepository.get(user_id, book_id);
 
 		const bookDto: BookDto = await BooksService.parseToDto(book);
 
@@ -72,7 +75,13 @@ class BooklistItemsService {
 				imageFile: bookDto.imageFile,
 			},
 			status: { id: status.id, name: status.name },
-			review: null, // todo
+			review: review
+				? {
+						score: review.score,
+						comment: review.comment,
+						createdAt: review.created_at,
+				  }
+				: null,
 		} as BooklistItemDto;
 	}
 }
