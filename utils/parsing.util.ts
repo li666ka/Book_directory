@@ -1,30 +1,31 @@
-import { BookFiltersDtoParsed, UserFiltersDtoParsed } from '../types/dto_parsed.types';
+import {
+	BookFiltersDtoParsed,
+	ReviewFiltersDtoParsed,
+	UserFiltersDtoParsed,
+} from '../types/dto_parsed.types';
 import { isInteger, isIntSet } from '../guards/_base.guards';
 import { AppError, HttpCode } from '../exceptions/app_error';
 import { BookFiltersDto } from '../controllers/books/dto/book_filters.dto';
 import { UserFiltersDto } from '../controllers/users/dto/user_filters.dto';
+import { ReviewFiltersDto } from '../controllers/reviews/dto/review_filters.dto';
 
-export function parseId(id: string): number {
-	const idParsed = parseToInt(id);
-	if (isNaN(idParsed)) throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect id');
-	return idParsed;
-}
-/**
- * Parses value by two approaches, compares results for checking has string int value or not.
- * @param value
- * Returns result or NaN.
- */
 export function parseToInt(value: string): number {
 	const parsedToNumber = Number(value); // can be `float` or parsed by another radix
 	const parsedToInt = parseInt(value, 10);
-	return isInteger(parsedToNumber) && parsedToInt === parsedToNumber
-		? parsedToInt
-		: NaN;
+	const parsed =
+		isInteger(parsedToNumber) && parsedToInt === parsedToNumber ? parsedToInt : NaN;
+
+	if (isNaN(parsed))
+		throw new AppError(HttpCode.BAD_REQUEST, 'Can`t be parsed to integer');
+	return parsed;
 }
 
 export function parseBookFiltersDto(
 	bookFiltersDto: BookFiltersDto
 ): BookFiltersDtoParsed {
+	if (Object.keys(bookFiltersDto).length === 0)
+		return bookFiltersDto as BookFiltersDtoParsed;
+
 	const { searchGenreIds: genreIds } = bookFiltersDto;
 	if (!genreIds) return bookFiltersDto as BookFiltersDtoParsed;
 
@@ -47,6 +48,9 @@ export function parseBookFiltersDto(
 export function parseUserFiltersDto(
 	userFiltersDto: UserFiltersDto
 ): UserFiltersDtoParsed {
+	if (Object.keys(userFiltersDto).length === 0)
+		return userFiltersDto as UserFiltersDtoParsed;
+
 	const { roleIds } = userFiltersDto;
 
 	let roleIdsParsed = undefined;
@@ -64,4 +68,16 @@ export function parseUserFiltersDto(
 	const parsed = userFiltersDto as UserFiltersDtoParsed;
 	parsed.roleIds = roleIdsParsed;
 	return parsed;
+}
+
+export function parseReviewFiltersDto(
+	reviewFiltersDto: ReviewFiltersDto
+): ReviewFiltersDtoParsed {
+	const { userId, bookId, scoreMin, scoreMax } = reviewFiltersDto;
+	return {
+		userId: userId ? parseToInt(userId) : undefined,
+		bookId: bookId ? parseToInt(bookId) : undefined,
+		scoreMin: scoreMin ? parseToInt(scoreMin) : undefined,
+		scoreMax: scoreMax ? parseToInt(scoreMax) : undefined,
+	};
 }
