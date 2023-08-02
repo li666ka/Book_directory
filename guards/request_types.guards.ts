@@ -4,6 +4,7 @@ import {
 	BooklistItemsRequest,
 	BooksRequest,
 	GenresRequest,
+	ReviewsRequest,
 	UsersRequest,
 } from '../types/request.types';
 
@@ -64,5 +65,15 @@ export function isGenresRequest(input: any): input is GenresRequest {
 		input === 'genres-create' ||
 		input === 'genres-update' ||
 		input === 'genres-delete'
+	);
+}
+
+export function isReviewsRequest(input: any): input is ReviewsRequest {
+	return (
+		input === 'reviews-get-all' ||
+		input === 'reviews-get' ||
+		input === 'reviews-create' ||
+		input === 'reviews-update' ||
+		input === 'reviews-delete'
 	);
 }

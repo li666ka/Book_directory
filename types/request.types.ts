@@ -4,7 +4,8 @@ export type RequestType =
 	| BooklistItemsRequest
 	| BooksRequest
 	| GenresRequest
-	| UsersRequest;
+	| UsersRequest
+	| ReviewsRequest;
 
 export type AuthRequest =
 	| 'auth-create-user'
@@ -47,3 +48,10 @@ export type UsersRequest =
 	| 'users-update'
 	| 'users-update-role'
 	| 'users-delete';
+
+export type ReviewsRequest =
+	| 'reviews-get-all'
+	| 'reviews-get'
+	| 'reviews-create'
+	| 'reviews-update'
+	| 'reviews-delete';

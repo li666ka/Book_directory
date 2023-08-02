@@ -7,7 +7,7 @@ import AuthorsRequestValidator from './request_validators/authors_request.valida
 import BooklistItemsRequestValidator from './request_validators/booklist_items_request.validator';
 import GenresRequestValidator from './request_validators/genres_request.validator';
 
-import { RequestType } from '../types/request.type';
+import { RequestType } from '../types/request.types';
 
 import {
 	isAuthorsRequest,
@@ -15,8 +15,10 @@ import {
 	isBooklistItemsRequest,
 	isBooksRequest,
 	isGenresRequest,
+	isReviewsRequest,
 	isUsersRequest,
 } from '../guards/request_types.guards';
+import ReviewsRequestValidator from './request_validators/reviews_request.validator';
 
 export function validate(
 	req: RequestType
@@ -27,6 +29,7 @@ export function validate(
 	if (isBooksRequest(req)) return BooksRequestValidator.validate(req);
 	if (isUsersRequest(req)) return UsersRequestValidator.validate(req);
 	if (isGenresRequest(req)) return GenresRequestValidator.validate(req);
+	if (isReviewsRequest(req)) return ReviewsRequestValidator.validate(req);
 
 	throw new Error('Validator is not defined');
 }
