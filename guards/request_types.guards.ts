@@ -5,6 +5,7 @@ import {
 	BooksRequest,
 	GenresRequest,
 	ReviewsRequest,
+	StatusesRequest,
 	UsersRequest,
 } from '../types/request.types';
 
@@ -75,5 +76,15 @@ export function isReviewsRequest(input: any): input is ReviewsRequest {
 		input === 'reviews-create' ||
 		input === 'reviews-update' ||
 		input === 'reviews-delete'
+	);
+}
+
+export function isStatusesRequest(input: any): input is StatusesRequest {
+	return (
+		input === 'statuses-get-all' ||
+		input === 'statuses-get' ||
+		input === 'statuses-create' ||
+		input === 'statuses-update' ||
+		input === 'statuses-delete'
 	);
 }
