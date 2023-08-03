@@ -3,7 +3,7 @@ import authors from './authors.router';
 import genres from './genres.router';
 import users from './users.router';
 import reviews from './reviews.router';
-// import statuses from './statuses.router';
+import statuses from './statuses.router';
 
 export default {
 	books,
@@ -11,5 +11,5 @@ export default {
 	genres,
 	users,
 	reviews,
-	// statuses
+	statuses,
 };

@@ -28,6 +28,6 @@ app.use('/authors', routes.authors);
 app.use('/genres', routes.genres);
 app.use('/users', routes.users);
 app.use('/reviews', routes.reviews);
-// app.use('/statuses', routes.statuses);
+app.use('/statuses', routes.statuses);
 
 app.use(handleError);

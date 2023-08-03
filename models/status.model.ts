@@ -5,7 +5,7 @@ import StatusesQueries from '../db/queries/statuses.queries';
 
 export interface Status extends RowDataPacket {
 	id: number;
-	name: number;
+	name: string;
 }
 
 export class StatusRepository {
