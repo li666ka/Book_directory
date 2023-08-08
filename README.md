@@ -2,6 +2,11 @@
 
 ## About
 
+## Technology Stack
+ - Node.js
+ - Typescript
+ - MySQl
+
 ## MySQL Database
 
 ### Installation
