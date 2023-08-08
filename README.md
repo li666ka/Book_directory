@@ -5,7 +5,8 @@
 ## Technology Stack
  - Node.js
  - Typescript
- - MySQl
+ - MySQL
+ - Docker
 
 ## MySQL Database
 
