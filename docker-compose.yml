@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mysql
+    container_name: db
+    ports:
+      - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+    volumes:
+      - ./db/scripts:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+
+  app:
+    image: node:18
+    container_name: app
+    command: sh -c "npm install && npm start"
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
+    environment:
+      PORT: $NODE_DOCKER_PORT
+      MYSQL_PORT: $MYSQL_PORT
+      MYSQL_HOST: $MYSQL_DOCKER_HOST
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
