@@ -2,6 +2,8 @@
 
 ## About
 
+Booklist is the management book system for tracking progress and sharing reviews. In your own booklist, you can organize books, set statuses and leave reviews.
+
 ## Technology Stack
  - Node.js
  - Typescript
