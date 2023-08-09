@@ -2,6 +2,12 @@
 
 ## About
 
+## Technology Stack
+ - Node.js
+ - Typescript
+ - MySQL
+ - Docker
+
 ## MySQL Database
 
 ### Installation
@@ -15,7 +21,13 @@
     > docker run --name <container-name> -p 8080:3306 -e MYSQL_ROOT_PASSWORD=<password> -d mysql
     ```
 
-2. Run new container *book_directory* in Docker.
+   For example, my own:
+   
+   container-name: _library_
+   
+   password: _0000_
+
+3. Run new container  _library_ in Docker.
 
 ## API
 
@@ -26,6 +38,7 @@
 `GET /authors` - returns all authors <br />
 `GET /authors/:id` - returns author <br />
 `POST /authors/` - creates author <br />
+`POST /authors/:id/image` - uploads author image <br />
 `PUT /authors/:id` - updates author <br />
 `DELETE /authors/:id` - deletes author <br />
 
@@ -34,6 +47,8 @@
 `GET /books` - returns all books <br />
 `GET /books/:id` - returns book <br />
 `POST /books/` - creates book <br />
+`POST /books/:id/image` - uploads book image <br />
+`POST /books/:id/file` - uploads book file <br />
 `PUT /books/:id` - updates book <br />
 `DELETE /books/:id` - deletes book <br />
 
@@ -64,20 +79,20 @@
 ### Users
 
 `GET /users` - returns all users <br />
-`GET /users/:id` - returns user <br />
+`GET /users/:userId` - returns user <br />
 `POST /users/signup` - creates user <br />
 `POST /users/signup/moderator` - creates moderator <br />
 `POST /users/signup/admin` - creates administrator <br />
 `POST /users/signin` - returns JWT <br />
-`PUT /users/:id` - updates user <br />
-`PATCH /users/:id/role` - update user role <br />
-`DELETE /users/:id` - deletes user <br />
+`PUT /users/:userId` - updates user <br />
+`PATCH /users/:userId/role` - update user role <br />
+`DELETE /users/:userId` - deletes user <br />
 
 `POST /users/:userId/books/:bookId` - adds book to user's booklist <br />
 `PUT /users/:userId/books/:bookId` - updates booklist item <br />
 `DELETE /users/:userId/books/:bookId` - removes item from booklist <br />
 
-### Book Reviews
+### Reviews
 
 `GET /reviews` - returns all reviews <br />
 `GET /reviews/:userId/:bookId` - returns book review <br />
