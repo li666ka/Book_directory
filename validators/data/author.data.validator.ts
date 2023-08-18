@@ -9,7 +9,7 @@ import { UpdateAuthorDto } from '../../controllers/authors/dto/update_author.dto
 import { CreateAuthorDto } from '../../controllers/authors/dto/create_author.dto';
 import { AppError, HttpCode } from '../../exceptions/app_error';
 
-class AuthorValidator {
+class AuthorDataValidator {
 	/**
 	 * Validates input author id.
 	 * @param id
@@ -105,4 +105,4 @@ class AuthorValidator {
 	}
 }
 
-export default AuthorValidator;
+export default AuthorDataValidator;

@@ -3,7 +3,7 @@ import { CreateGenreDto } from '../../controllers/genres/dto/create_genre.dto';
 import { UpdateGenreDto } from '../../controllers/genres/dto/update_genre.dto';
 import { AppError, HttpCode } from '../../exceptions/app_error';
 
-class GenreValidator {
+class GenreDataValidator {
 	/**
 	 * Validates input id.
 	 * @param id
@@ -84,4 +84,4 @@ class GenreValidator {
 	}
 }
 
-export default GenreValidator;
+export default GenreDataValidator;

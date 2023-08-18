@@ -5,7 +5,7 @@ import { UpdateUserDto } from '../../controllers/users/dto/update_user.dto';
 import { UpdateUserRoleDto } from '../../controllers/users/dto/update_user_role.dto';
 import { AppError, HttpCode } from '../../exceptions/app_error';
 
-class UserValidator {
+class UserDataValidator {
 	/**
 	 * Validates UserFiltersDto object.
 	 * Changes UserFiltersDto object (parse roleIds to number[]).
@@ -93,4 +93,4 @@ class UserValidator {
 	}
 }
 
-export default UserValidator;
+export default UserDataValidator;

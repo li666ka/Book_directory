@@ -7,7 +7,7 @@ import { LoginUserDto } from '../../controllers/auth/dto/login_user.dto';
 import { Role as RoleName } from '../../types/role.type';
 import { AppError, HttpCode } from '../../exceptions/app_error';
 
-class AuthValidator {
+class AuthDataValidator {
 	/**
 	 * Validates data in CreateUserDto object and Role.
 	 * @param createUserDto
@@ -65,4 +65,4 @@ class AuthValidator {
 	}
 }
 
-export default AuthValidator;
+export default AuthDataValidator;

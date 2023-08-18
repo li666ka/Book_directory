@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 
-import AuthRequestValidator from './request_validators/auth_request.validator';
-import UsersRequestValidator from './request_validators/users_request.validator';
-import BooksRequestValidator from './request_validators/books_request.validator';
-import AuthorsRequestValidator from './request_validators/authors_request.validator';
-import BooklistItemsRequestValidator from './request_validators/booklist_items_request.validator';
-import GenresRequestValidator from './request_validators/genres_request.validator';
+import AuthRequestValidator from '../validators/requests/auth.request.validator';
+import UsersRequestValidator from '../validators/requests/users.request.validator';
+import BooksRequestValidator from '../validators/requests/books.request.validator';
+import AuthorsRequestValidator from '../validators/requests/authors.request.validator';
+import BooklistItemsRequestValidator from '../validators/requests/booklist-items.request.validator';
+import GenresRequestValidator from '../validators/requests/genres.request.validator';
 
 import { RequestType } from '../types/request.types';
 
@@ -19,8 +19,8 @@ import {
 	isStatusesRequest,
 	isUsersRequest,
 } from '../guards/request_types.guards';
-import ReviewsRequestValidator from './request_validators/reviews_request.validator';
-import StatusesRequestValidator from './request_validators/statuses_request.validator';
+import ReviewsRequestValidator from '../validators/requests/reviews.request.validator';
+import StatusesRequestValidator from '../validators/requests/statuses.request.validator';
 
 export function validate(
 	req: RequestType

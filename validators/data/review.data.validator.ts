@@ -6,8 +6,9 @@ import { Review, ReviewRepository } from '../../models/review.model';
 import { CreateReviewDto } from '../../controllers/reviews/dto/create_review.dto';
 import { BooklistItem, BooklistItemRepository } from '../../models/booklist_item.model';
 import { UpdateReviewDto } from '../../controllers/reviews/dto/update_review.dto';
+import { Status, StatusRepository } from '../../models/status.model';
 
-class ReviewValidator {
+class ReviewDataValidator {
 	private static readonly MIN_SCORE = 0;
 	private static readonly MAX_SCORE = 10;
 
@@ -87,6 +88,16 @@ class ReviewValidator {
 				`No booklist item with book id ${bookId} and user id ${userId} for creating review`
 			);
 
+		const status: string = (
+			(await StatusRepository.get(booklistItem.status_id)) as Status
+		).name;
+
+		// if (status === )
+		// 	throw new AppError(
+		// 		HttpCode.BAD_REQUEST,
+		// 		`No status with id ${booklistItem.status_id}`
+		// 	);
+
 		const { score } = createReviewDto;
 		try {
 			this.validateScore(score);
@@ -132,4 +143,4 @@ class ReviewValidator {
 	}
 }
 
-export default ReviewValidator;
+export default ReviewDataValidator;

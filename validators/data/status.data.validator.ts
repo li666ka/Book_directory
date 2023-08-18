@@ -3,7 +3,7 @@ import { AppError, HttpCode } from '../../exceptions/app_error';
 import { CreateStatusDto } from '../../controllers/statuses/dto/create_status.dto';
 import { UpdateStatusDto } from '../../controllers/statuses/dto/update_status.dto';
 
-class StatusValidator {
+class StatusDataValidator {
 	public static async validateGetting(id: number): Promise<Status> {
 		const status: Status | undefined = await StatusRepository.get(id);
 		if (!status)
@@ -41,4 +41,4 @@ class StatusValidator {
 	}
 }
 
-export default StatusValidator;
+export default StatusDataValidator;

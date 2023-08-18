@@ -6,7 +6,7 @@ import { Status, StatusRepository } from '../../models/status.model';
 import { BooklistItem, BooklistItemRepository } from '../../models/booklist_item.model';
 import { UpdateBooklistItemDto } from '../../controllers/booklist_items/dto/update_booklist_item.dto';
 
-class BooklistItemsValidator {
+class BooklistItemDataValidator {
 	public static async validateCreating(
 		userId: number,
 		bookId: number,
@@ -89,4 +89,4 @@ class BooklistItemsValidator {
 	}
 }
 
-export default BooklistItemsValidator;
+export default BooklistItemDataValidator;
