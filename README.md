@@ -2,32 +2,19 @@
 
 ## About
 
+Booklist is the management book system for tracking progress and sharing reviews. In your own booklist, you can organize books, set statuses and leave reviews.
+
 ## Technology Stack
  - Node.js
  - Typescript
  - MySQL
  - Docker
 
-## MySQL Database
-
-### Installation
-
-1. Open your cmd and input next commands:
-
-    ```
-    > docker pull mysql
-    ```
-    ```
-    > docker run --name <container-name> -p 8080:3306 -e MYSQL_ROOT_PASSWORD=<password> -d mysql
-    ```
-
-   For example, my own:
-   
-   container-name: _library_
-   
-   password: _0000_
-
-3. Run new container  _library_ in Docker.
+## Docker Compose
+```
+ > docker-compose up -d 
+```
+You can change environment variables in `.env` file.
 
 ## API
 
