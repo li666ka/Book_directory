@@ -22,7 +22,7 @@ class AuthService {
 		);
 
 		const { username, password } = createUserDto;
-		const hash = bcrypt.hashSync(password, 10);
+		const hash = await bcrypt.hash(password, 10);
 
 		const okPacket: OkPacket = await UserRepository.create(roleId, username, hash);
 		const newUser = (await UserRepository.get(okPacket.insertId)) as User;
@@ -38,8 +38,8 @@ class AuthService {
 
 		const { password } = loginUserDto;
 
-		const isPasswordCorrect: boolean = bcrypt.compareSync(password, user.password);
-		if (!isPasswordCorrect) throw new Error('Incorrect password');
+		const match: boolean = await bcrypt.compare(password, user.password);
+		if (!match) throw new Error('Incorrect password');
 
 		const role: string = ((await RoleRepository.get(user.role_id)) as Role).name;
 
