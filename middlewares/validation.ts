@@ -18,7 +18,7 @@ import {
 	isReviewsRequest,
 	isStatusesRequest,
 	isUsersRequest,
-} from '../guards/request_types.guards';
+} from '../guards/request.guards';
 import ReviewsRequestValidator from '../validators/requests/reviews.request.validator';
 import StatusesRequestValidator from '../validators/requests/statuses.request.validator';
 

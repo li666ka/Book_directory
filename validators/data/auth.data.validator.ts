@@ -1,11 +1,11 @@
 import { User, UserRepository } from '../../models/user.model';
 import { RoleRepository } from '../../models/role.model';
 
-import { CreateUserDto } from '../../controllers/auth/dto/create_user.dto';
-import { LoginUserDto } from '../../controllers/auth/dto/login_user.dto';
+import { CreateUserDto } from '../../controllers/auth/dto/create-user.dto';
+import { LoginUserDto } from '../../controllers/auth/dto/login-user.dto';
 
 import { Role as RoleName } from '../../types/role.type';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class AuthDataValidator {
 	/**

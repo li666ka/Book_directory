@@ -6,17 +6,20 @@ import { User, UserRepository } from '../models/user.model';
 import { Role, RoleRepository } from '../models/role.model';
 
 import { JWT_SECRET } from '../utils/jwt.util';
-import AuthValidator from './validators/auth.validator';
+import AuthDataValidator from '../validators/data/auth.data.validator';
 import { Role as RoleName } from '../types/role.type';
-import { CreateUserDto } from '../controllers/auth/dto/create_user.dto';
-import { LoginUserDto } from '../controllers/auth/dto/login_user.dto';
+import { CreateUserDto } from '../controllers/auth/dto/create-user.dto';
+import { LoginUserDto } from '../controllers/auth/dto/login-user.dto';
 
 class AuthService {
 	public static async register(
 		createUserDto: CreateUserDto,
 		role: RoleName
 	): Promise<string> {
-		const roleId: number = await AuthValidator.validateCreating(createUserDto, role);
+		const roleId: number = await AuthDataValidator.validateCreating(
+			createUserDto,
+			role
+		);
 
 		const { username, password } = createUserDto;
 		const hash = bcrypt.hashSync(password, 10);
@@ -31,7 +34,7 @@ class AuthService {
 	}
 
 	public static async login(loginUserDto: LoginUserDto): Promise<string> {
-		const user = await AuthValidator.validateLogin(loginUserDto);
+		const user = await AuthDataValidator.validateLogin(loginUserDto);
 
 		const { password } = loginUserDto;
 

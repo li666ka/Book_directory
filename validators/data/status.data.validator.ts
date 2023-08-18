@@ -1,7 +1,7 @@
 import { Status, StatusRepository } from '../../models/status.model';
-import { AppError, HttpCode } from '../../exceptions/app_error';
-import { CreateStatusDto } from '../../controllers/statuses/dto/create_status.dto';
-import { UpdateStatusDto } from '../../controllers/statuses/dto/update_status.dto';
+import { AppError, HttpCode } from '../../exceptions/app-error';
+import { CreateStatusDto } from '../../controllers/statuses/dto/create-status.dto';
+import { UpdateStatusDto } from '../../controllers/statuses/dto/update-status.dto';
 
 class StatusDataValidator {
 	public static async validateGetting(id: number): Promise<Status> {

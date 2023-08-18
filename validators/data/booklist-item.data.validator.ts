@@ -1,10 +1,10 @@
-import { CreateBooklistItemDto } from '../../controllers/booklist_items/dto/create_booklist_item.dto';
+import { CreateBooklistItemDto } from '../../controllers/booklist-items/dto/create-booklist-item.dto';
 import { User, UserRepository } from '../../models/user.model';
 import { Book, BookRepository } from '../../models/book.model';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 import { Status, StatusRepository } from '../../models/status.model';
-import { BooklistItem, BooklistItemRepository } from '../../models/booklist_item.model';
-import { UpdateBooklistItemDto } from '../../controllers/booklist_items/dto/update_booklist_item.dto';
+import { BooklistItem, BooklistItemRepository } from '../../models/booklist-item.model';
+import { UpdateBooklistItemDto } from '../../controllers/booklist-items/dto/update-booklist-item.dto';
 
 class BooklistItemDataValidator {
 	public static async validateCreating(

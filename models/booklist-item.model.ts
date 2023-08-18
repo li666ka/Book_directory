@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import BooklistItemsQueries from '../db/queries/booklist_items.queries';
+import BooklistItemsQueries from '../db/queries/booklist-items.queries';
 import DB_CONNECTION from '../utils/db.util';
 
 export interface BooklistItem extends RowDataPacket {

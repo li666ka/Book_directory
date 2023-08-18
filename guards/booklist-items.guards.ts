@@ -1,6 +1,6 @@
 import { isInteger, isObject } from './_base.guards';
-import { CreateBooklistItemDto } from '../controllers/booklist_items/dto/create_booklist_item.dto';
-import { UpdateBooklistItemDto } from '../controllers/booklist_items/dto/update_booklist_item.dto';
+import { CreateBooklistItemDto } from '../controllers/booklist-items/dto/create-booklist-item.dto';
+import { UpdateBooklistItemDto } from '../controllers/booklist-items/dto/update-booklist-item.dto';
 
 export function isCreateBooklistItemDto(input: any): input is CreateBooklistItemDto {
 	return isObject(input) && 'statusId' in input && isInteger(input.statusId);

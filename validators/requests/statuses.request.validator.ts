@@ -1,7 +1,7 @@
 import { StatusesRequest } from '../../types/request.types';
 import { Request, Response } from 'express';
-import { AppError, HttpCode } from '../../exceptions/app_error';
-import { isCreateStatusDto, isUpdateStatusDto } from '../../guards/statuses_dto.guards';
+import { AppError, HttpCode } from '../../exceptions/app-error';
+import { isCreateStatusDto, isUpdateStatusDto } from '../../guards/statuses.guards';
 
 class StatusesRequestValidator {
 	public static validate(req: StatusesRequest) {

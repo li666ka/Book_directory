@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import UsersController from '../controllers/users/users.controller';
 import AuthController from '../controllers/auth/auth.controller';
-import BooklistItemsController from '../controllers/booklist_items/booklist_items.controller';
+import BooklistItemsController from '../controllers/booklist-items/booklist-items.controller';
 
 import { validate } from '../middlewares/validation';
 import { authorize } from '../middlewares/authorization';

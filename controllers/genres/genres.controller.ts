@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import GenresService from '../../services/genres.service';
 
-import { HttpCode } from '../../exceptions/app_error';
+import { HttpCode } from '../../exceptions/app-error';
 import { parseToInt } from '../../utils/parsing.util';
-import { GenreFiltersDto } from './dto/genre_filters.dto';
+import { GenreFiltersDto } from './dto/genre-filters.dto';
 import { GenreDto } from './dto/genre.dto';
-import { CreateGenreDto } from './dto/create_genre.dto';
-import { UpdateGenreDto } from './dto/update_genre.dto';
+import { CreateGenreDto } from './dto/create-genre.dto';
+import { UpdateGenreDto } from './dto/update-genre.dto';
 
 class GenresController {
 	public static async getAll(

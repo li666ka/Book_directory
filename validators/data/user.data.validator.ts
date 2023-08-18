@@ -1,9 +1,9 @@
 import { Role, RoleRepository } from '../../models/role.model';
 import { User, UserRepository } from '../../models/user.model';
-import { UserFiltersDtoParsed } from '../../types/dto_parsed.types';
+import { UserFiltersDtoParsed } from '../../types/dto-parsed.types';
 import { UpdateUserDto } from '../../controllers/users/dto/update_user.dto';
 import { UpdateUserRoleDto } from '../../controllers/users/dto/update_user_role.dto';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class UserDataValidator {
 	/**

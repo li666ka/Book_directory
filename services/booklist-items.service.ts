@@ -1,16 +1,16 @@
-import { CreateBooklistItemDto } from '../controllers/booklist_items/dto/create_booklist_item.dto';
-import { UpdateBooklistItemDto } from '../controllers/booklist_items/dto/update_booklist_item.dto';
-import { BooklistItemDto } from '../controllers/booklist_items/dto/booklist_item.dto';
+import { CreateBooklistItemDto } from '../controllers/booklist-items/dto/create-booklist-item.dto';
+import { UpdateBooklistItemDto } from '../controllers/booklist-items/dto/update-booklist-item.dto';
+import { BooklistItemDto } from '../controllers/booklist-items/dto/booklist-item.dto';
 import { BookDto } from '../controllers/books/dto/book.dto';
 
-import { BooklistItem, BooklistItemRepository } from '../models/booklist_item.model';
+import { BooklistItem, BooklistItemRepository } from '../models/booklist-item.model';
 import { Status, StatusRepository } from '../models/status.model';
 import { Book, BookRepository } from '../models/book.model';
 import { User, UserRepository } from '../models/user.model';
 
 import BooksService from './books.service';
-import BooklistItemsValidator from './validators/booklist_items.validator';
-import { AppError, HttpCode } from '../exceptions/app_error';
+import BooklistItemDataValidator from '../validators/data/booklist-item.data.validator';
+import { AppError, HttpCode } from '../exceptions/app-error';
 import { ReviewRepository } from '../models/review.model';
 import ReviewsService from './reviews.service';
 
@@ -20,7 +20,7 @@ class BooklistItemsService {
 		bookId: number,
 		createBooklistItemDto: CreateBooklistItemDto
 	): Promise<BooklistItemDto> {
-		await BooklistItemsValidator.validateCreating(
+		await BooklistItemDataValidator.validateCreating(
 			userId,
 			bookId,
 			createBooklistItemDto
@@ -45,13 +45,17 @@ class BooklistItemsService {
 		bookId: number,
 		updateBooklistDto: UpdateBooklistItemDto
 	) {
-		await BooklistItemsValidator.validateUpdating(userId, bookId, updateBooklistDto);
+		await BooklistItemDataValidator.validateUpdating(
+			userId,
+			bookId,
+			updateBooklistDto
+		);
 		const { statusId } = updateBooklistDto;
 		await BooklistItemRepository.update(statusId, userId, bookId);
 	}
 
 	public static async delete(userId: number, bookId: number) {
-		await BooklistItemsValidator.validateDeleting(userId, bookId);
+		await BooklistItemDataValidator.validateDeleting(userId, bookId);
 		await BooklistItemRepository.delete(userId, bookId);
 	}
 

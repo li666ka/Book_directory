@@ -1,7 +1,7 @@
 import { isInteger, isIntSet, isObject, isString, isStringArray } from './_base.guards';
-import { BookFiltersDto } from '../controllers/books/dto/book_filters.dto';
-import { CreateBookDto } from '../controllers/books/dto/create_book.dto';
-import { UpdateBookDto } from '../controllers/books/dto/update_book.dto';
+import { BookFiltersDto } from '../controllers/books/dto/book-filters.dto';
+import { CreateBookDto } from '../controllers/books/dto/create-book.dto';
+import { UpdateBookDto } from '../controllers/books/dto/update-book.dto';
 
 export function isBookFiltersDto(input: any): input is BookFiltersDto {
 	return (

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { isCreateUserDto, isLoginUserDto } from '../../guards/users_dto.guards';
+import { isCreateUserDto, isLoginUserDto } from '../../guards/users.guards';
 import { AuthRequest } from '../../types/request.types';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class AuthRequestValidator {
 	public static validate(

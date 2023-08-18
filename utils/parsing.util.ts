@@ -2,12 +2,12 @@ import {
 	BookFiltersDtoParsed,
 	ReviewFiltersDtoParsed,
 	UserFiltersDtoParsed,
-} from '../types/dto_parsed.types';
+} from '../types/dto-parsed.types';
 import { isInteger, isIntSet } from '../guards/_base.guards';
-import { AppError, HttpCode } from '../exceptions/app_error';
-import { BookFiltersDto } from '../controllers/books/dto/book_filters.dto';
+import { AppError, HttpCode } from '../exceptions/app-error';
+import { BookFiltersDto } from '../controllers/books/dto/book-filters.dto';
 import { UserFiltersDto } from '../controllers/users/dto/user_filters.dto';
-import { ReviewFiltersDto } from '../controllers/reviews/dto/review_filters.dto';
+import { ReviewFiltersDto } from '../controllers/reviews/dto/review-filters.dto';
 
 export function parseToInt(value: string): number {
 	const parsedToNumber = Number(value); // can be `float` or parsed by another radix

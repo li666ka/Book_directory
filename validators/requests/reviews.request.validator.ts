@@ -4,8 +4,8 @@ import {
 	isCreateReviewDto,
 	isReviewFiltersDto,
 	isUpdateReviewDto,
-} from '../../guards/reviews_dto.guards';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+} from '../../guards/reviews.guards';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class ReviewsRequestValidator {
 	public static validate(req: ReviewsRequest) {

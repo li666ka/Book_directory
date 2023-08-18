@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import UsersService from '../../services/users.service';
 
 import { parseToInt, parseUserFiltersDto } from '../../utils/parsing.util';
-import { HttpCode } from '../../exceptions/app_error';
+import { HttpCode } from '../../exceptions/app-error';
 import { UserFiltersDto } from './dto/user_filters.dto';
 import { UserDto } from './dto/user.dto';
 import { UserDetailsDto } from './dto/user_details.dto';

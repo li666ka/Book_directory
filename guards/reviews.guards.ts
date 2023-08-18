@@ -1,7 +1,7 @@
-import { ReviewFiltersDto } from '../controllers/reviews/dto/review_filters.dto';
+import { ReviewFiltersDto } from '../controllers/reviews/dto/review-filters.dto';
 import { isInteger, isNull, isObject, isString } from './_base.guards';
-import { CreateReviewDto } from '../controllers/reviews/dto/create_review.dto';
-import { UpdateReviewDto } from '../controllers/reviews/dto/update_review.dto';
+import { CreateReviewDto } from '../controllers/reviews/dto/create-review.dto';
+import { UpdateReviewDto } from '../controllers/reviews/dto/update-review.dto';
 
 export function isReviewFiltersDto(input: any): input is ReviewFiltersDto {
 	return (

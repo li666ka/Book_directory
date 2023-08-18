@@ -1,11 +1,11 @@
-import { ReviewFiltersDtoParsed } from '../../types/dto_parsed.types';
+import { ReviewFiltersDtoParsed } from '../../types/dto-parsed.types';
 import { Book, BookRepository } from '../../models/book.model';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 import { User, UserRepository } from '../../models/user.model';
 import { Review, ReviewRepository } from '../../models/review.model';
-import { CreateReviewDto } from '../../controllers/reviews/dto/create_review.dto';
-import { BooklistItem, BooklistItemRepository } from '../../models/booklist_item.model';
-import { UpdateReviewDto } from '../../controllers/reviews/dto/update_review.dto';
+import { CreateReviewDto } from '../../controllers/reviews/dto/create-review.dto';
+import { BooklistItem, BooklistItemRepository } from '../../models/booklist-item.model';
+import { UpdateReviewDto } from '../../controllers/reviews/dto/update-review.dto';
 import { Status, StatusRepository } from '../../models/status.model';
 
 class ReviewDataValidator {

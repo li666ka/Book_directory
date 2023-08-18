@@ -5,9 +5,9 @@ import {
 	BOOK_FILE_FIELD,
 	BOOK_IMAGE_FIELD,
 } from '../../utils/multer.util';
-import { UpdateAuthorDto } from '../../controllers/authors/dto/update_author.dto';
-import { CreateAuthorDto } from '../../controllers/authors/dto/create_author.dto';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { UpdateAuthorDto } from '../../controllers/authors/dto/update-author.dto';
+import { CreateAuthorDto } from '../../controllers/authors/dto/create-author.dto';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class AuthorDataValidator {
 	/**

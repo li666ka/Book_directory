@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import {
 	isCreateBooklistItemDto,
 	isUpdateBooklistItemDto,
-} from '../../guards/booklist_items.guards';
+} from '../../guards/booklist-items.guards';
 import { BooklistItemsRequest } from '../../types/request.types';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class BooklistItemsRequestValidator {
 	public static validate(req: BooklistItemsRequest) {

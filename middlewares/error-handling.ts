@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AppError, HttpCode } from '../exceptions/app_error';
+import { AppError, HttpCode } from '../exceptions/app-error';
 
 export function handleError(error: Error, req: Request, res: Response, next: any) {
 	const { message } = error;

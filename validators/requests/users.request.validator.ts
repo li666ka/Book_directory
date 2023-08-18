@@ -3,9 +3,9 @@ import {
 	isUpdateUserDto,
 	isUpdateUserRoleDto,
 	isUserFiltersDto,
-} from '../../guards/users_dto.guards';
+} from '../../guards/users.guards';
 import { UsersRequest } from '../../types/request.types';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class UsersRequestValidator {
 	public static validate(req: UsersRequest) {

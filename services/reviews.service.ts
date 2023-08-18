@@ -1,19 +1,19 @@
 import { Review, ReviewRepository } from '../models/review.model';
 import { ReviewDto } from '../controllers/reviews/dto/review.dto';
-import { ReviewFiltersDtoParsed } from '../types/dto_parsed.types';
-import ReviewValidator from './validators/review.validator';
+import { ReviewFiltersDtoParsed } from '../types/dto-parsed.types';
+import ReviewDataValidator from '../validators/data/review.data.validator';
 import { User, UserRepository } from '../models/user.model';
 import { Book, BookRepository } from '../models/book.model';
 import { Author, AuthorRepository } from '../models/author.model';
-import { CreateReviewDto } from '../controllers/reviews/dto/create_review.dto';
-import { UpdateReviewDto } from '../controllers/reviews/dto/update_review.dto';
+import { CreateReviewDto } from '../controllers/reviews/dto/create-review.dto';
+import { UpdateReviewDto } from '../controllers/reviews/dto/update-review.dto';
 
 class ReviewsService {
 	public static async find(
 		reviewsFiltersDto: ReviewFiltersDtoParsed | undefined
 	): Promise<ReviewDto[]> {
 		if (reviewsFiltersDto)
-			await ReviewValidator.validateGettingAll(reviewsFiltersDto);
+			await ReviewDataValidator.validateGettingAll(reviewsFiltersDto);
 
 		let reviews: Review[] = await ReviewRepository.getAll();
 
@@ -37,7 +37,7 @@ class ReviewsService {
 	}
 
 	public static async findOne(userId: number, bookId: number): Promise<ReviewDto> {
-		const review: Review = await ReviewValidator.validateGetting(userId, bookId);
+		const review: Review = await ReviewDataValidator.validateGetting(userId, bookId);
 		return await this.parseToDto(review);
 	}
 
@@ -46,7 +46,7 @@ class ReviewsService {
 		bookId: number,
 		createReviewDto: CreateReviewDto
 	): Promise<ReviewDto> {
-		await ReviewValidator.validateCreating(userId, bookId, createReviewDto);
+		await ReviewDataValidator.validateCreating(userId, bookId, createReviewDto);
 
 		const { score, comment } = createReviewDto;
 		await ReviewRepository.create(userId, bookId, score, comment);
@@ -61,7 +61,7 @@ class ReviewsService {
 		bookId: number,
 		updateReviewDto: UpdateReviewDto
 	) {
-		let review = await ReviewValidator.validateUpdating(
+		let review = await ReviewDataValidator.validateUpdating(
 			bookId,
 			userId,
 			updateReviewDto
@@ -79,7 +79,7 @@ class ReviewsService {
 	}
 
 	public static async delete(userId: number, bookId: number) {
-		await ReviewValidator.validateGetting(userId, bookId);
+		await ReviewDataValidator.validateGetting(userId, bookId);
 		await ReviewRepository.delete(userId, bookId);
 	}
 

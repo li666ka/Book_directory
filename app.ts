@@ -7,7 +7,7 @@ import logger from 'morgan';
 import routes from './routes/_all';
 import corsOption from './configs/cors.config';
 import { STATIC_DIR } from './utils/multer.util';
-import { handleError } from './middlewares/error_handling';
+import { handleError } from './middlewares/error-handling';
 
 const app: Express = express();
 const port: number = Number(process.env.PORT) || 4000;

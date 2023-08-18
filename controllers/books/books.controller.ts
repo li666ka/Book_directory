@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 
 import BooksService from '../../services/books.service';
 import { parseBookFiltersDto, parseToInt } from '../../utils/parsing.util';
-import { BookFiltersDtoParsed } from '../../types/dto_parsed.types';
-import { HttpCode } from '../../exceptions/app_error';
-import { BookFiltersDto } from './dto/book_filters.dto';
+import { BookFiltersDtoParsed } from '../../types/dto-parsed.types';
+import { HttpCode } from '../../exceptions/app-error';
+import { BookFiltersDto } from './dto/book-filters.dto';
 import { BookDto } from './dto/book.dto';
-import { BookDetailsDto } from './dto/book_details.dto';
-import { CreateBookDto } from './dto/create_book.dto';
-import { UpdateBookDto } from './dto/update_book.dto';
+import { BookDetailsDto } from './dto/book-details.dto';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 class BooksController {
 	public static async getAll(

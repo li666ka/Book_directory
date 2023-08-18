@@ -1,8 +1,8 @@
 import { StatusDto } from '../controllers/statuses/dto/status.dto';
 import { Status, StatusRepository } from '../models/status.model';
-import StatusValidator from './validators/status.validator';
-import { CreateStatusDto } from '../controllers/statuses/dto/create_status.dto';
-import { UpdateStatusDto } from '../controllers/statuses/dto/update_status.dto';
+import StatusDataValidator from '../validators/data/status.data.validator';
+import { CreateStatusDto } from '../controllers/statuses/dto/create-status.dto';
+import { UpdateStatusDto } from '../controllers/statuses/dto/update-status.dto';
 
 class StatusesService {
 	public static async find(): Promise<StatusDto[]> {
@@ -18,12 +18,12 @@ class StatusesService {
 	}
 
 	public static async findOne(id: number): Promise<StatusDto> {
-		const status = await StatusValidator.validateGetting(id);
+		const status = await StatusDataValidator.validateGetting(id);
 		return this.parseToDto(status);
 	}
 
 	public static async create(createStatusDto: CreateStatusDto): Promise<StatusDto> {
-		await StatusValidator.validateCreating(createStatusDto);
+		await StatusDataValidator.validateCreating(createStatusDto);
 		const { name } = createStatusDto;
 		const { insertId } = await StatusRepository.create(name);
 		const newStatus = await StatusRepository.get(insertId);
@@ -31,13 +31,13 @@ class StatusesService {
 	}
 
 	public static async update(id: number, updateStatusDto: UpdateStatusDto) {
-		await StatusValidator.validateUpdating(id, updateStatusDto);
+		await StatusDataValidator.validateUpdating(id, updateStatusDto);
 		const { name } = updateStatusDto;
 		await StatusRepository.update(name, id);
 	}
 
 	public static async delete(id: number) {
-		await StatusValidator.validateGetting(id);
+		await StatusDataValidator.validateGetting(id);
 		await StatusRepository.delete(id);
 	}
 

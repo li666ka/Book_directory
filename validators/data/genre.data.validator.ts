@@ -1,7 +1,7 @@
 import { Genre, GenreRepository } from '../../models/genre.model';
-import { CreateGenreDto } from '../../controllers/genres/dto/create_genre.dto';
-import { UpdateGenreDto } from '../../controllers/genres/dto/update_genre.dto';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { CreateGenreDto } from '../../controllers/genres/dto/create-genre.dto';
+import { UpdateGenreDto } from '../../controllers/genres/dto/update-genre.dto';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class GenreDataValidator {
 	/**

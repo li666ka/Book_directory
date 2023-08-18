@@ -3,9 +3,9 @@ import {
 	isCreateGenreDto,
 	isGenreFiltersDto,
 	isUpdateGenreDto,
-} from '../../guards/genres_dto.guards';
+} from '../../guards/genres.guards';
 import { GenresRequest } from '../../types/request.types';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class GenresRequestValidator {
 	public static validate(req: GenresRequest) {

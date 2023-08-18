@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
 import AuthService from '../../services/auth.service';
-import { CreateUserDto } from './dto/create_user.dto';
-import { LoginUserDto } from './dto/login_user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 class AuthController {
 	public static async createUser(

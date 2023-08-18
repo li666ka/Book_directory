@@ -4,28 +4,28 @@ import { OkPacket } from 'mysql2';
 
 import { Book, BookRepository } from '../models/book.model';
 import { Author, AuthorRepository } from '../models/author.model';
-import { BookGenre, BookGenreRepository } from '../models/book_genre.model';
+import { BookGenre, BookGenreRepository } from '../models/book-genre.model';
 import { Genre, GenreRepository } from '../models/genre.model';
 import { Review, ReviewRepository } from '../models/review.model';
-import { BooklistItem, BooklistItemRepository } from '../models/booklist_item.model';
+import { BooklistItem, BooklistItemRepository } from '../models/booklist-item.model';
+import { User, UserRepository } from '../models/user.model';
 
-import { BookFiltersDtoParsed } from '../types/dto_parsed.types';
+import { BookFiltersDtoParsed } from '../types/dto-parsed.types';
 
-import BookValidator from './validators/book.validator';
+import BookDataValidator from '../validators/data/book.data.validator';
 import { STATIC_DIR } from '../utils/multer.util';
 import { BookDto } from '../controllers/books/dto/book.dto';
-import { BookDetailsDto } from '../controllers/books/dto/book_details.dto';
-import { CreateBookDto } from '../controllers/books/dto/create_book.dto';
-import { UpdateBookDto } from '../controllers/books/dto/update_book.dto';
+import { BookDetailsDto } from '../controllers/books/dto/book-details.dto';
+import { CreateBookDto } from '../controllers/books/dto/create-book.dto';
+import { UpdateBookDto } from '../controllers/books/dto/update-book.dto';
 import { GenreDto } from '../controllers/genres/dto/genre.dto';
-import { User, UserRepository } from '../models/user.model';
 
 class BooksService {
 	public static async find(booksFilters: BookFiltersDtoParsed): Promise<BookDto[]> {
 		let books: Book[] = await BookRepository.getAll();
 
 		if (Object.keys(booksFilters).length !== 0) {
-			await BookValidator.validateGettingAll(booksFilters);
+			await BookDataValidator.validateGettingAll(booksFilters);
 
 			const { searchTitle, searchAuthorFullName, searchGenreIds } = booksFilters;
 
@@ -37,22 +37,16 @@ class BooksService {
 			);
 		}
 
-		const booksDto: BookDto[] = [];
-		for (const book of books) {
-			const bookDto: BookDto = await this.parseToDto(book);
-			booksDto.push(bookDto);
-		}
-
-		return booksDto;
+		if (books.length === 0) return [];
 	}
 
 	public static async findOne(id: number): Promise<BookDetailsDto> {
-		const book = await BookValidator.validateGetting(id);
+		const book = await BookDataValidator.validateGetting(id);
 		return await this.parseToDetailsDto(book);
 	}
 
 	public static async create(createBookDto: CreateBookDto): Promise<BookDto> {
-		await BookValidator.validateCreating(createBookDto);
+		await BookDataValidator.validateCreating(createBookDto);
 
 		const { authorId, title, description, genreIds } = createBookDto;
 
@@ -77,7 +71,7 @@ class BooksService {
 	}
 
 	public static async uploadImage(id: number, image: Express.Multer.File) {
-		const { book } = await BookValidator.validateGetting(id);
+		const { book } = await BookDataValidator.validateGetting(id);
 		const { filename } = image;
 		//delete old image file
 		if (book.image_file) fs.rmSync(path.join(STATIC_DIR, book.image_file));
@@ -92,7 +86,7 @@ class BooksService {
 	}
 
 	public static async uploadFile(id: number, file: Express.Multer.File) {
-		const { book } = await BookValidator.validateGetting(id);
+		const { book } = await BookDataValidator.validateGetting(id);
 		const { filename } = file;
 		//delete old book file
 		if (book.book_file) fs.rmSync(path.join(STATIC_DIR, book.book_file));
@@ -107,7 +101,7 @@ class BooksService {
 	}
 
 	public static async update(id: number, updateBookDto: UpdateBookDto) {
-		let { book } = await BookValidator.validateUpdating(id, updateBookDto);
+		let { book } = await BookDataValidator.validateUpdating(id, updateBookDto);
 
 		if (updateBookDto) {
 			const {
@@ -137,31 +131,86 @@ class BooksService {
 	}
 
 	public static async delete(id: number) {
-		const book: Book = await BookValidator.validateDeleting(id);
+		const book: Book = await BookDataValidator.validateDeleting(id);
 		await BookRepository.delete(book.id);
 		fs.rmSync(path.join(STATIC_DIR, book.image_file));
 		fs.rmSync(path.join(STATIC_DIR, book.book_file));
 	}
 
-	public static async getGenres(bookId: number): Promise<GenreDto[]> {
-		const genreIds: number[] = (await BookGenreRepository.getAll())
-			.filter((bookGenre) => bookGenre.book_id === bookId)
-			.map((bookGenre) => bookGenre.genre_id);
+	public static async getBookGenres(
+		this: { connections: BookGenre[] },
+		bookId: number
+	): Promise<GenreDto[]> {
+		const { connections } = this;
 
-		const genres: GenreDto[] = [];
+		// genre ids of book
+		const genreIds: number[] = connections
+			.filter((connection: BookGenre) => connection.book_id === bookId)
+			.map((connection: BookGenre) => connection.genre_id);
+
+		const genresDto: GenreDto[] = [];
 
 		for (const genreId of genreIds) {
 			const genre = (await GenreRepository.get(genreId)) as Genre;
-			genres.push({ id: genre.id, name: genre.name });
+			genresDto.push({ id: genre.id, name: genre.name });
 		}
 
-		return genres;
+		return genresDto;
 	}
 
-	public static async parseToDto(book: Book): Promise<BookDto> {
-		const author = (await AuthorRepository.get(book.author_id)) as Author;
+	public static async parseArrayToDto(books: Book[]): Promise<BookDto[]> {
+		const booksGenresAllGetting = BookGenreRepository.getAll();
 
-		const genres: GenreDto[] = await this.getGenres(book.id);
+		// wait for getting all genres and all book-genre connections
+		const [bookGenreConnectionsAll] = await Promise.all([booksGenresAllGetting]);
+
+		// set context for getBookGenres function
+		const getBookGenres = this.getBookGenres.bind({
+			bookGenreConnections: bookGenreConnectionsAll,
+		});
+
+		const booksParsing = new Array<Promise<BookDto>>(books.length);
+		for (const book of books) {
+			const bookParsing = new Promise<BookDto>(async (resolve, reject) => {
+				const authorGetting = AuthorRepository.get(book.author_id);
+				const genresGetting = getBookGenres(book.id);
+
+				// wait for getting author and book genres
+				let [author, genres] = await Promise.all([authorGetting, genresGetting]);
+				author = author as Author;
+				genres = genres as GenreDto[];
+
+				resolve({
+					id: book.id,
+					author: { id: author.id, fullName: author.full_name },
+					title: book.title,
+					genres,
+					description: book.description,
+					imageFile: book.image_file,
+					bookFile: book.book_file,
+					createdAt: book.created_at,
+				});
+			});
+			booksParsing.push(bookParsing);
+		}
+
+		return Promise.all(booksParsing);
+	}
+
+	public static async parseOneToDto(
+		book: Book,
+		getGenresFunc: (
+			this: { connections: BookGenre[] },
+			bookId: number
+		) => Promise<GenreDto[]>
+	): Promise<BookDto> {
+		const authorGetting = AuthorRepository.get(book.author_id);
+		const genresGetting = this.getBookGenres(book.id);
+
+		// wait for getting author and book genres
+		let [author, genres] = await Promise.all([authorGetting, genresGetting]);
+		author = author as Author;
+		genres = genres as GenreDto[];
 
 		return {
 			id: book.id,

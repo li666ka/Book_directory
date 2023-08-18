@@ -1,7 +1,7 @@
 import { isObject, isString } from './_base.guards';
-import { CreateGenreDto } from '../controllers/genres/dto/create_genre.dto';
-import { GenreFiltersDto } from '../controllers/genres/dto/genre_filters.dto';
-import { UpdateGenreDto } from '../controllers/genres/dto/update_genre.dto';
+import { CreateGenreDto } from '../controllers/genres/dto/create-genre.dto';
+import { GenreFiltersDto } from '../controllers/genres/dto/genre-filters.dto';
+import { UpdateGenreDto } from '../controllers/genres/dto/update-genre.dto';
 
 export function isCreateGenreDto(input: any): input is CreateGenreDto {
 	return isObject(input) && 'name' in input && isString(input.name);

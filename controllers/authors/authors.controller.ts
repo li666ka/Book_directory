@@ -2,12 +2,12 @@ import { Request, Response } from 'express';
 
 import AuthorsService from '../../services/authors.service';
 import { parseToInt } from '../../utils/parsing.util';
-import { HttpCode } from '../../exceptions/app_error';
-import { AuthorsFiltersDto } from './dto/authors_filters.dto';
+import { HttpCode } from '../../exceptions/app-error';
+import { AuthorsFiltersDto } from './dto/authors-filters.dto';
 import { AuthorDto } from './dto/author.dto';
-import { AuthorDetailsDto } from './dto/author_details.dto';
-import { CreateAuthorDto } from './dto/create_author.dto';
-import { UpdateAuthorDto } from './dto/update_author.dto';
+import { AuthorDetailsDto } from './dto/author-details.dto';
+import { CreateAuthorDto } from './dto/create-author.dto';
+import { UpdateAuthorDto } from './dto/update-author.dto';
 
 class AuthorsController {
 	public static async getAll(

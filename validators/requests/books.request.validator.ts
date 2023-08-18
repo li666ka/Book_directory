@@ -4,9 +4,9 @@ import {
 	isBookFiltersDto,
 	isCreateBookDto,
 	isUpdateBookDto,
-} from '../../guards/books_dto.guards';
+} from '../../guards/books.guards';
 import { BooksRequest } from '../../types/request.types';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 import { isFile } from '../../guards/files.guards';
 
 class BooksRequestValidator {

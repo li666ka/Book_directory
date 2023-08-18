@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 
-import { CreateBooklistItemDto } from './dto/create_booklist_item.dto';
-import { UpdateBooklistItemDto } from './dto/update_booklist_item.dto';
-import { BooklistItemDto } from './dto/booklist_item.dto';
+import { CreateBooklistItemDto } from './dto/create-booklist-item.dto';
+import { UpdateBooklistItemDto } from './dto/update-booklist-item.dto';
+import { BooklistItemDto } from './dto/booklist-item.dto';
 
-import BooklistItemsService from '../../services/booklist_items.service';
-import { HttpCode } from '../../exceptions/app_error';
+import BooklistItemsService from '../../services/booklist-items.service';
+import { HttpCode } from '../../exceptions/app-error';
 import { parseToInt } from '../../utils/parsing.util';
 
 class BooklistItemsController {

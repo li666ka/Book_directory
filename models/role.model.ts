@@ -10,8 +10,10 @@ export interface Role extends RowDataPacket {
 
 export class RoleRepository {
 	public static async getAll(): Promise<Role[]> {
+		console.log('Roles Getting is started...');
 		const query: string = RolesQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Role[]>(query);
+		console.log('Roles Getting is finished');
 		return rows;
 	}
 

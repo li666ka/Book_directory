@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { StatusDto } from './dto/status.dto';
-import { CreateStatusDto } from './dto/create_status.dto';
+import { CreateStatusDto } from './dto/create-status.dto';
 import StatusesService from '../../services/statuses.service';
 import { parseToInt } from '../../utils/parsing.util';
-import { UpdateStatusDto } from './dto/update_status.dto';
-import { HttpCode } from '../../exceptions/app_error';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { HttpCode } from '../../exceptions/app-error';
 
 class StatusesController {
 	public static async getAll(req: Request, res: Response<StatusDto[]>) {

@@ -4,10 +4,10 @@ import {
 	isAuthorsFiltersDto,
 	isCreateAuthorDto,
 	isUpdateAuthorDto,
-} from '../../guards/authors_dto.guards';
+} from '../../guards/authors.guards';
 import { isFile } from '../../guards/files.guards';
 import { AuthorsRequest } from '../../types/request.types';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 
 class AuthorsRequestValidator {
 	public static validate(req: AuthorsRequest) {

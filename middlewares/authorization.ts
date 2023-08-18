@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { Role } from '../types/role.type';
 import { JWT_SECRET, JwtPayloadExt } from '../utils/jwt.util';
 import { isString } from '../guards/_base.guards';
-import { AppError, HttpCode } from '../exceptions/app_error';
+import { AppError, HttpCode } from '../exceptions/app-error';
 
 export function authorize(
 	accountOwner: boolean,

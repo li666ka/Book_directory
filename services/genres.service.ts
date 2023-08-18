@@ -2,11 +2,11 @@ import { OkPacket } from 'mysql2';
 
 import { Genre, GenreRepository } from '../models/genre.model';
 
-import GenreValidator from './validators/genre.validator';
-import { GenreFiltersDto } from '../controllers/genres/dto/genre_filters.dto';
+import GenreDataValidator from '../validators/data/genre.data.validator';
+import { GenreFiltersDto } from '../controllers/genres/dto/genre-filters.dto';
 import { GenreDto } from '../controllers/genres/dto/genre.dto';
-import { CreateGenreDto } from '../controllers/genres/dto/create_genre.dto';
-import { UpdateGenreDto } from '../controllers/genres/dto/update_genre.dto';
+import { CreateGenreDto } from '../controllers/genres/dto/create-genre.dto';
+import { UpdateGenreDto } from '../controllers/genres/dto/update-genre.dto';
 
 class GenresService {
 	public static async find(genreFiltersDto: GenreFiltersDto): Promise<GenreDto[]> {
@@ -19,12 +19,12 @@ class GenresService {
 	}
 
 	public static async findOne(id: number): Promise<GenreDto> {
-		const genre: Genre = await GenreValidator.validateGetting(id);
+		const genre: Genre = await GenreDataValidator.validateGetting(id);
 		return this.parseToDto(genre);
 	}
 
 	public static async create(createGenreDto: CreateGenreDto): Promise<GenreDto> {
-		await GenreValidator.validateCreating(createGenreDto);
+		await GenreDataValidator.validateCreating(createGenreDto);
 
 		const { name } = createGenreDto;
 		const okPacket: OkPacket = await GenreRepository.create(name);
@@ -39,13 +39,13 @@ class GenresService {
 		id: number,
 		updateGenreDto: UpdateGenreDto
 	): Promise<void> {
-		await GenreValidator.validateUpdating(id, updateGenreDto);
+		await GenreDataValidator.validateUpdating(id, updateGenreDto);
 		const { name } = updateGenreDto;
 		await GenreRepository.update(name, +id);
 	}
 
 	public static async delete(id: number): Promise<void> {
-		const genre: Genre = await GenreValidator.validateDeleting(id);
+		const genre: Genre = await GenreDataValidator.validateDeleting(id);
 		await GenreRepository.delete(genre.id);
 	}
 

@@ -1,11 +1,11 @@
 import { Book, BookRepository } from '../../models/book.model';
 import { Author, AuthorRepository } from '../../models/author.model';
 import { Genre, GenreRepository } from '../../models/genre.model';
-import { BookFiltersDtoParsed } from '../../types/dto_parsed.types';
-import { CreateBookDto } from '../../controllers/books/dto/create_book.dto';
+import { BookFiltersDtoParsed } from '../../types/dto-parsed.types';
+import { CreateBookDto } from '../../controllers/books/dto/create-book.dto';
 
-import { UpdateBookDto } from '../../controllers/books/dto/update_book.dto';
-import { AppError, HttpCode } from '../../exceptions/app_error';
+import { UpdateBookDto } from '../../controllers/books/dto/update-book.dto';
+import { AppError, HttpCode } from '../../exceptions/app-error';
 import { BOOK_FILE_FIELD, BOOK_IMAGE_FIELD } from '../../utils/multer.util';
 
 class BookDataValidator {

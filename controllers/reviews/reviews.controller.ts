@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { ReviewDto } from './dto/review.dto';
-import { ReviewFiltersDto } from './dto/review_filters.dto';
+import { ReviewFiltersDto } from './dto/review-filters.dto';
 import { parseReviewFiltersDto, parseToInt } from '../../utils/parsing.util';
 import ReviewsService from '../../services/reviews.service';
-import { HttpCode } from '../../exceptions/app_error';
-import { CreateReviewDto } from './dto/create_review.dto';
-import { UpdateReviewDto } from './dto/update_review.dto';
+import { HttpCode } from '../../exceptions/app-error';
+import { CreateReviewDto } from './dto/create-review.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewRepository } from '../../models/review.model';
 
 class ReviewsController {

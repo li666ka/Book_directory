@@ -1,7 +1,7 @@
 import { isIntSet, isNull, isObject, isString } from './_base.guards';
-import { AuthorsFiltersDto } from '../controllers/authors/dto/authors_filters.dto';
-import { CreateAuthorDto } from '../controllers/authors/dto/create_author.dto';
-import { UpdateAuthorDto } from '../controllers/authors/dto/update_author.dto';
+import { AuthorsFiltersDto } from '../controllers/authors/dto/authors-filters.dto';
+import { CreateAuthorDto } from '../controllers/authors/dto/create-author.dto';
+import { UpdateAuthorDto } from '../controllers/authors/dto/update-author.dto';
 
 export function isAuthorsFiltersDto(
 	input: AuthorsFiltersDto
