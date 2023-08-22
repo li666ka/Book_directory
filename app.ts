@@ -10,11 +10,6 @@ import { STATIC_DIR } from './utils/multer.util';
 import { handleError } from './middlewares/error-handling';
 
 const app: Express = express();
-const port: number = Number(process.env.PORT) || 4000;
-
-app.listen(port, () => {
-	console.log(`Server is listening on port ${port}`);
-});
 
 app.use(express.static(STATIC_DIR));
 app.use(cors(corsOption));
@@ -31,3 +26,5 @@ app.use('/reviews', routes.reviews);
 app.use('/statuses', routes.statuses);
 
 app.use(handleError);
+
+export default app;

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start:ts": "tsc -w",
-    "start:js": "nodemon build/app.js",
+    "start:js": "nodemon build/server.js",
     "start": "concurrently npm:start:*"
   },
   "dependencies": {
