@@ -1,11 +1,11 @@
 import { Role, RoleRepository } from '../../models/role.model';
 import { User, UserRepository } from '../../models/user.model';
 import { UserFiltersDtoParsed } from '../../types/dto-parsed.types';
-import { UpdateUserDto } from '../../controllers/users/dto/update_user.dto';
-import { UpdateUserRoleDto } from '../../controllers/users/dto/update_user_role.dto';
+import { UpdateUserDto } from '../../controllers/users/dto/update-user.dto';
+import { UpdateUserRoleDto } from '../../controllers/users/dto/update-user-role.dto';
 import { AppError, HttpCode } from '../../exceptions/app-error';
 
-class UserDataValidator {
+class UsersDataValidator {
 	/**
 	 * Validates UserFiltersDto object.
 	 * Changes UserFiltersDto object (parse roleIds to number[]).
@@ -93,4 +93,4 @@ class UserDataValidator {
 	}
 }
 
-export default UserDataValidator;
+export default UsersDataValidator;

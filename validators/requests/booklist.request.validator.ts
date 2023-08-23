@@ -6,7 +6,7 @@ import {
 import { BooklistItemsRequest } from '../../types/request.types';
 import { AppError, HttpCode } from '../../exceptions/app-error';
 
-class BooklistItemsRequestValidator {
+class BooklistRequestValidator {
 	public static validate(req: BooklistItemsRequest) {
 		switch (req) {
 			case 'booklist-items-create':
@@ -37,4 +37,4 @@ class BooklistItemsRequestValidator {
 	}
 }
 
-export default BooklistItemsRequestValidator;
+export default BooklistRequestValidator;

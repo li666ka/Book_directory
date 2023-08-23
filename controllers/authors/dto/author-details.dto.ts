@@ -5,5 +5,10 @@ export interface AuthorDetailsDto extends AuthorDto {
 	bornAt: string;
 	diedAt: string | null;
 	info: string;
-	books: Pick<BookDto, 'id' | 'title' | 'genres' | 'imageFile'>[];
+	books: AuthorDetailsDto_Book[];
 }
+
+export type AuthorDetailsDto_Book = Pick<
+	BookDto,
+	'id' | 'title' | 'genres' | 'imageFile'
+>;

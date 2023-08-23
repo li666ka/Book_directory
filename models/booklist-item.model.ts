@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import BooklistItemsQueries from '../db/queries/booklist-items.queries';
+import BooklistQueries from '../db/queries/booklist.queries';
 import DB_CONNECTION from '../utils/db.util';
 
 export interface BooklistItem extends RowDataPacket {
@@ -11,7 +11,7 @@ export interface BooklistItem extends RowDataPacket {
 
 export class BooklistItemRepository {
 	public static async getAll(): Promise<BooklistItem[]> {
-		const query: string = BooklistItemsQueries.GetAll;
+		const query: string = BooklistQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<BooklistItem[]>(query);
 		return rows;
 	}
@@ -20,7 +20,7 @@ export class BooklistItemRepository {
 		userId: number,
 		bookId: number
 	): Promise<BooklistItem | undefined> {
-		const query: string = BooklistItemsQueries.Get;
+		const query: string = BooklistQueries.Get;
 		const values: any[] = [userId, bookId];
 		const [rows] = await DB_CONNECTION.promise().query<BooklistItem[]>(query, values);
 		return rows[0];
@@ -31,7 +31,7 @@ export class BooklistItemRepository {
 		bookId: number,
 		statusId: number
 	): Promise<OkPacket> {
-		const query: string = BooklistItemsQueries.Create;
+		const query: string = BooklistQueries.Create;
 		const values: any[] = [userId, bookId, statusId];
 		const [okPacket] = await DB_CONNECTION.promise().query<OkPacket>(query, values);
 		return okPacket;
@@ -42,13 +42,13 @@ export class BooklistItemRepository {
 		newUserId: number,
 		bookId: number
 	): Promise<void> {
-		const query: string = BooklistItemsQueries.Update;
+		const query: string = BooklistQueries.Update;
 		const values: any[] = [newStatusId, newUserId, bookId];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}
 
 	public static async delete(userId: number, bookId: number): Promise<void> {
-		const query: string = BooklistItemsQueries.Delete;
+		const query: string = BooklistQueries.Delete;
 		const values: any[] = [userId, bookId];
 		await DB_CONNECTION.promise().query<OkPacket>(query, values);
 	}

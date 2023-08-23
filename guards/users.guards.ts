@@ -1,9 +1,9 @@
 import { CreateUserDto } from '../controllers/auth/dto/create-user.dto';
 import { isInteger, isObject, isString, isStringArray } from './_base.guards';
-import { UserFiltersDto } from '../controllers/users/dto/user_filters.dto';
+import { UserFiltersDto } from '../controllers/users/dto/user-filters.dto';
 import { LoginUserDto } from '../controllers/auth/dto/login-user.dto';
-import { UpdateUserDto } from '../controllers/users/dto/update_user.dto';
-import { UpdateUserRoleDto } from '../controllers/users/dto/update_user_role.dto';
+import { UpdateUserDto } from '../controllers/users/dto/update-user.dto';
+import { UpdateUserRoleDto } from '../controllers/users/dto/update-user-role.dto';
 
 export function isUserFiltersDto(input: any): input is UserFiltersDto {
 	return (

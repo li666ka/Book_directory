@@ -1,6 +1,6 @@
-import { CreateBooklistItemDto } from '../controllers/booklist-items/dto/create-booklist-item.dto';
-import { UpdateBooklistItemDto } from '../controllers/booklist-items/dto/update-booklist-item.dto';
-import { BooklistItemDto } from '../controllers/booklist-items/dto/booklist-item.dto';
+import { CreateBooklistItemDto } from '../controllers/booklist/dto/create-booklist-item.dto';
+import { UpdateBooklistItemDto } from '../controllers/booklist/dto/update-booklist-item.dto';
+import { BooklistItemDto } from '../controllers/booklist/dto/booklist-item.dto';
 import { BookDto } from '../controllers/books/dto/book.dto';
 
 import { BooklistItem, BooklistItemRepository } from '../models/booklist-item.model';
@@ -14,7 +14,7 @@ import { AppError, HttpCode } from '../exceptions/app-error';
 import { ReviewRepository } from '../models/review.model';
 import ReviewsService from './reviews.service';
 
-class BooklistItemsService {
+class BooklistService {
 	public static async create(
 		userId: number,
 		bookId: number,
@@ -90,4 +90,4 @@ class BooklistItemsService {
 	}
 }
 
-export default BooklistItemsService;
+export default BooklistService;

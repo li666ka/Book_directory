@@ -1,5 +1,4 @@
 import express, { Express } from 'express';
-import 'dotenv/config';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from 'morgan';

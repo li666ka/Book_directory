@@ -4,7 +4,7 @@ import AuthRequestValidator from '../validators/requests/auth.request.validator'
 import UsersRequestValidator from '../validators/requests/users.request.validator';
 import BooksRequestValidator from '../validators/requests/books.request.validator';
 import AuthorsRequestValidator from '../validators/requests/authors.request.validator';
-import BooklistItemsRequestValidator from '../validators/requests/booklist-items.request.validator';
+import BooklistRequestValidator from '../validators/requests/booklist.request.validator';
 import GenresRequestValidator from '../validators/requests/genres.request.validator';
 
 import { RequestType } from '../types/request.types';
@@ -27,7 +27,7 @@ export function validate(
 ): (req: Request, res: Response, next: any) => any {
 	if (isAuthRequest(req)) return AuthRequestValidator.validate(req);
 	if (isAuthorsRequest(req)) return AuthorsRequestValidator.validate(req);
-	if (isBooklistItemsRequest(req)) return BooklistItemsRequestValidator.validate(req);
+	if (isBooklistItemsRequest(req)) return BooklistRequestValidator.validate(req);
 	if (isBooksRequest(req)) return BooksRequestValidator.validate(req);
 	if (isUsersRequest(req)) return UsersRequestValidator.validate(req);
 	if (isGenresRequest(req)) return GenresRequestValidator.validate(req);

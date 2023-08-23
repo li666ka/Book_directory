@@ -15,7 +15,7 @@ export interface Author extends RowDataPacket {
 
 export class AuthorRepository {
 	public static async getAll(): Promise<Author[]> {
-		let query: string = AuthorsQueries.GetAll;
+		const query: string = AuthorsQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Author[]>(query);
 		return rows;
 	}

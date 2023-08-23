@@ -6,7 +6,7 @@ import {
 import { isInteger, isIntSet } from '../guards/_base.guards';
 import { AppError, HttpCode } from '../exceptions/app-error';
 import { BookFiltersDto } from '../controllers/books/dto/book-filters.dto';
-import { UserFiltersDto } from '../controllers/users/dto/user_filters.dto';
+import { UserFiltersDto } from '../controllers/users/dto/user-filters.dto';
 import { ReviewFiltersDto } from '../controllers/reviews/dto/review-filters.dto';
 
 export function parseToInt(value: string): number {

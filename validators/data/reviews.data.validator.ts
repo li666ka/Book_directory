@@ -8,7 +8,7 @@ import { BooklistItem, BooklistItemRepository } from '../../models/booklist-item
 import { UpdateReviewDto } from '../../controllers/reviews/dto/update-review.dto';
 import { Status, StatusRepository } from '../../models/status.model';
 
-class ReviewDataValidator {
+class ReviewsDataValidator {
 	private static readonly MIN_SCORE = 0;
 	private static readonly MAX_SCORE = 10;
 
@@ -143,4 +143,4 @@ class ReviewDataValidator {
 	}
 }
 
-export default ReviewDataValidator;
+export default ReviewsDataValidator;

@@ -4,11 +4,11 @@ import UsersService from '../../services/users.service';
 
 import { parseToInt, parseUserFiltersDto } from '../../utils/parsing.util';
 import { HttpCode } from '../../exceptions/app-error';
-import { UserFiltersDto } from './dto/user_filters.dto';
+import { UserFiltersDto } from './dto/user-filters.dto';
 import { UserDto } from './dto/user.dto';
-import { UserDetailsDto } from './dto/user_details.dto';
-import { UpdateUserDto } from './dto/update_user.dto';
-import { UpdateUserRoleDto } from './dto/update_user_role.dto';
+import { UserDetailsDto } from './dto/user-details.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 
 class UsersController {
 	public static async getAll(

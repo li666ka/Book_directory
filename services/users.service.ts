@@ -1,25 +1,25 @@
 import { UserFiltersDtoParsed } from '../types/dto-parsed.types';
 
 import BooksService from './books.service';
-import UserDataValidator from '../validators/data/user.data.validator';
+import UsersDataValidator from '../validators/data/users.data.validator';
 
 import { Review, ReviewRepository } from '../models/review.model';
 import { BooklistItem, BooklistItemRepository } from '../models/booklist-item.model';
 import { User, UserRepository } from '../models/user.model';
 import { UserDto } from '../controllers/users/dto/user.dto';
-import { UserDetailsDto } from '../controllers/users/dto/user_details.dto';
-import { UpdateUserDto } from '../controllers/users/dto/update_user.dto';
-import { UpdateUserRoleDto } from '../controllers/users/dto/update_user_role.dto';
+import { UserDetailsDto } from '../controllers/users/dto/user-details.dto';
+import { UpdateUserDto } from '../controllers/users/dto/update-user.dto';
+import { UpdateUserRoleDto } from '../controllers/users/dto/update-user-role.dto';
 import { BookDto } from '../controllers/books/dto/book.dto';
-import { BooklistItemDto } from '../controllers/booklist-items/dto/booklist-item.dto';
-import BooklistItemsService from './booklist-items.service';
+import { BooklistItemDto } from '../controllers/booklist/dto/booklist-item.dto';
+import BooklistService from './booklist.service';
 
 class UsersService {
 	public static async find(userFiltersDto: UserFiltersDtoParsed): Promise<UserDto[]> {
 		let users: User[] = await UserRepository.getAll();
 
 		if (Object.keys(userFiltersDto).length !== 0) {
-			await UserDataValidator.validateGettingAll(userFiltersDto);
+			await UsersDataValidator.validateGettingAll(userFiltersDto);
 
 			users = this.filter(users, userFiltersDto);
 		}
@@ -34,12 +34,12 @@ class UsersService {
 	}
 
 	public static async findOne(id: number): Promise<UserDetailsDto> {
-		const user = await UserDataValidator.validateGetting(id);
+		const user = await UsersDataValidator.validateGetting(id);
 		return this.parseToDetailsDto(user);
 	}
 
 	public static async update(id: number, updateUserDto: UpdateUserDto) {
-		let user: User = await UserDataValidator.validateUpdating(id, updateUserDto);
+		let user: User = await UsersDataValidator.validateUpdating(id, updateUserDto);
 		updateUserDto = updateUserDto as UpdateUserDto;
 
 		const { username, password } = updateUserDto;
@@ -56,17 +56,17 @@ class UsersService {
 	}
 
 	public static async updateRole(id: number, updateUserRoleDto: UpdateUserRoleDto) {
-		const user = await UserDataValidator.validateUpdatingRole(id, updateUserRoleDto);
+		const user = await UsersDataValidator.validateUpdatingRole(id, updateUserRoleDto);
 		const { roleId } = updateUserRoleDto;
 		await UserRepository.update(roleId, user.username, user.password, user.id);
 	}
 
 	public static async delete(id: number) {
-		const user: User = await UserDataValidator.validateDeleting(id);
+		const user: User = await UsersDataValidator.validateDeleting(id);
 		await UserRepository.delete(user.id);
 	}
 
-	public static parseToDto(user: User): UserDto {
+	private static parseToDto(user: User): UserDto {
 		return {
 			id: user.id,
 			roleId: user.role_id,
@@ -85,7 +85,7 @@ class UsersService {
 		const booklist = [];
 
 		for (const item of booklistItems) {
-			const itemDto: BooklistItemDto = await BooklistItemsService.parseToDto(item);
+			const itemDto: BooklistItemDto = await BooklistService.parseToDto(item);
 			const { book, status, review } = itemDto;
 			booklist.push({ book, status, review });
 		}

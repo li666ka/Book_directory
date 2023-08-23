@@ -2,7 +2,7 @@ import { OkPacket } from 'mysql2';
 
 import { Genre, GenreRepository } from '../models/genre.model';
 
-import GenreDataValidator from '../validators/data/genre.data.validator';
+import GenresDataValidator from '../validators/data/genres.data.validator';
 import { GenreFiltersDto } from '../controllers/genres/dto/genre-filters.dto';
 import { GenreDto } from '../controllers/genres/dto/genre.dto';
 import { CreateGenreDto } from '../controllers/genres/dto/create-genre.dto';
@@ -19,12 +19,12 @@ class GenresService {
 	}
 
 	public static async findOne(id: number): Promise<GenreDto> {
-		const genre: Genre = await GenreDataValidator.validateGetting(id);
+		const genre: Genre = await GenresDataValidator.validateGetting(id);
 		return this.parseToDto(genre);
 	}
 
 	public static async create(createGenreDto: CreateGenreDto): Promise<GenreDto> {
-		await GenreDataValidator.validateCreating(createGenreDto);
+		await GenresDataValidator.validateCreating(createGenreDto);
 
 		const { name } = createGenreDto;
 		const okPacket: OkPacket = await GenreRepository.create(name);
@@ -39,13 +39,13 @@ class GenresService {
 		id: number,
 		updateGenreDto: UpdateGenreDto
 	): Promise<void> {
-		await GenreDataValidator.validateUpdating(id, updateGenreDto);
+		await GenresDataValidator.validateUpdating(id, updateGenreDto);
 		const { name } = updateGenreDto;
 		await GenreRepository.update(name, +id);
 	}
 
 	public static async delete(id: number): Promise<void> {
-		const genre: Genre = await GenreDataValidator.validateDeleting(id);
+		const genre: Genre = await GenresDataValidator.validateDeleting(id);
 		await GenreRepository.delete(genre.id);
 	}
 

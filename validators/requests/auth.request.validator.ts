@@ -26,7 +26,6 @@ class AuthRequestValidator {
 
 	private static validateCreateUser(req: Request, res: Response, next: any): any {
 		const { body } = req;
-		console.log(body);
 		if (!isCreateUserDto(body))
 			throw new AppError(HttpCode.BAD_REQUEST, 'Incorrect CreateUserDto');
 		next();

@@ -1,7 +1,7 @@
 import { Review, ReviewRepository } from '../models/review.model';
 import { ReviewDto } from '../controllers/reviews/dto/review.dto';
 import { ReviewFiltersDtoParsed } from '../types/dto-parsed.types';
-import ReviewDataValidator from '../validators/data/review.data.validator';
+import ReviewsDataValidator from '../validators/data/reviews.data.validator';
 import { User, UserRepository } from '../models/user.model';
 import { Book, BookRepository } from '../models/book.model';
 import { Author, AuthorRepository } from '../models/author.model';
@@ -13,7 +13,7 @@ class ReviewsService {
 		reviewsFiltersDto: ReviewFiltersDtoParsed | undefined
 	): Promise<ReviewDto[]> {
 		if (reviewsFiltersDto)
-			await ReviewDataValidator.validateGettingAll(reviewsFiltersDto);
+			await ReviewsDataValidator.validateGettingAll(reviewsFiltersDto);
 
 		let reviews: Review[] = await ReviewRepository.getAll();
 
@@ -37,7 +37,7 @@ class ReviewsService {
 	}
 
 	public static async findOne(userId: number, bookId: number): Promise<ReviewDto> {
-		const review: Review = await ReviewDataValidator.validateGetting(userId, bookId);
+		const review: Review = await ReviewsDataValidator.validateGetting(userId, bookId);
 		return await this.parseToDto(review);
 	}
 
@@ -46,7 +46,7 @@ class ReviewsService {
 		bookId: number,
 		createReviewDto: CreateReviewDto
 	): Promise<ReviewDto> {
-		await ReviewDataValidator.validateCreating(userId, bookId, createReviewDto);
+		await ReviewsDataValidator.validateCreating(userId, bookId, createReviewDto);
 
 		const { score, comment } = createReviewDto;
 		await ReviewRepository.create(userId, bookId, score, comment);
@@ -61,7 +61,7 @@ class ReviewsService {
 		bookId: number,
 		updateReviewDto: UpdateReviewDto
 	) {
-		let review = await ReviewDataValidator.validateUpdating(
+		let review = await ReviewsDataValidator.validateUpdating(
 			bookId,
 			userId,
 			updateReviewDto
@@ -79,7 +79,7 @@ class ReviewsService {
 	}
 
 	public static async delete(userId: number, bookId: number) {
-		await ReviewDataValidator.validateGetting(userId, bookId);
+		await ReviewsDataValidator.validateGetting(userId, bookId);
 		await ReviewRepository.delete(userId, bookId);
 	}
 

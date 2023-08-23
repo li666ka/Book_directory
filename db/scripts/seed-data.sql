@@ -178,7 +178,7 @@ VALUES (3, 'admin', '$2b$10$A0wPUFoa9YzvbfcJCONnQujDovH3fd8/DJ0Dnle/HUAOX4.KwWDU
        (1, 'user2', '$2b$10$MuhF.fcelwibTCxc.L2xFOROQufzjyZs/khKiVZBMn5BjjL79qqvS', '2023-01-18 00:00:00')
 ;
 
-INSERT INTO booklist_items (user_id, book_id, status_id)
+INSERT INTO booklist (user_id, book_id, status_id)
 VALUES
     -- user1
     (2, 7, 1),

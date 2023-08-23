@@ -16,7 +16,7 @@ export interface Book extends RowDataPacket {
 export class BookRepository {
 	public static async getAll(): Promise<Book[]> {
 		console.log('Books Getting is started...');
-		let query: string = BooksQueries.GetAll;
+		const query: string = BooksQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query);
 		console.log('Books Getting is finished');
 		return rows;

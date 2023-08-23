@@ -8,7 +8,7 @@ import { UpdateBookDto } from '../../controllers/books/dto/update-book.dto';
 import { AppError, HttpCode } from '../../exceptions/app-error';
 import { BOOK_FILE_FIELD, BOOK_IMAGE_FIELD } from '../../utils/multer.util';
 
-class BookDataValidator {
+class BooksDataValidator {
 	/**
 	 * Validates BookFiltersDto object.
 	 * Changes BookFiltersDto object (parse searchGenreIds to number[]).
@@ -137,4 +137,4 @@ class BookDataValidator {
 	}
 }
 
-export default BookDataValidator;
+export default BooksDataValidator;

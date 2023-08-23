@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import UsersController from '../controllers/users/users.controller';
 import AuthController from '../controllers/auth/auth.controller';
-import BooklistItemsController from '../controllers/booklist-items/booklist-items.controller';
+import BooklistController from '../controllers/booklist/booklist.controller';
 
 import { validate } from '../middlewares/validation';
 import { authorize } from '../middlewares/authorization';
@@ -44,14 +44,14 @@ router.post(
 	'/:userId/books/:bookId',
 	authorize(true),
 	validate('booklist-items-create'),
-	BooklistItemsController.create
+	BooklistController.create
 );
 router.put(
 	'/:userId/books/:bookId',
 	authorize(true),
 	validate('booklist-items-update'),
-	BooklistItemsController.update
+	BooklistController.update
 );
-router.delete('/:userId/books/:bookId', authorize(true), BooklistItemsController.delete);
+router.delete('/:userId/books/:bookId', authorize(true), BooklistController.delete);
 
 export default router;

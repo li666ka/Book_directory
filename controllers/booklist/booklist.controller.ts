@@ -4,11 +4,11 @@ import { CreateBooklistItemDto } from './dto/create-booklist-item.dto';
 import { UpdateBooklistItemDto } from './dto/update-booklist-item.dto';
 import { BooklistItemDto } from './dto/booklist-item.dto';
 
-import BooklistItemsService from '../../services/booklist-items.service';
+import BooklistService from '../../services/booklist.service';
 import { HttpCode } from '../../exceptions/app-error';
 import { parseToInt } from '../../utils/parsing.util';
 
-class BooklistItemsController {
+class BooklistController {
 	public static async create(
 		req: Request<{ userId: string; bookId: string }, never, CreateBooklistItemDto>,
 		res: Response
@@ -18,7 +18,7 @@ class BooklistItemsController {
 			bookIdParsed: number = parseToInt(bookId);
 		const { body } = req;
 
-		const newBooklistItem: BooklistItemDto = await BooklistItemsService.create(
+		const newBooklistItem: BooklistItemDto = await BooklistService.create(
 			userIdParsed,
 			bookIdParsed,
 			body
@@ -35,7 +35,7 @@ class BooklistItemsController {
 		const userIdParsed: number = parseToInt(userId),
 			bookIdParsed: number = parseToInt(bookId);
 		const { body } = req;
-		await BooklistItemsService.update(userIdParsed, bookIdParsed, body);
+		await BooklistService.update(userIdParsed, bookIdParsed, body);
 		res.sendStatus(HttpCode.OK);
 	}
 
@@ -46,9 +46,9 @@ class BooklistItemsController {
 		const { userId, bookId } = req.params;
 		const userIdParsed: number = parseToInt(userId),
 			bookIdParsed: number = parseToInt(bookId);
-		await BooklistItemsService.delete(userIdParsed, bookIdParsed);
+		await BooklistService.delete(userIdParsed, bookIdParsed);
 		res.sendStatus(HttpCode.OK);
 	}
 }
 
-export default BooklistItemsController;
+export default BooklistController;

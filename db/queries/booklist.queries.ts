@@ -1,27 +1,27 @@
-const BooklistItemsQueries = {
+const BooklistQueries = {
 	GetAll: `
         SELECT *
-        FROM booklist_items
+        FROM booklist
 	`,
 	Get: `
         SELECT *
-        FROM booklist_items
+        FROM booklist
         WHERE user_id = ? AND book_id = ?
 	`,
 	Create: `
-        INSERT INTO booklist_items (user_id, book_id, status_id)
+        INSERT INTO booklist (user_id, book_id, status_id)
         VALUES (?, ?, ?)
 	`,
 	Update: `
-        UPDATE booklist_items
+        UPDATE booklist
         SET status_id = ?
         WHERE user_id = ? AND book_id = ?
 	`,
 	Delete: `
         DELETE
-        FROM booklist_items
+        FROM booklist
         WHERE user_id = ? AND book_id = ?
 	`,
 };
 
-export default BooklistItemsQueries;
+export default BooklistQueries;
