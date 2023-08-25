@@ -3,11 +3,14 @@ import { AuthorDto } from '../../authors/dto/author.dto';
 
 export interface BookDto {
 	id: number;
-	author: Pick<AuthorDto, 'id' | 'fullName'>;
+	author: BookDto_Author;
 	title: string;
-	genres: GenreDto[];
+	genres: BookDto_Genre[];
 	description: string;
 	imageFile: string | null;
 	bookFile: string | null;
 	createdAt: string;
 }
+
+export type BookDto_Author = Pick<AuthorDto, 'id' | 'fullName'>;
+export type BookDto_Genre = Pick<GenreDto, 'id' | 'name'>;

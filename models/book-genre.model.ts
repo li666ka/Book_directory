@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 import BooksGenresQueries from '../db/queries/books-genres.queries';
 
 export interface BookGenre extends RowDataPacket {
@@ -9,6 +9,16 @@ export interface BookGenre extends RowDataPacket {
 }
 
 export class BookGenreRepository {
+	private static _cache: BookGenre[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<BookGenre[]> {
 		const query: string = BooksGenresQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<BookGenre[]>(query);

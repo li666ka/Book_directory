@@ -4,8 +4,15 @@ import { StatusDto } from '../../statuses/dto/status.dto';
 import { ReviewDto } from '../../reviews/dto/review.dto';
 
 export interface BooklistItemDto {
-	user: Pick<UserDto, 'id' | 'username'>;
-	book: Pick<BookDto, 'id' | 'author' | 'title' | 'genres' | 'imageFile'>;
+	user: BooklistItemDto_User;
+	book: BooklistItemDto_Book;
 	status: StatusDto;
-	review: Pick<ReviewDto, 'score' | 'comment' | 'createdAt'> | null;
+	review: BooklistItemDto_Review | null;
 }
+
+export type BooklistItemDto_User = Pick<UserDto, 'id' | 'username'>;
+export type BooklistItemDto_Book = Pick<
+	BookDto,
+	'id' | 'author' | 'title' | 'genres' | 'imageFile'
+>;
+export type BooklistItemDto_Review = Pick<ReviewDto, 'score' | 'comment' | 'createdAt'>;

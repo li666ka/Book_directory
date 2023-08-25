@@ -14,13 +14,10 @@ class AuthDataValidator {
 	 * @param role
 	 * Returns role id of input Role.
 	 */
-	public static async validateCreating(
-		createUserDto: CreateUserDto,
-		role: RoleName
-	): Promise<number> {
+	public static validateCreating(createUserDto: CreateUserDto, role: RoleName): number {
 		const { username } = createUserDto;
 
-		const userSameUsername: User | undefined = (await UserRepository.getAll()).find(
+		const userSameUsername: User | undefined = UserRepository.cache.find(
 			(user) => user.username === username
 		);
 
@@ -30,7 +27,7 @@ class AuthDataValidator {
 				`User with username ${username} already exists`
 			);
 
-		const roleId: number | undefined = (await RoleRepository.getAll()).find(
+		const roleId: number | undefined = RoleRepository.cache.find(
 			(r) => r.name === role
 		)?.id;
 
@@ -48,10 +45,10 @@ class AuthDataValidator {
 	 * @param loginUserDto
 	 * Returns User by username.
 	 */
-	public static async validateLogin(loginUserDto: LoginUserDto): Promise<User> {
+	public static validateLogin(loginUserDto: LoginUserDto): User {
 		const { username } = loginUserDto;
 
-		const user: User | undefined = (await UserRepository.getAll()).find(
+		const user: User | undefined = UserRepository.cache.find(
 			(user) => user.username === username
 		);
 

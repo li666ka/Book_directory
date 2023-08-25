@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 import StatusesQueries from '../db/queries/statuses.queries';
 
 export interface Status extends RowDataPacket {
@@ -9,6 +9,16 @@ export interface Status extends RowDataPacket {
 }
 
 export class StatusRepository {
+	private static _cache: Status[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<Status[]> {
 		const query: string = StatusesQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Status[]>(query);

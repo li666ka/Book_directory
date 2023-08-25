@@ -1,7 +1,8 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 import ReviewsQueries from '../db/queries/reviews.queries';
+import { Genre } from './genre.model';
 
 export interface Review extends RowDataPacket {
 	user_id: number;
@@ -12,6 +13,16 @@ export interface Review extends RowDataPacket {
 }
 
 export class ReviewRepository {
+	private static _cache: Review[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<Review[]> {
 		const query: string = ReviewsQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Review[]>(query);

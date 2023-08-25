@@ -1,25 +1,22 @@
 import { UserFiltersDtoParsed } from '../types/dto-parsed.types';
 
-import BooksService from './books.service';
 import UsersDataValidator from '../validators/data/users.data.validator';
 
-import { Review, ReviewRepository } from '../models/review.model';
 import { BooklistItem, BooklistItemRepository } from '../models/booklist-item.model';
 import { User, UserRepository } from '../models/user.model';
 import { UserDto } from '../controllers/users/dto/user.dto';
 import { UserDetailsDto } from '../controllers/users/dto/user-details.dto';
 import { UpdateUserDto } from '../controllers/users/dto/update-user.dto';
 import { UpdateUserRoleDto } from '../controllers/users/dto/update-user-role.dto';
-import { BookDto } from '../controllers/books/dto/book.dto';
 import { BooklistItemDto } from '../controllers/booklist/dto/booklist-item.dto';
 import BooklistService from './booklist.service';
 
 class UsersService {
-	public static async find(userFiltersDto: UserFiltersDtoParsed): Promise<UserDto[]> {
-		let users: User[] = await UserRepository.getAll();
+	public static find(userFiltersDto: UserFiltersDtoParsed): UserDto[] {
+		let users: User[] = UserRepository.cache;
 
 		if (Object.keys(userFiltersDto).length !== 0) {
-			await UsersDataValidator.validateGettingAll(userFiltersDto);
+			UsersDataValidator.validateGettingAll(userFiltersDto);
 
 			users = this.filter(users, userFiltersDto);
 		}
@@ -33,9 +30,17 @@ class UsersService {
 		return usersDto;
 	}
 
-	public static async findOne(id: number): Promise<UserDetailsDto> {
-		const user = await UsersDataValidator.validateGetting(id);
+	public static findOne(id: number): UserDetailsDto {
+		const user = UsersDataValidator.validateGetting(id);
 		return this.parseToDetailsDto(user);
+	}
+
+	public static getById(id: number): User | undefined {
+		return UserRepository.cache.find((user) => user.id === id);
+	}
+
+	public static getByUsername(username: string): User | undefined {
+		return UserRepository.cache.find((user) => user.username === username);
 	}
 
 	public static async update(id: number, updateUserDto: UpdateUserDto) {
@@ -75,17 +80,17 @@ class UsersService {
 		};
 	}
 
-	private static async parseToDetailsDto(user: User): Promise<UserDetailsDto> {
+	private static parseToDetailsDto(user: User): UserDetailsDto {
 		const userDto: UserDto = this.parseToDto(user);
 
-		const booklistItems: BooklistItem[] = (
-			await BooklistItemRepository.getAll()
-		).filter((item) => item.user_id === user.id);
+		const booklistItems: BooklistItem[] = BooklistItemRepository.cache.filter(
+			(item) => item.user_id === user.id
+		);
 
 		const booklist = [];
 
 		for (const item of booklistItems) {
-			const itemDto: BooklistItemDto = await BooklistService.parseToDto(item);
+			const itemDto: BooklistItemDto = BooklistService.parseToDto(item);
 			const { book, status, review } = itemDto;
 			booklist.push({ book, status, review });
 		}

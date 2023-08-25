@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 import BooksQueries from '../db/queries/books.queries';
 
 export interface Book extends RowDataPacket {
@@ -14,11 +14,19 @@ export interface Book extends RowDataPacket {
 }
 
 export class BookRepository {
+	private static _cache: Book[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<Book[]> {
-		console.log('Books Getting is started...');
 		const query: string = BooksQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Book[]>(query);
-		console.log('Books Getting is finished');
 		return rows;
 	}
 

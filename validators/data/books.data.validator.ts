@@ -1,12 +1,14 @@
-import { Book, BookRepository } from '../../models/book.model';
-import { Author, AuthorRepository } from '../../models/author.model';
-import { Genre, GenreRepository } from '../../models/genre.model';
+import { Book } from '../../models/book.model';
+import { Author } from '../../models/author.model';
+import { Genre } from '../../models/genre.model';
 import { BookFiltersDtoParsed } from '../../types/dto-parsed.types';
 import { CreateBookDto } from '../../controllers/books/dto/create-book.dto';
 
 import { UpdateBookDto } from '../../controllers/books/dto/update-book.dto';
 import { AppError, HttpCode } from '../../exceptions/app-error';
-import { BOOK_FILE_FIELD, BOOK_IMAGE_FIELD } from '../../utils/multer.util';
+import GenresService from '../../services/genres.service';
+import BooksService from '../../services/books.service';
+import AuthorsService from '../../services/authors.service';
 
 class BooksDataValidator {
 	/**
@@ -14,7 +16,7 @@ class BooksDataValidator {
 	 * Changes BookFiltersDto object (parse searchGenreIds to number[]).
 	 * @param booksFiltersDto
 	 */
-	public static async validateGettingAll(booksFiltersDto: BookFiltersDtoParsed) {
+	public static validateGettingAll(booksFiltersDto: BookFiltersDtoParsed) {
 		if (!booksFiltersDto) return;
 
 		const { searchGenreIds } = booksFiltersDto;
@@ -22,7 +24,7 @@ class BooksDataValidator {
 		if (!searchGenreIds) return;
 
 		for (const searchGenreId of searchGenreIds) {
-			const genre: Genre | undefined = await GenreRepository.get(searchGenreId);
+			const genre: Genre | undefined = GenresService.getById(searchGenreId);
 			if (!genre)
 				throw new AppError(
 					HttpCode.BAD_REQUEST,
@@ -36,11 +38,10 @@ class BooksDataValidator {
 	 * @param id
 	 * Returns Book object by input id.
 	 */
-	public static async validateGetting(id: number): Promise<Book> {
-		const book: Book | undefined = await BookRepository.get(id);
+	public static validateGetting(id: number): Book {
+		const book: Book | undefined = BooksService.getById(id);
 		if (!book)
 			throw new AppError(HttpCode.BAD_REQUEST, `Book with id ${id} does not exist`);
-
 		return book;
 	}
 
@@ -50,12 +51,12 @@ class BooksDataValidator {
 	 * @param createBookDto
 	 * Returns object with multer book filenames or throws Error.
 	 */
-	public static async validateCreating(createBookDto: CreateBookDto) {
+	public static validateCreating(createBookDto: CreateBookDto) {
 		const { authorId, genreIds, title } = createBookDto;
 
-		const authorBookWithSameTitle = (await BookRepository.getAll())
-			.filter((book) => book.author_id === authorId)
-			.find((book) => book.title === title);
+		const authorBookWithSameTitle = BooksService.getByTitle(title).find(
+			(book) => book.author_id === authorId
+		);
 
 		if (authorBookWithSameTitle)
 			throw new AppError(
@@ -67,7 +68,7 @@ class BooksDataValidator {
 			throw new AppError(HttpCode.BAD_REQUEST, 'genresIds is empty');
 
 		for (const genreId of genreIds) {
-			const genre: Genre | undefined = await GenreRepository.get(genreId);
+			const genre: Genre | undefined = GenresService.getById(genreId);
 			if (!genre)
 				throw new AppError(
 					HttpCode.BAD_REQUEST,
@@ -75,7 +76,7 @@ class BooksDataValidator {
 				);
 		}
 
-		const author: Author | undefined = await AuthorRepository.get(authorId);
+		const author: Author | undefined = AuthorsService.getById(authorId);
 		if (!author)
 			throw new AppError(
 				HttpCode.BAD_REQUEST,
@@ -89,16 +90,14 @@ class BooksDataValidator {
 	 * @param id
 	 * @param updateBookDto
 	 */
-	public static async validateUpdating(
+	public static validateUpdating(
 		id: number,
 		updateBookDto: UpdateBookDto
-	): Promise<{
-		book: Book;
-	}> {
+	): { book: Book } {
 		const { authorId, genreIds } = updateBookDto;
 		if (genreIds) {
 			for (const genreId of genreIds) {
-				const genre: Genre | undefined = await GenreRepository.get(genreId);
+				const genre: Genre | undefined = GenresService.getById(genreId);
 				if (!genre)
 					throw new AppError(
 						HttpCode.BAD_REQUEST,
@@ -108,7 +107,7 @@ class BooksDataValidator {
 		}
 		let author: Author | undefined = undefined;
 		if (authorId) {
-			author = await AuthorRepository.get(authorId);
+			author = AuthorsService.getById(authorId);
 			if (!author)
 				throw new AppError(
 					HttpCode.BAD_REQUEST,
@@ -116,7 +115,7 @@ class BooksDataValidator {
 				);
 		}
 
-		const book: Book | undefined = await BookRepository.get(id);
+		const book: Book | undefined = BooksService.getById(id);
 
 		if (!book)
 			throw new AppError(HttpCode.BAD_REQUEST, `Book with id ${id} does not exist`);
@@ -129,10 +128,11 @@ class BooksDataValidator {
 	 * @param id
 	 * Returns Book object by input id.
 	 */
-	public static async validateDeleting(id: number): Promise<Book> {
-		const book: Book | undefined = await BookRepository.get(id);
-		if (!book)
+	public static validateDeleting(id: number): Book {
+		const book: Book | undefined = BooksService.getById(id);
+		if (!book) {
 			throw new AppError(HttpCode.BAD_REQUEST, `Book with id ${id} does not exist`);
+		}
 		return book;
 	}
 }

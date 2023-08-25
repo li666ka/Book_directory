@@ -1,7 +1,7 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
 import RolesQueries from '../db/queries/roles.queries';
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 
 export interface Role extends RowDataPacket {
 	id: number;
@@ -9,11 +9,19 @@ export interface Role extends RowDataPacket {
 }
 
 export class RoleRepository {
+	private static _cache: Role[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<Role[]> {
-		console.log('Roles Getting is started...');
 		const query: string = RolesQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<Role[]>(query);
-		console.log('Roles Getting is finished');
 		return rows;
 	}
 

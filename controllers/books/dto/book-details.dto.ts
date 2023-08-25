@@ -2,7 +2,9 @@ import { BookDto } from './book.dto';
 import { ReviewDto } from '../../reviews/dto/review.dto';
 
 export interface BookDetailsDto extends BookDto {
-	reviews: Omit<ReviewDto, 'book'>[];
+	reviews: BookDetailsDto_Review[];
 	averageScore: number;
 	additionNumber: number;
 }
+
+export type BookDetailsDto_Review = Omit<ReviewDto, 'book'>;

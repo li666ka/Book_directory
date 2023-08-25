@@ -2,6 +2,7 @@ import { Genre, GenreRepository } from '../../models/genre.model';
 import { CreateGenreDto } from '../../controllers/genres/dto/create-genre.dto';
 import { UpdateGenreDto } from '../../controllers/genres/dto/update-genre.dto';
 import { AppError, HttpCode } from '../../exceptions/app-error';
+import GenresService from '../../services/genres.service';
 
 class GenresDataValidator {
 	/**
@@ -9,8 +10,8 @@ class GenresDataValidator {
 	 * @param id
 	 * Returns Genre object by input id.
 	 */
-	public static async validateGetting(id: number): Promise<Genre> {
-		const genre: Genre | undefined = await GenreRepository.get(id);
+	public static validateGetting(id: number): Genre {
+		const genre: Genre | undefined = GenresService.getById(id);
 		if (!genre)
 			throw new AppError(
 				HttpCode.BAD_REQUEST,
@@ -24,12 +25,10 @@ class GenresDataValidator {
 	 * Validates CreateGenreDto object.
 	 * @param createGenreDto
 	 */
-	public static async validateCreating(createGenreDto: CreateGenreDto): Promise<void> {
+	public static validateCreating(createGenreDto: CreateGenreDto) {
 		const { name } = createGenreDto;
 
-		const genreWithSameName: Genre | undefined = (
-			await GenreRepository.getAll()
-		).find((genre) => genre.name === name);
+		const genreWithSameName: Genre | undefined = GenresService.getByName(name);
 
 		if (genreWithSameName)
 			throw new AppError(
@@ -43,11 +42,8 @@ class GenresDataValidator {
 	 * @param id
 	 * @param updateGenreDto
 	 */
-	public static async validateUpdating(
-		id: number,
-		updateGenreDto: UpdateGenreDto
-	): Promise<void | never> {
-		const genre: Genre | undefined = await GenreRepository.get(id);
+	public static validateUpdating(id: number, updateGenreDto: UpdateGenreDto) {
+		const genre: Genre | undefined = GenresService.getById(id);
 		if (!genre)
 			throw new AppError(
 				HttpCode.BAD_REQUEST,
@@ -56,9 +52,7 @@ class GenresDataValidator {
 
 		const { name } = updateGenreDto;
 
-		const genreWithSameName: Genre | undefined = (
-			await GenreRepository.getAll()
-		).find((genre) => genre.name === name);
+		const genreWithSameName: Genre | undefined = GenresService.getByName(name);
 
 		if (genreWithSameName)
 			throw new AppError(
@@ -72,8 +66,8 @@ class GenresDataValidator {
 	 * @param id
 	 * Returns Genre object by input id.
 	 */
-	public static async validateDeleting(id: number): Promise<Genre> {
-		const genre: Genre | undefined = await GenreRepository.get(id);
+	public static validateDeleting(id: number): Genre {
+		const genre: Genre | undefined = GenresService.getById(id);
 		if (!genre)
 			throw new AppError(
 				HttpCode.BAD_REQUEST,

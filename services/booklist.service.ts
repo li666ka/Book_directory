@@ -1,20 +1,29 @@
 import { CreateBooklistItemDto } from '../controllers/booklist/dto/create-booklist-item.dto';
 import { UpdateBooklistItemDto } from '../controllers/booklist/dto/update-booklist-item.dto';
 import { BooklistItemDto } from '../controllers/booklist/dto/booklist-item.dto';
-import { BookDto } from '../controllers/books/dto/book.dto';
 
 import { BooklistItem, BooklistItemRepository } from '../models/booklist-item.model';
-import { Status, StatusRepository } from '../models/status.model';
-import { Book, BookRepository } from '../models/book.model';
-import { User, UserRepository } from '../models/user.model';
+import { Status } from '../models/status.model';
+import { Book } from '../models/book.model';
+import { User } from '../models/user.model';
+import { Author } from '../models/author.model';
 
-import BooksService from './books.service';
 import BooklistItemDataValidator from '../validators/data/booklist-item.data.validator';
 import { AppError, HttpCode } from '../exceptions/app-error';
-import { ReviewRepository } from '../models/review.model';
+
 import ReviewsService from './reviews.service';
+import UsersService from './users.service';
+import StatusesService from './statuses.service';
+import AuthorsService from './authors.service';
+import BooksService from './books.service';
 
 class BooklistService {
+	public static getByIds(userId: number, bookId: number): BooklistItem | undefined {
+		return BooklistItemRepository.cache.find(
+			(item) => item.user_id === userId && item.book_id === bookId
+		);
+	}
+
 	public static async create(
 		userId: number,
 		bookId: number,
@@ -37,6 +46,7 @@ class BooklistService {
 				'Creating new booklist item is failed'
 			);
 
+		await BooklistItemRepository.store();
 		return this.parseToDto(newBooklistItem);
 	}
 
@@ -52,32 +62,35 @@ class BooklistService {
 		);
 		const { statusId } = updateBooklistDto;
 		await BooklistItemRepository.update(statusId, userId, bookId);
+		await BooklistItemRepository.store();
 	}
 
 	public static async delete(userId: number, bookId: number) {
 		await BooklistItemDataValidator.validateDeleting(userId, bookId);
 		await BooklistItemRepository.delete(userId, bookId);
+		await BooklistItemRepository.store();
 	}
 
-	public static async parseToDto(booklistItem: BooklistItem): Promise<BooklistItemDto> {
+	public static parseToDto(booklistItem: BooklistItem): BooklistItemDto {
 		const { user_id, book_id, status_id } = booklistItem;
 
-		const user = (await UserRepository.get(user_id)) as User;
-		const book = (await BookRepository.get(book_id)) as Book;
-		const status = (await StatusRepository.get(status_id)) as Status;
-		const review = await ReviewRepository.get(user_id, book_id);
+		const user = UsersService.getById(user_id) as User;
+		const book = BooksService.getById(book_id) as Book;
+		const status = StatusesService.getById(status_id) as Status;
+		const review = ReviewsService.getByIds(user_id, book_id);
+		const author = AuthorsService.getById(book.author_id) as Author;
 
-		const bookDto: BookDto = await BooksService.parseToDto(book);
+		const bookDto = {
+			id: book.id,
+			author: { id: author.id, fullName: author.full_name },
+			title: book.title,
+			genres: BooksService.getGenres(book.id),
+			imageFile: book.imageFile,
+		};
 
 		return {
 			user: { id: user.id, username: user.username },
-			book: {
-				id: bookDto.id,
-				author: bookDto.author,
-				title: bookDto.title,
-				genres: bookDto.genres,
-				imageFile: bookDto.imageFile,
-			},
+			book: bookDto,
 			status: { id: status.id, name: status.name },
 			review: review
 				? {
@@ -86,7 +99,7 @@ class BooklistService {
 						createdAt: review.created_at,
 				  }
 				: null,
-		} as BooklistItemDto;
+		};
 	}
 }
 

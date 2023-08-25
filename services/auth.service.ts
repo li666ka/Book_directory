@@ -16,10 +16,7 @@ class AuthService {
 		createUserDto: CreateUserDto,
 		role: RoleName
 	): Promise<string> {
-		const roleId: number = await AuthDataValidator.validateCreating(
-			createUserDto,
-			role
-		);
+		const roleId: number = AuthDataValidator.validateCreating(createUserDto, role);
 
 		const { username, password } = createUserDto;
 		const hash = await bcrypt.hash(password, 10);
@@ -27,6 +24,7 @@ class AuthService {
 		const okPacket: OkPacket = await UserRepository.create(roleId, username, hash);
 		const newUser = (await UserRepository.get(okPacket.insertId)) as User;
 
+		await UserRepository.store();
 		return jwt.sign(
 			{ userId: newUser.id, username: newUser.username, role: role },
 			JWT_SECRET
@@ -34,7 +32,7 @@ class AuthService {
 	}
 
 	public static async login(loginUserDto: LoginUserDto): Promise<string> {
-		const user = await AuthDataValidator.validateLogin(loginUserDto);
+		const user = AuthDataValidator.validateLogin(loginUserDto);
 
 		const { password } = loginUserDto;
 

@@ -10,22 +10,19 @@ import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 
 class AuthorsController {
-	public static async getAll(
+	public static getAll(
 		req: Request<never, never, never, AuthorsFiltersDto>,
 		res: Response<AuthorDto[]>
 	) {
 		const { query } = req;
-		const authors: AuthorDto[] = await AuthorsService.find(query);
+		const authors: AuthorDto[] = AuthorsService.find(query);
 		res.json(authors);
 	}
 
-	public static async get(
-		req: Request<{ id: string }>,
-		res: Response<AuthorDetailsDto>
-	) {
+	public static get(req: Request<{ id: string }>, res: Response<AuthorDetailsDto>) {
 		const { id } = req.params;
 		const idParsed: number = parseToInt(id);
-		const author: AuthorDetailsDto = await AuthorsService.findOne(idParsed);
+		const author: AuthorDetailsDto = AuthorsService.findOne(idParsed);
 		res.json(author);
 	}
 

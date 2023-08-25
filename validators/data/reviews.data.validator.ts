@@ -7,16 +7,21 @@ import { CreateReviewDto } from '../../controllers/reviews/dto/create-review.dto
 import { BooklistItem, BooklistItemRepository } from '../../models/booklist-item.model';
 import { UpdateReviewDto } from '../../controllers/reviews/dto/update-review.dto';
 import { Status, StatusRepository } from '../../models/status.model';
+import ReviewsService from '../../services/reviews.service';
+import BooklistService from '../../services/booklist.service';
+import StatusesService from '../../services/statuses.service';
 
 class ReviewsDataValidator {
 	private static readonly MIN_SCORE = 0;
 	private static readonly MAX_SCORE = 10;
 
-	public static async validateGettingAll(reviewsFiltersDto: ReviewFiltersDtoParsed) {
+	public static validateGettingAll(reviewsFiltersDto: ReviewFiltersDtoParsed) {
 		const { bookId, userId, scoreMin, scoreMax } = reviewsFiltersDto;
 
 		if (bookId) {
-			const book: Book | undefined = await BookRepository.get(bookId);
+			const book: Book | undefined = BookRepository.cache.find(
+				(book) => book.id === bookId
+			);
 			if (!book)
 				new AppError(
 					HttpCode.BAD_REQUEST,
@@ -25,7 +30,9 @@ class ReviewsDataValidator {
 		}
 
 		if (userId) {
-			const user: User | undefined = await UserRepository.get(userId);
+			const user: User | undefined = UserRepository.cache.find(
+				(user) => user.id === userId
+			);
 			if (!user)
 				new AppError(
 					HttpCode.BAD_REQUEST,
@@ -52,8 +59,8 @@ class ReviewsDataValidator {
 		}
 	}
 
-	public static async validateGetting(userId: number, bookId: number): Promise<Review> {
-		const review: Review | undefined = await ReviewRepository.get(userId, bookId);
+	public static validateGetting(userId: number, bookId: number): Review {
+		const review: Review | undefined = ReviewsService.getByIds(userId, bookId);
 
 		if (!review)
 			throw new AppError(
@@ -64,12 +71,12 @@ class ReviewsDataValidator {
 		return review;
 	}
 
-	public static async validateCreating(
+	public static validateCreating(
 		userId: number,
 		bookId: number,
 		createReviewDto: CreateReviewDto
 	) {
-		const review: Review | undefined = await ReviewRepository.get(userId, bookId);
+		const review: Review | undefined = ReviewsService.getByIds(userId, bookId);
 
 		if (review)
 			throw new AppError(
@@ -77,7 +84,7 @@ class ReviewsDataValidator {
 				`Review with book id ${bookId} and user id ${userId} already exists`
 			);
 
-		const booklistItem: BooklistItem | undefined = await BooklistItemRepository.get(
+		const booklistItem: BooklistItem | undefined = BooklistService.getByIds(
 			userId,
 			bookId
 		);
@@ -88,9 +95,8 @@ class ReviewsDataValidator {
 				`No booklist item with book id ${bookId} and user id ${userId} for creating review`
 			);
 
-		const status: string = (
-			(await StatusRepository.get(booklistItem.status_id)) as Status
-		).name;
+		const status: string = (StatusesService.getById(booklistItem.status_id) as Status)
+			.name;
 
 		// if (status === )
 		// 	throw new AppError(
@@ -107,12 +113,12 @@ class ReviewsDataValidator {
 		}
 	}
 
-	public static async validateUpdating(
+	public static validateUpdating(
 		userId: number,
 		bookId: number,
 		updateReviewDto: UpdateReviewDto
-	): Promise<Review> {
-		const review: Review | undefined = await ReviewRepository.get(userId, bookId);
+	): Review {
+		const review: Review | undefined = ReviewsService.getByIds(userId, bookId);
 
 		if (!review)
 			throw new AppError(

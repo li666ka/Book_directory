@@ -9,8 +9,8 @@ import { CreateGenreDto } from '../controllers/genres/dto/create-genre.dto';
 import { UpdateGenreDto } from '../controllers/genres/dto/update-genre.dto';
 
 class GenresService {
-	public static async find(genreFiltersDto: GenreFiltersDto): Promise<GenreDto[]> {
-		let genres: Genre[] = await GenreRepository.getAll();
+	public static find(genreFiltersDto: GenreFiltersDto): GenreDto[] {
+		let genres: Genre[] = GenreRepository.cache;
 
 		const { searchName } = genreFiltersDto;
 		if (searchName) genres = this.filterByName(genres, searchName);
@@ -18,9 +18,17 @@ class GenresService {
 		return genres;
 	}
 
-	public static async findOne(id: number): Promise<GenreDto> {
-		const genre: Genre = await GenresDataValidator.validateGetting(id);
+	public static findOne(id: number): GenreDto {
+		const genre: Genre = GenresDataValidator.validateGetting(id);
 		return this.parseToDto(genre);
+	}
+
+	public static getById(id: number): Genre | undefined {
+		return GenreRepository.cache.find((genre) => genre.id === id);
+	}
+
+	public static getByName(name: string): Genre | undefined {
+		return GenreRepository.cache.find((genre) => genre.name === name);
 	}
 
 	public static async create(createGenreDto: CreateGenreDto): Promise<GenreDto> {
@@ -32,21 +40,21 @@ class GenresService {
 
 		if (!newGenre) throw new Error('Creating is failed');
 
+		await GenreRepository.store();
 		return this.parseToDto(newGenre);
 	}
 
-	public static async update(
-		id: number,
-		updateGenreDto: UpdateGenreDto
-	): Promise<void> {
+	public static async update(id: number, updateGenreDto: UpdateGenreDto) {
 		await GenresDataValidator.validateUpdating(id, updateGenreDto);
 		const { name } = updateGenreDto;
 		await GenreRepository.update(name, +id);
+		await GenreRepository.store();
 	}
 
-	public static async delete(id: number): Promise<void> {
+	public static async delete(id: number) {
 		const genre: Genre = await GenresDataValidator.validateDeleting(id);
 		await GenreRepository.delete(genre.id);
+		await GenreRepository.store();
 	}
 
 	private static filterByName(genres: Genre[], name: string): Genre[] {

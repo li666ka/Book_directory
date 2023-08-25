@@ -7,15 +7,17 @@ import { Book, BookRepository } from '../models/book.model';
 import { Author, AuthorRepository } from '../models/author.model';
 import { CreateReviewDto } from '../controllers/reviews/dto/create-review.dto';
 import { UpdateReviewDto } from '../controllers/reviews/dto/update-review.dto';
+import UsersService from './users.service';
+import BooksService from './books.service';
+import AuthorsService from './authors.service';
 
 class ReviewsService {
-	public static async find(
+	public static find(
 		reviewsFiltersDto: ReviewFiltersDtoParsed | undefined
-	): Promise<ReviewDto[]> {
-		if (reviewsFiltersDto)
-			await ReviewsDataValidator.validateGettingAll(reviewsFiltersDto);
+	): ReviewDto[] {
+		if (reviewsFiltersDto) ReviewsDataValidator.validateGettingAll(reviewsFiltersDto);
 
-		let reviews: Review[] = await ReviewRepository.getAll();
+		let reviews: Review[] = ReviewRepository.cache;
 
 		if (reviewsFiltersDto) {
 			const { bookId, userId, scoreMin, scoreMax } = reviewsFiltersDto;
@@ -29,16 +31,22 @@ class ReviewsService {
 		const reviewsDto: ReviewDto[] = [];
 
 		for (const review of reviews) {
-			const reviewDto: ReviewDto = await this.parseToDto(review);
+			const reviewDto: ReviewDto = this.parseToDto(review);
 			reviewsDto.push(reviewDto);
 		}
 
 		return reviewsDto;
 	}
 
-	public static async findOne(userId: number, bookId: number): Promise<ReviewDto> {
-		const review: Review = await ReviewsDataValidator.validateGetting(userId, bookId);
-		return await this.parseToDto(review);
+	public static findOne(userId: number, bookId: number): ReviewDto {
+		const review: Review = ReviewsDataValidator.validateGetting(userId, bookId);
+		return this.parseToDto(review);
+	}
+
+	public static getByIds(userId: number, bookId: number): Review | undefined {
+		return ReviewRepository.cache.find(
+			(review) => review.user_id === userId && review.book_id === bookId
+		);
 	}
 
 	public static async create(
@@ -53,7 +61,8 @@ class ReviewsService {
 
 		const newReview = (await ReviewRepository.get(userId, bookId)) as Review;
 
-		return await this.parseToDto(newReview);
+		await ReviewRepository.store();
+		return this.parseToDto(newReview);
 	}
 
 	public static async update(
@@ -76,20 +85,22 @@ class ReviewsService {
 			await this.updateComment(comment, review);
 			review = (await ReviewRepository.get(bookId, userId)) as Review;
 		}
+		await ReviewRepository.store();
 	}
 
 	public static async delete(userId: number, bookId: number) {
 		await ReviewsDataValidator.validateGetting(userId, bookId);
 		await ReviewRepository.delete(userId, bookId);
+		await ReviewRepository.store();
 	}
 
-	public static async parseToDto(review: Review): Promise<ReviewDto> {
+	public static parseToDto(review: Review): ReviewDto {
 		console.log(review);
 		const { user_id, book_id, score, comment, created_at } = review;
 
-		const user = (await UserRepository.get(user_id)) as User;
-		const book = (await BookRepository.get(book_id)) as Book;
-		const author = (await AuthorRepository.get(book.author_id)) as Author;
+		const user = UsersService.getById(user_id) as User;
+		const book = BooksService.getById(book_id) as Book;
+		const author = AuthorsService.getById(book.author_id) as Author;
 
 		return {
 			user: { id: user.id, username: user.username },

@@ -1,6 +1,6 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 import UsersQueries from '../db/queries/users.queries';
 
 export interface User extends RowDataPacket {
@@ -12,6 +12,16 @@ export interface User extends RowDataPacket {
 }
 
 export class UserRepository {
+	private static _cache: User[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<User[]> {
 		const query: string = UsersQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<User[]>(query);

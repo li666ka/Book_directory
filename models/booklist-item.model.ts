@@ -1,7 +1,7 @@
 import { OkPacket, RowDataPacket } from 'mysql2';
 
 import BooklistQueries from '../db/queries/booklist.queries';
-import DB_CONNECTION from '../utils/db.util';
+import { DB_CONNECTION } from '../utils/db.util';
 
 export interface BooklistItem extends RowDataPacket {
 	user_id: number;
@@ -10,6 +10,16 @@ export interface BooklistItem extends RowDataPacket {
 }
 
 export class BooklistItemRepository {
+	private static _cache: BooklistItem[];
+
+	public static async store() {
+		this._cache = await this.getAll();
+	}
+
+	public static get cache() {
+		return this._cache;
+	}
+
 	public static async getAll(): Promise<BooklistItem[]> {
 		const query: string = BooklistQueries.GetAll;
 		const [rows] = await DB_CONNECTION.promise().query<BooklistItem[]>(query);

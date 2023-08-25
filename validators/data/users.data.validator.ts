@@ -4,6 +4,7 @@ import { UserFiltersDtoParsed } from '../../types/dto-parsed.types';
 import { UpdateUserDto } from '../../controllers/users/dto/update-user.dto';
 import { UpdateUserRoleDto } from '../../controllers/users/dto/update-user-role.dto';
 import { AppError, HttpCode } from '../../exceptions/app-error';
+import UsersService from '../../services/users.service';
 
 class UsersDataValidator {
 	/**
@@ -11,16 +12,16 @@ class UsersDataValidator {
 	 * Changes UserFiltersDto object (parse roleIds to number[]).
 	 * @param userFiltersDto
 	 */
-	public static async validateGettingAll(
-		userFiltersDto: UserFiltersDtoParsed
-	): Promise<void> {
+	public static validateGettingAll(userFiltersDto: UserFiltersDtoParsed) {
 		if (!userFiltersDto) return;
 
 		const { roleIds } = userFiltersDto;
 
 		if (roleIds) {
 			for (const roleId of roleIds) {
-				const role: Role | undefined = await RoleRepository.get(roleId);
+				const role: Role | undefined = RoleRepository.cache.find(
+					(role) => role.id === roleId
+				);
 
 				if (!role)
 					throw new AppError(
@@ -32,26 +33,21 @@ class UsersDataValidator {
 		}
 	}
 
-	public static async validateGetting(id: number): Promise<User> {
-		const user: User | undefined = await UserRepository.get(id);
+	public static validateGetting(id: number): User {
+		const user: User | undefined = UsersService.getById(id);
 		if (!user)
 			throw new AppError(HttpCode.BAD_REQUEST, `User with id ${id} does not exist`);
 
 		return user;
 	}
 
-	public static async validateUpdating(
-		id: number,
-		updateUserDto: UpdateUserDto
-	): Promise<User> {
-		const user: User | undefined = await UserRepository.get(id);
+	public static validateUpdating(id: number, updateUserDto: UpdateUserDto): User {
+		const user: User | undefined = UsersService.getById(id);
 		if (!user) throw new Error(`Book with id ${id} does not exist`);
 
 		const { username } = updateUserDto;
 		if (username) {
-			const userWithSameUsername = (await UserRepository.getAll()).find(
-				(user) => user.username === username
-			);
+			const userWithSameUsername = UsersService.getByUsername(username);
 			if (userWithSameUsername)
 				throw new AppError(
 					HttpCode.BAD_REQUEST,
@@ -62,13 +58,15 @@ class UsersDataValidator {
 		return user;
 	}
 
-	public static async validateUpdatingRole(
+	public static validateUpdatingRole(
 		id: number,
 		updateUserRoleDto: UpdateUserRoleDto
-	): Promise<User> {
+	): User {
 		const { roleId } = updateUserRoleDto;
 
-		const role: Role | undefined = await RoleRepository.get(roleId);
+		const role: Role | undefined = RoleRepository.cache.find(
+			(role) => role.id === roleId
+		);
 
 		if (!role)
 			throw new AppError(
@@ -76,15 +74,15 @@ class UsersDataValidator {
 				`Role with id ${roleId} does not exist`
 			);
 
-		const user: User | undefined = await UserRepository.get(id);
+		const user: User | undefined = UsersService.getById(id);
 		if (!user)
 			throw new AppError(HttpCode.BAD_REQUEST, `Book with id ${id} does not exist`);
 
 		return user;
 	}
 
-	public static async validateDeleting(id: number): Promise<User> {
-		const user: User | undefined = await UserRepository.get(id);
+	public static validateDeleting(id: number): User {
+		const user: User | undefined = UsersService.getById(id);
 
 		if (!user)
 			throw new AppError(HttpCode.BAD_REQUEST, `User with id ${id} does not exist`);

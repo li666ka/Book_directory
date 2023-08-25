@@ -5,8 +5,8 @@ import { CreateStatusDto } from '../controllers/statuses/dto/create-status.dto';
 import { UpdateStatusDto } from '../controllers/statuses/dto/update-status.dto';
 
 class StatusesService {
-	public static async find(): Promise<StatusDto[]> {
-		const statuses: Status[] = await StatusRepository.getAll();
+	public static find(): StatusDto[] {
+		const statuses: Status[] = StatusRepository.cache;
 
 		const statusesDto: StatusDto[] = [];
 		for (const status of statuses) {
@@ -17,9 +17,17 @@ class StatusesService {
 		return statusesDto;
 	}
 
-	public static async findOne(id: number): Promise<StatusDto> {
-		const status = await StatusesDataValidator.validateGetting(id);
+	public static findOne(id: number): StatusDto {
+		const status = StatusesDataValidator.validateGetting(id);
 		return this.parseToDto(status);
+	}
+
+	public static getById(id: number): Status | undefined {
+		return StatusRepository.cache.find((status) => status.id === id);
+	}
+
+	public static getByName(name: string): Status | undefined {
+		return StatusRepository.cache.find((status) => status.name === name);
 	}
 
 	public static async create(createStatusDto: CreateStatusDto): Promise<StatusDto> {
@@ -27,6 +35,7 @@ class StatusesService {
 		const { name } = createStatusDto;
 		const { insertId } = await StatusRepository.create(name);
 		const newStatus = await StatusRepository.get(insertId);
+		await StatusRepository.store();
 		return this.parseToDto(newStatus);
 	}
 
@@ -34,11 +43,13 @@ class StatusesService {
 		await StatusesDataValidator.validateUpdating(id, updateStatusDto);
 		const { name } = updateStatusDto;
 		await StatusRepository.update(name, id);
+		await StatusRepository.store();
 	}
 
 	public static async delete(id: number) {
 		await StatusesDataValidator.validateGetting(id);
 		await StatusRepository.delete(id);
+		await StatusRepository.store();
 	}
 
 	public static parseToDto(status: Status): StatusDto {
